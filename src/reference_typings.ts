@@ -35,7 +35,7 @@ export namespace ArgumentType {
   export const StringType: 1 = 1;
   export const DoubleType: 2 = 2;
 }
-export type ExtensionFunctionType = 1|2;
+export type ArgumentType = 1|2;
 
 /** Path 'kind' used in a PathYY file */
 export namespace PathKind {
@@ -52,12 +52,11 @@ export namespace SpriteBBoxMode {
 export type SpriteBBoxMode = 0|1|2;
 
 export namespace SpriteCollisionKind {
+  export const Precise: 0 = 0;
   export const Rectangle: 1 = 1;
-  export const RotatedRectangle: 5 = 5;
   export const Ellipse: 2 = 2;
   export const Diamond: 3 = 3;
-  export const Precise: 0 = 0;
-  export const PrecisePerFrame: 0 = 0;
+  export const RotatedRectangle: 5 = 5;
 }
 export type SpriteCollisionKind = 0|1|2|3|5;
 
@@ -738,7 +737,7 @@ export namespace Resource {
     argCount: number;
 
     /** Array of argument type. See @type ArgumentType for these: */
-    args: ExtensionFunctionType[];
+    args: ArgumentType[];
 
     /** The external name of the function. */
     externalName: string;
@@ -762,7 +761,7 @@ export namespace Resource {
     name: string;
 
     /** This is the ArgumentType return. */
-    returnType: ExtensionFunctionType;
+    returnType: ArgumentType;
   }
 
   export interface Shader extends BaseResource {
