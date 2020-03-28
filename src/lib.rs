@@ -45,7 +45,7 @@ mod resource {
         #[serde(default = "gm_sprite")]
         pub model_name: String,
 
-        /// Version string
+        /// Version string. Currently 1.12.
         mvc: String,
 
         /// Resource Name
