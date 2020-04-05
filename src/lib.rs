@@ -188,136 +188,140 @@ mod resource {
     }
 }
 
-// /// GMS2 project file typings
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct Yyp {
-//     /// Unknown property, seems to always be an empty array
-//     pub configs: Vec<Option<serde_json::Value>>,
-//     /// Contains project GUID
-//     pub id: String,
-//     /// Denotes whether this project uses drag and drop or not
-//     #[serde(rename = "IsDnDProject")]
-//     pub is_dn_d_project: bool,
-//     /// Usually contains resource type, in this case GMProject
-//     #[serde(rename = "modelName")]
-//     pub model_name: YypModelName,
-//     /// A version number string, unknown use
-//     pub mvc: String,
-//     /// Allows for experimental JS editing. Unfinished or legacy feature. It's a secret.
-//     pub option_ecma: bool,
-//     /// Parent project, apparently non-public feature
-//     #[serde(rename = "parentProject")]
-//     pub parent_project: ParentProject,
-//     /// Contains all project resources (unordered)
-//     pub resources: Vec<YypResource>,
-//     /// An array of script GUID's, seemingly optional
-//     pub script_order: Option<Vec<String>>,
-//     /// Unknown property, usually an empty string
-//     pub tutorial: Option<String>,
-// }
+/// GMS2 project file typings
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Yyp {
+    /// Unknown property, seems to always be an empty array
+    pub configs: Vec<Option<serde_json::Value>>,
+    /// Contains project GUID
+    pub id: Uuid,
+    /// Denotes whether this project uses drag and drop or not
+    #[serde(rename = "IsDnDProject")]
+    pub is_dn_d_project: bool,
+    /// Always "GMProject"
+    #[serde(rename = "modelName")]
+    pub model_name: String,
+    /// A version number string, unknown use
+    pub mvc: String,
+    /// Allows for experimental JS editing. Unfinished or legacy feature. It's a secret.
+    pub option_ecma: bool,
+    /// Parent project, apparently non-public feature
+    #[serde(rename = "parentProject")]
+    pub parent_project: ParentProject,
+    /// Contains all project resources (unordered)
+    pub resources: Vec<YypResource>,
 
-// /// Parent project entry of a YYP
-// ///
-// /// Parent project, apparently non-public feature
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct ParentProject {
-//     /// Contains parent project resources
-//     #[serde(rename = "alteredResources")]
-//     pub altered_resources: Vec<YypResource>,
-//     /// Unkown property, usually an empty array
-//     #[serde(rename = "hiddenResources")]
-//     pub hidden_resources: Vec<YypResource>,
-//     /// GUID of the parent project
-//     pub id: String,
-//     /// Describes object entry type.
-//     #[serde(rename = "modelName")]
-//     pub model_name: ParentProjectModelName,
-//     /// A version number string, unknown use
-//     pub mvc: String,
-//     /// Contains parent project path presumably, always contains the following string:
-//     /// "${base_project}"
-//     #[serde(rename = "projectPath")]
-//     pub project_path: String,
-// }
+    /// An array of script GUID's
+    pub script_order: Vec<String>,
 
-// /// Represents a resource entry in a YYP
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct YypResource {
-//     /// This resource entry GUID (not the GUID of the resource itself). Appears to serve no
-//     /// purpose.
-//     #[serde(rename = "Key")]
-//     pub key: String,
-//     /// Contains resource information
-//     #[serde(rename = "Value")]
-//     pub value: YypResourceValue,
-// }
+    /// Unknown property, usually an empty string, unless you're making a tutorial
+    /// in which case, shame upon your house
+    pub tutorial: Option<String>,
+}
 
-// /// Contains resource information
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct YypResourceValue {
-//     /// Unknown property, seems to always be an empty array
-//     #[serde(rename = "configDeltaFiles")]
-//     pub config_delta_files: Vec<Option<serde_json::Value>>,
-//     /// Unknown property, seems to always be an empty array
-//     #[serde(rename = "configDeltas")]
-//     pub config_deltas: Vec<Option<serde_json::Value>>,
-//     /// GUID of the resource
-//     pub id: String,
-//     /// Describes object entry type, which is always "GMResourceInfo" for YYPResources
-//     #[serde(rename = "modelName")]
-//     pub model_name: FluffyModelName,
-//     /// A version number string, unknown use
-//     pub mvc: String,
-//     /// Unknown property, seems to always have only one entry: "default"
-//     #[serde(rename = "resourceCreationConfigs")]
-//     pub resource_creation_configs: Vec<String>,
-//     /// Contains the relative backslash-escaped path to the resource's .yy file
-//     #[serde(rename = "resourcePath")]
-//     pub resource_path: String,
-//     /// Describes the resource type
-//     #[serde(rename = "resourceType")]
-//     pub resource_type: ResourceType,
-// }
+/// Parent project entry of a YYP
+///
+/// Parent project, apparently non-public feature
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ParentProject {
+    /// Contains parent project resources
+    #[serde(rename = "alteredResources")]
+    pub altered_resources: Vec<YypResource>,
+    /// Unkown property, usually an empty array
+    #[serde(rename = "hiddenResources")]
+    pub hidden_resources: Vec<YypResource>,
+    /// GUID of the parent project
+    pub id: Uuid,
+    /// Describes object entry type.
+    /// Always "GMParentProject"
+    #[serde(rename = "modelName")]
+    pub model_name: String,
+    /// A version number string, unknown use
+    pub mvc: String,
+    /// Contains parent project path presumably, always contains the following string:
+    /// "${base_project}"
+    #[serde(rename = "projectPath")]
+    pub project_path: String,
+}
 
-// /// Internal resource type descriptor (GMEvent)
-// ///
-// /// Describes the resource type
-// #[derive(Debug, Serialize, Deserialize)]
-// pub enum ResourceType {
-//     #[serde(rename = "GMExtension")]
-//     GmExtension,
-//     #[serde(rename = "GMExtensionConstant")]
-//     GmExtensionConstant,
-//     #[serde(rename = "GMExtensionFile")]
-//     GmExtensionFile,
-//     #[serde(rename = "GMExtensionFunction")]
-//     GmExtensionFunction,
-//     #[serde(rename = "GMFolder")]
-//     GmFolder,
-//     #[serde(rename = "GMFont")]
-//     GmFont,
-//     #[serde(rename = "GMIncludedFile")]
-//     GmIncludedFile,
-//     #[serde(rename = "GMNote")]
-//     GmNote,
-//     #[serde(rename = "GMObject")]
-//     GmObject,
-//     #[serde(rename = "GMOption")]
-//     GmOption,
-//     #[serde(rename = "GMPath")]
-//     GmPath,
-//     #[serde(rename = "GMRoom")]
-//     GmRoom,
-//     #[serde(rename = "GMScript")]
-//     GmScript,
-//     #[serde(rename = "GMShader")]
-//     GmShader,
-//     #[serde(rename = "GMSound")]
-//     GmSound,
-//     #[serde(rename = "GMSprite")]
-//     GmSprite,
-//     #[serde(rename = "GMTileSet")]
-//     GmTileSet,
-//     #[serde(rename = "GMTimeline")]
-//     GmTimeline,
-// }
+/// Represents a resource entry in a YYP
+#[derive(Debug, Serialize, Deserialize)]
+pub struct YypResource {
+    /// This resource entry GUID (not the GUID of the resource itself). Appears to serve no
+    /// purpose.
+    #[serde(rename = "Key")]
+    pub key: Uuid,
+    /// Contains resource information
+    #[serde(rename = "Value")]
+    pub value: YypResourceValue,
+}
+
+/// Contains resource information
+#[derive(Debug, Serialize, Deserialize)]
+pub struct YypResourceValue {
+    /// Unknown property, seems to always be an empty array
+    #[serde(rename = "configDeltaFiles")]
+    pub config_delta_files: Vec<Option<serde_json::Value>>,
+    /// Unknown property, seems to always be an empty array
+    #[serde(rename = "configDeltas")]
+    pub config_deltas: Vec<Option<serde_json::Value>>,
+    /// GUID of the resource
+    pub id: Uuid,
+    /// Describes object entry type, which is always "GMResourceInfo" for YYPResources
+    #[serde(rename = "modelName")]
+    pub model_name: String,
+    /// A version number string, unknown use
+    pub mvc: String,
+    /// Unknown property, seems to always have only one entry: "default"
+    #[serde(rename = "resourceCreationConfigs")]
+    pub resource_creation_configs: Vec<String>,
+
+    /// Contains the relative backslash-escaped path to the resource's .yy file
+    #[serde(rename = "resourcePath")]
+    pub resource_path: String,
+    /// Describes the resource type
+    #[serde(rename = "resourceType")]
+    pub resource_type: ResourceType,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum ResourceType {
+    #[serde(rename = "GMObject")]
+    GmObject,
+    #[serde(rename = "GMIncludedFile")]
+    GmIncludedFile,
+    #[serde(rename = "GMExtension")]
+    GmExtension,
+    #[serde(rename = "GMExtensionFile")]
+    GmExtensionFile,
+    #[serde(rename = "GMExtensionConstant")]
+    GmExtensionConstant,
+    #[serde(rename = "GMFont")]
+    GmFont,
+    #[serde(rename = "GMNote")]
+    GmNote,
+    #[serde(rename = "GMOption")]
+    GmOption,
+    #[serde(rename = "GMPath")]
+    GmPath,
+    #[serde(rename = "GMRoom")]
+    GmRoom,
+    #[serde(rename = "GMScript")]
+    GmScript,
+    #[serde(rename = "GMShader")]
+    GmShader,
+    #[serde(rename = "GMSound")]
+    GmSound,
+    #[serde(rename = "GMSprite")]
+    GmSprite,
+    #[serde(rename = "GMTileSet")]
+    GmTileSet,
+    #[serde(rename = "GMFolder")]
+    GmFolder,
+    #[serde(rename = "GMTimeline")]
+    GmTimeline,
+}
+
+pub enum GmSprite {
+    
+}
