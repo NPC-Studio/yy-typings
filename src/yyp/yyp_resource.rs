@@ -20,22 +20,11 @@ pub struct YypResource {
 #[serde(rename_all = "camelCase")]
 pub struct YypResourceValue {
     /// Unknown property, seems to always be an empty array
-    pub config_delta_files: Vec<Option<serde_json::Value>>,
-
-    /// Unknown property, seems to always be an empty array
-    pub config_deltas: Vec<Option<serde_json::Value>>,
+    #[serde(default)]
+    pub config_deltas: Option<Vec<String>>,
 
     /// GUID of the resource
     pub id: YypResourceId,
-
-    /// Describes object entry type, which is always "GMResourceInfo" for YYPResources
-    pub model_name: ConstGmResourceInfo,
-
-    /// A version number string, unknown use
-    pub mvc: String,
-
-    /// Unknown property, seems to always have only one entry: "default"
-    pub resource_creation_configs: Vec<String>,
 
     /// Contains the relative backslash-escaped path to the resource's .yy file
     pub resource_path: String,
@@ -51,6 +40,7 @@ pub enum ConstGmResourceInfo {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub enum ResourceType {
     #[serde(rename = "GMObject")]
     GmObject,
@@ -86,4 +76,16 @@ pub enum ResourceType {
     GmFolder,
     #[serde(rename = "GMTimeline")]
     GmTimeline,
+    #[serde(rename = "GMMainOptions")]
+    GmMainOptions,
+    #[serde(rename = "GMWindowsOptions")]
+    GmWindowsOptions,
+    #[serde(rename = "GMLinuxOptions")]
+    GmLinuxOptions,
+    #[serde(rename = "GMMacOptions")]
+    GmMacOptions,
+    #[serde(rename = "GMNotes")]
+    GmNotes,
+    #[serde(rename = "GMHtml5Options")]
+    GmHtml5Options,
 }

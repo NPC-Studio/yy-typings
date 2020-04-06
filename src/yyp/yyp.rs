@@ -7,7 +7,7 @@ create_guarded_uuid!(ProjectId);
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Yyp {
     /// Unknown property, seems to always be an empty array
-    pub configs: Vec<Option<serde_json::Value>>,
+    pub configs: Vec<String>,
     /// Contains project GUID
     pub id: ProjectId,
     /// Denotes whether this project uses drag and drop or not

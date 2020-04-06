@@ -10,6 +10,7 @@ pub struct ParentProject {
     /// Contains parent project resources
     #[serde(rename = "alteredResources")]
     pub altered_resources: Vec<YypResource>,
+    
     /// Unkown property, usually an empty array
     #[serde(rename = "hiddenResources")]
     pub hidden_resources: Vec<YypResource>,
@@ -18,7 +19,7 @@ pub struct ParentProject {
     /// Describes object entry type.
     /// Always "GMParentProject"
     #[serde(rename = "modelName")]
-    pub model_name: ConstGmParentProject,
+    pub model_name: ConstGmProjectParent,
     /// A version number string, unknown use
     pub mvc: String,
     /// Contains parent project path presumably, always contains the following string:
@@ -28,7 +29,7 @@ pub struct ParentProject {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum ConstGmParentProject {
-    #[serde(rename = "GMParentProject")]
-    GmParentProject,
+pub enum ConstGmProjectParent {
+    #[serde(rename = "GMProjectParent")]
+    GmProjectParent,
 }

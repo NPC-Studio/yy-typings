@@ -62,7 +62,7 @@ pub struct Sprite {
     pub sepmasks: bool,
 
     /// This is always null...I think.
-    pub swatch_colours: Option<serde_json::Value>,
+    pub swatch_colours: Option<()>,
 
     pub swf_precision: f64,
 
