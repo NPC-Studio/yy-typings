@@ -1,6 +1,6 @@
 use super::yyp::ResourceType;
-use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 create_guarded_uuid!(SpriteId);
 create_guarded_uuid!(TextureGroupId);
@@ -32,6 +32,7 @@ pub struct Sprite {
     pub bbox_right: f64,
     #[serde(rename = "bbox_top")]
     pub bbox_top: f64,
+
     #[serde(rename = "bboxmode")]
     pub bboxmode: SpriteBBoxMode,
     #[serde(rename = "colkind")]
@@ -56,7 +57,7 @@ pub struct Sprite {
     pub origin: f64,
     pub origin_locked: bool,
     pub playback_speed: f64,
-    pub playback_speedtype: SpritePlaybackSpeed,
+    pub playback_speed_type: SpritePlaybackSpeed,
     pub premultiply_alpha: bool,
 
     pub sepmasks: bool,
@@ -185,14 +186,16 @@ pub enum ConstGmImageLayer {
     GmImageLayer,
 }
 
-#[derive(Debug, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[repr(u8)]
 pub enum SpriteBBoxMode {
     Automatic,
     FullImage,
     Manual,
 }
 
-#[derive(Debug, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[repr(u8)]
 pub enum SpriteCollisionKind {
     Precise,
     Rectangle,
@@ -201,7 +204,8 @@ pub enum SpriteCollisionKind {
     RotatedRectangle = 5,
 }
 
-#[derive(Debug, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[repr(u8)]
 pub enum SpritePlaybackSpeed {
     FramesPerSecond,
     FramesPerGameFrame,

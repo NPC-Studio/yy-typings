@@ -88,4 +88,20 @@ pub enum ResourceType {
     GmNotes,
     #[serde(rename = "GMHtml5Options")]
     GmHtml5Options,
+    #[serde(rename = "GMSwitchOptions")]
+    GmSwitchOptions,
+    #[serde(rename = "GMPS4Options")]
+    GmPs4Options,
+    #[serde(rename = "GMWindowsUAPOptions")]
+    GmWindowsUapOptions,
+    #[serde(rename = "GMiOSOptions")]
+    GmiOSOptions,
+    #[serde(rename = "GMtvOSOptions")]
+    GmtvOSOptions,
+    #[serde(rename = "GMAmazonFireOptions")]
+    GmAmazonFireOptions,
+    #[serde(rename = "GMAndroidOptions")]
+    GmAndroidOptions,
+    #[serde(rename = "GMXBoxOneOptions")]
+    GmXboxOneOptions,
 }
