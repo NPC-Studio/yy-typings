@@ -2,8 +2,9 @@ use super::yyp::ResourceType;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
+use std::num::NonZeroUsize;
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Sprite {
     /// Event GUID
@@ -31,7 +32,8 @@ pub struct Sprite {
     #[serde(rename = "bboxmode")]
     pub bbox_mode: BBoxMode,
     #[serde(rename = "colkind")]
-    pub colkind: SpriteCollisionKind,
+    pub colkind: CollisionKind,
+    pub sepmasks: bool,
     #[serde(rename = "coltolerance")]
     pub coltolerance: u8,
     pub edge_filtering: bool,
@@ -42,41 +44,78 @@ pub struct Sprite {
     pub frames: Vec<Frame>,
     pub layers: Vec<ImageLayer>,
 
-    pub grid_x: f64,
-    pub grid_y: f64,
-
-    #[serde(rename = "HTile")]
-    pub h_tile: bool,
-
-    pub origin: f64,
+    pub origin: Origin,
     pub origin_locked: bool,
     pub playback_speed: f64,
-    pub playback_speed_type: SpritePlaybackSpeed,
+    pub playback_speed_type: PlaybackSpeed,
     pub premultiply_alpha: bool,
-
-    pub sepmasks: bool,
-
-    /// This is probably always null, unless you make a swatch,
-    /// but why are you doing that! Just don't do that. Easy.
-    pub swatch_colours: serde_json::Value,
-    pub swf_precision: f64,
 
     pub texture_group_id: TextureGroupId,
 
-    /// This is always 0. Why is it there? Who can know.
+    /// The type of sprite, whether a bitmap or a vector sprite.
+    /// Right now, we don't handle this intelligently.
     #[serde(rename = "type")]
     pub resource_sprite_type: usize,
+    pub swf_precision: f64,
 
+    #[serde(rename = "HTile")]
+    pub h_tile: bool,
     #[serde(rename = "VTile")]
     pub v_tile: bool,
 
-    pub height: usize,
-    pub width: usize,
+    pub height: NonZeroUsize,
+    pub width: NonZeroUsize,
 
     #[serde(rename = "xorig")]
     pub xorig: usize,
     #[serde(rename = "yorig")]
     pub yorig: usize,
+    /// This is probably always null, unless you make a swatch,
+    /// but why are you doing that! Just don't do that. Easy.
+    pub swatch_colours: serde_json::Value,
+
+    pub grid_x: NonZeroUsize,
+    pub grid_y: NonZeroUsize,
+}
+
+impl Default for Sprite {
+    fn default() -> Self {
+        Self {
+            id: SpriteId::new(),
+            model_name: Default::default(),
+            mvc: "1.12".to_owned(),
+            name: Default::default(),
+            bbox_bottom: Default::default(),
+            bbox_left: Default::default(),
+            bbox_right: Default::default(),
+            bbox_top: Default::default(),
+            bbox_mode: Default::default(),
+            colkind: Default::default(),
+            sepmasks: Default::default(),
+            coltolerance: Default::default(),
+            edge_filtering: Default::default(),
+            for3d: Default::default(),
+            frames: Default::default(),
+            layers: Default::default(),
+            origin: Default::default(),
+            origin_locked: Default::default(),
+            playback_speed: Default::default(),
+            playback_speed_type: Default::default(),
+            premultiply_alpha: Default::default(),
+            texture_group_id: Default::default(),
+            resource_sprite_type: Default::default(),
+            swf_precision: Default::default(),
+            h_tile: Default::default(),
+            v_tile: Default::default(),
+            height: NonZeroUsize::new(1).unwrap(),
+            width: NonZeroUsize::new(1).unwrap(),
+            xorig: Default::default(),
+            yorig: Default::default(),
+            swatch_colours: Default::default(),
+            grid_x: NonZeroUsize::new(1).unwrap(),
+            grid_y: NonZeroUsize::new(1).unwrap(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -154,7 +193,7 @@ pub struct ImageLayer {
 
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
 #[repr(u8)]
-pub enum SpriteCollisionKind {
+pub enum CollisionKind {
     Precise,
     #[default]
     Rectangle,
@@ -165,7 +204,7 @@ pub enum SpriteCollisionKind {
 
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
 #[repr(u8)]
-pub enum SpritePlaybackSpeed {
+pub enum PlaybackSpeed {
     #[default]
     FramesPerSecond,
     FramesPerGameFrame,
@@ -211,12 +250,6 @@ create_guarded_uuid!(FrameId);
 create_guarded_uuid!(SpriteImageId);
 create_guarded_uuid!(LayerId);
 
-#[derive(Debug, Serialize, Deserialize, Default)]
-pub struct Bbox {
-    pub top_left: (isize, isize),
-    pub bottom_right: (isize, isize),
-}
-
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
 #[repr(u8)]
 pub enum BBoxMode {
@@ -224,4 +257,20 @@ pub enum BBoxMode {
     Automatic,
     FullImage,
     Manual,
+}
+
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[repr(u8)]
+pub enum Origin {
+    #[default]
+    TopLeft,
+    TopCenter,
+    TopRight,
+    MiddleLeft,
+    MiddleCenter,
+    MiddleRight,
+    BottomLeft,
+    BottomCenter,
+    BottomRight,
+    Custom,
 }
