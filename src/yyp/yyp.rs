@@ -24,6 +24,7 @@ pub struct Yyp {
     /// Parent project, apparently non-public feature
     #[serde(rename = "parentProject")]
     pub parent_project: ParentProject,
+
     /// Contains all project resources (unordered)
     pub resources: Vec<YypResource>,
 

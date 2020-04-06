@@ -42,3 +42,10 @@ pub mod yyp {
     mod yyp_resource;
     pub use yyp_resource::*;
 }
+
+mod yy_boss;
+pub use yy_boss::YyBoss;
+mod yy_resource;
+pub use yy_resource::YyResource;
+
+type YyResult<T> = Result<T, Box<dyn std::error::Error>>;
