@@ -51,7 +51,7 @@ pub mod boss {
 
     mod yy_boss;
     mod yy_resource;
-    pub use yy_boss::YypBoss;
+    pub use crate::boss::yy_boss::YypBoss;
     pub use yy_resource::YyResource;
 
     mod resource_boss {

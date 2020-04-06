@@ -42,7 +42,7 @@ pub struct Sprite {
     pub for3d: bool,
 
     pub frames: Vec<Frame>,
-    pub layers: Vec<ImageLayer>,
+    pub layers: Vec<Layer>,
 
     pub origin: Origin,
     pub origin_locked: bool,
@@ -74,8 +74,8 @@ pub struct Sprite {
     /// but why are you doing that! Just don't do that. Easy.
     pub swatch_colours: serde_json::Value,
 
-    pub grid_x: NonZeroUsize,
-    pub grid_y: NonZeroUsize,
+    pub grid_x: usize,
+    pub grid_y: usize,
 }
 
 impl Default for Sprite {
@@ -112,13 +112,13 @@ impl Default for Sprite {
             xorig: Default::default(),
             yorig: Default::default(),
             swatch_colours: Default::default(),
-            grid_x: NonZeroUsize::new(1).unwrap(),
-            grid_y: NonZeroUsize::new(1).unwrap(),
+            grid_x: Default::default(),
+            grid_y: Default::default(),
         }
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Frame {
     /// The UUID of this Frame. Every SpriteImage within
@@ -138,23 +138,23 @@ pub struct Frame {
     /// It's a composite of the images below. It's LayerID will
     /// always be UUID::default, or 0000...0000, but it's
     /// FrameID will always == Self.Id.
-    pub composite_image: SpriteImage,
+    pub composite_image: Image,
 
     /// These are the images which compose the composite image.
     /// At the minimum, there will be one Image. It's LayerID will
     /// correspond to the LayerId of a Sprite above.
-    pub images: Vec<SpriteImage>,
+    pub images: Vec<Image>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct SpriteImage {
+pub struct Image {
     /// This ID seems to referenced nowhere else, and may not have any independent
     /// usage. It does not reference anything else, at the minimum.
-    pub id: SpriteImageId,
+    pub id: ImageId,
 
     /// The model name is always "GMSpriteImage"
-    pub model_name: ConstGmSpriteImage,
+    pub model_name: ConstGmImage,
 
     /// Currently 1.0
     pub mvc: String,
@@ -170,9 +170,9 @@ pub struct SpriteImage {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ImageLayer {
+pub struct Layer {
     /// This UUID corresponds to the SpriteImage LayerId UUID.
-    pub id: SpriteImageId,
+    pub id: LayerId,
     pub model_name: ConstGmImageLayer,
 
     /// Currently "1.0"
@@ -238,7 +238,7 @@ pub enum ConstGmSpriteFrame {
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault)]
-pub enum ConstGmSpriteImage {
+pub enum ConstGmImage {
     #[serde(rename = "GMSpriteImage")]
     #[default]
     GmSpriteImage,
@@ -247,7 +247,7 @@ pub enum ConstGmSpriteImage {
 create_guarded_uuid!(SpriteId);
 create_guarded_uuid!(TextureGroupId);
 create_guarded_uuid!(FrameId);
-create_guarded_uuid!(SpriteImageId);
+create_guarded_uuid!(ImageId);
 create_guarded_uuid!(LayerId);
 
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]

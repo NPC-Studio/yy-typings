@@ -177,6 +177,53 @@ impl Sprite {
     }
 }
 
+impl Frame {
+    pub fn new(sprite: &Sprite) -> Self {
+        let id = FrameId::new();
+        Self {
+            id,
+            mvc: "1.0".to_string(),
+            sprite_id: sprite.id,
+            model_name: Default::default(),
+
+            composite_image: Image::new(id, LayerId::default()),
+            images: sprite
+                .layers
+                .iter()
+                .map(|layer| Image::new(id, layer.id))
+                .collect(),
+        }
+    }
+}
+
+impl Image {
+    pub fn new(frame_id: FrameId, layer_id: LayerId) -> Self {
+        Self {
+            id: ImageId::new(),
+            model_name: Default::default(),
+            mvc: "1.0".to_owned(),
+            frame_id,
+            layer_id,
+        }
+    }
+}
+
+impl Layer {
+    pub fn new(sprite_id: SpriteId) -> Self {
+        Self {
+            id: LayerId::new(),
+            model_name: ConstGmImageLayer::GmImageLayer,
+            mvc: "1.0".to_string(),
+            sprite_id,
+            blend_mode: 0,
+            is_locked: false,
+            name: "default".to_string(),
+            opacity: 100,
+            visible: true,
+        }
+    }
+}
+
 use std::path::{Path, PathBuf};
 impl YyResource for Sprite {
     fn relative_filepath(&self) -> PathBuf {
