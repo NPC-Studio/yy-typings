@@ -1,4 +1,4 @@
-use super::yyp::ResourceType;
+use super::yyp::{ResourceType, YypResourceKeyId};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
@@ -213,4 +213,18 @@ pub enum SpritePlaybackSpeed {
 
 fn sprite_type() -> usize {
     0
+}
+
+use super::YyResource;
+impl YyResource for Sprite {
+    fn relative_filepath(&self) -> std::path::PathBuf {
+        unimplemented!()
+    }
+    fn yy_resource_id<T: Into<YypResourceKeyId>>(&self) -> T {
+        unimplemented!()
+    }
+
+    fn yy_resource_type<T: Into<ResourceType>>(&self) -> T {
+        unimplemented!()
+    }
 }
