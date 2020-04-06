@@ -1,4 +1,4 @@
-use super::yyp::{ResourceType, YypResourceKeyId};
+use super::yy_typings::yyp::{ResourceType, YypResourceKeyId};
 use anyhow::Result;
 use std::path::{Path, PathBuf};
 

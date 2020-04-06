@@ -1,4 +1,4 @@
-use yy_boss::resources::sprite::Sprite;
+use yy_boss::yy_typings::resources::sprite::Sprite;
 
 #[test]
 fn trivial_case() {

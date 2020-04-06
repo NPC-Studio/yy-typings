@@ -1,4 +1,7 @@
-use super::{resources::*, yyp::*, YyResource};
+use super::{
+    yy_typings::{resources::sprite::*, yyp::*},
+    YyResource,
+};
 use anyhow::Result;
 use std::collections::HashMap;
 use std::{
@@ -7,18 +10,18 @@ use std::{
 };
 
 #[derive(Debug)]
-pub struct YyBoss {
+pub struct YypBoss {
     yyp: Yyp,
     dirty: bool,
     absolute_path: PathBuf,
-    sprites: YyResourceHandler<sprite::Sprite>,
+    sprites: YyResourceHandler<Sprite>,
 }
 
-impl YyBoss {
+impl YypBoss {
     /// Creates a new YyBoss Manager. Note that it performs the
     /// fs itself here. See `with_components` if handling this in
     /// some other way.
-    pub fn new(path_to_yyp: PathBuf) -> Result<YyBoss> {
+    pub fn new(path_to_yyp: PathBuf) -> Result<YypBoss> {
         let yy_file = fs::read_to_string(&path_to_yyp)?;
         let yyp: Yyp = serde_json::from_str(&yy_file)?;
 
@@ -30,7 +33,7 @@ impl YyBoss {
         })
     }
 
-    pub fn add_sprite(&mut self, sprite: sprite::Sprite, associated_data: ()) -> Result<()> {
+    pub fn add_sprite(&mut self, sprite: Sprite, associated_data: ()) -> Result<()> {
         self.add_new_resource(&sprite, None)?;
         self.sprites.add_new(sprite, associated_data);
 

@@ -1,4 +1,4 @@
-use yy_boss::yyp::Yyp;
+use yy_boss::yy_typings::yyp::Yyp;
 
 #[test]
 fn trivial_case() {

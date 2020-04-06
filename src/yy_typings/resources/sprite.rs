@@ -1,14 +1,9 @@
-use super::yyp::{ResourceType, YypResourceKeyId};
+use super::yyp::ResourceType;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use smart_default::SmartDefault;
 
-create_guarded_uuid!(SpriteId);
-create_guarded_uuid!(TextureGroupId);
-create_guarded_uuid!(FrameId);
-create_guarded_uuid!(SpriteImageId);
-create_guarded_uuid!(LayerId);
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Sprite {
     /// Event GUID
@@ -18,27 +13,27 @@ pub struct Sprite {
     pub model_name: ConstGmSprite,
 
     /// Version string. Currently 1.12.
-    mvc: String,
+    pub mvc: String,
 
     /// Resource Name
-    name: String,
+    pub name: String,
 
     // Collisions
     #[serde(rename = "bbox_bottom")]
-    pub bbox_bottom: f64,
+    pub bbox_bottom: isize,
     #[serde(rename = "bbox_left")]
-    pub bbox_left: f64,
+    pub bbox_left: isize,
     #[serde(rename = "bbox_right")]
-    pub bbox_right: f64,
+    pub bbox_right: isize,
     #[serde(rename = "bbox_top")]
-    pub bbox_top: f64,
+    pub bbox_top: isize,
 
     #[serde(rename = "bboxmode")]
-    pub bboxmode: SpriteBBoxMode,
+    pub bbox_mode: BBoxMode,
     #[serde(rename = "colkind")]
     pub colkind: SpriteCollisionKind,
     #[serde(rename = "coltolerance")]
-    pub coltolerance: f64,
+    pub coltolerance: u8,
     pub edge_filtering: bool,
 
     #[serde(rename = "For3D")]
@@ -49,7 +44,6 @@ pub struct Sprite {
 
     pub grid_x: f64,
     pub grid_y: f64,
-    pub height: f64,
 
     #[serde(rename = "HTile")]
     pub h_tile: bool,
@@ -62,40 +56,30 @@ pub struct Sprite {
 
     pub sepmasks: bool,
 
-    /// This is always null...I think.
-    pub swatch_colours: Option<()>,
-
+    /// This is probably always null, unless you make a swatch,
+    /// but why are you doing that! Just don't do that. Easy.
+    pub swatch_colours: serde_json::Value,
     pub swf_precision: f64,
 
     pub texture_group_id: TextureGroupId,
 
     /// This is always 0. Why is it there? Who can know.
-    #[serde(rename = "type", default = "sprite_type")]
+    #[serde(rename = "type")]
     pub resource_sprite_type: usize,
 
     #[serde(rename = "VTile")]
     pub v_tile: bool,
 
-    pub width: f64,
+    pub height: usize,
+    pub width: usize,
+
     #[serde(rename = "xorig")]
-    pub xorig: f64,
+    pub xorig: usize,
     #[serde(rename = "yorig")]
-    pub yorig: f64,
+    pub yorig: usize,
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-pub enum ConstGmSprite {
-    #[serde(rename = "GMSprite")]
-    GmSprite,
-}
-
-impl From<ConstGmSprite> for ResourceType {
-    fn from(_: ConstGmSprite) -> Self {
-        Self::GmSprite
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Frame {
     /// The UUID of this Frame. Every SpriteImage within
@@ -123,13 +107,7 @@ pub struct Frame {
     pub images: Vec<SpriteImage>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum ConstGmSpriteFrame {
-    #[serde(rename = "GMSpriteFrame")]
-    GmSpriteFrame,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteImage {
     /// This ID seems to referenced nowhere else, and may not have any independent
@@ -152,12 +130,6 @@ pub struct SpriteImage {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum ConstGmSpriteImage {
-    #[serde(rename = "GMSpriteImage")]
-    GmSpriteImage,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageLayer {
     /// This UUID corresponds to the SpriteImage LayerId UUID.
@@ -176,73 +148,80 @@ pub struct ImageLayer {
     pub name: String,
 
     /// Between 0-100
-    pub opacity: f64,
+    pub opacity: u8,
     pub visible: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum ConstGmImageLayer {
-    #[serde(rename = "GMImageLayer")]
-    GmImageLayer,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
-#[repr(u8)]
-pub enum SpriteBBoxMode {
-    Automatic,
-    FullImage,
-    Manual,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
 #[repr(u8)]
 pub enum SpriteCollisionKind {
     Precise,
+    #[default]
     Rectangle,
     Ellipse,
     Diamond,
     RotatedRectangle = 5,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
 #[repr(u8)]
 pub enum SpritePlaybackSpeed {
+    #[default]
     FramesPerSecond,
     FramesPerGameFrame,
 }
 
-fn sprite_type() -> usize {
-    0
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSprite {
+    #[serde(rename = "GMSprite")]
+    #[default]
+    GmSprite,
 }
 
-use super::YyResource;
-use std::path::{Path, PathBuf};
-impl YyResource for Sprite {
-    fn relative_filepath(&self) -> PathBuf {
-        Path::new(&format!("sprites/{}", self.name)).to_owned()
+impl From<ConstGmSprite> for ResourceType {
+    fn from(_: ConstGmSprite) -> Self {
+        Self::GmSprite
     }
-
-    fn id(&self) -> SpriteId {
-        self.id
-    }
-
-    fn yy_resource_type(&self) -> ResourceType {
-        self.model_name.into()
-    }
-
-    fn serialize_associated_data(
-        directory_path: &Path,
-        data: &(),
-    ) -> anyhow::Result<()> {
-        unimplemented!()
-    }
-
-    type Key = SpriteId;
-    type AssociatedData = ();
 }
 
-impl Into<YypResourceKeyId> for SpriteId {
-    fn into(self) -> YypResourceKeyId {
-        YypResourceKeyId::with_id(self.0)
-    }
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmImageLayer {
+    #[serde(rename = "GMImageLayer")]
+    #[default]
+    GmImageLayer,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteFrame {
+    #[serde(rename = "GMSpriteFrame")]
+    #[default]
+    GmSpriteFrame,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteImage {
+    #[serde(rename = "GMSpriteImage")]
+    #[default]
+    GmSpriteImage,
+}
+
+create_guarded_uuid!(SpriteId);
+create_guarded_uuid!(TextureGroupId);
+create_guarded_uuid!(FrameId);
+create_guarded_uuid!(SpriteImageId);
+create_guarded_uuid!(LayerId);
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct Bbox {
+    pub top_left: (isize, isize),
+    pub bottom_right: (isize, isize),
+}
+
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[repr(u8)]
+pub enum BBoxMode {
+    #[default]
+    Automatic,
+    FullImage,
+    Manual,
 }

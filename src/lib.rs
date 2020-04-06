@@ -29,22 +29,33 @@ macro_rules! create_guarded_uuid {
     };
 }
 
-pub mod resources {
+pub mod yy_typings {
+    pub mod resources {
+        use super::*;
+
+        pub mod sprite;
+    }
+
+    pub mod yyp {
+        mod parent_project;
+        pub use parent_project::*;
+        mod yyp;
+        pub use yyp::*;
+        mod yyp_resource;
+        pub use yyp_resource::*;
+    }
+}
+
+pub mod boss {
     use super::*;
-    pub mod sprite;
+
+    mod yy_boss;
+    mod yy_resource;
+    pub use yy_boss::YypBoss;
+    pub use yy_resource::YyResource;
+
+    mod resource_boss {
+        use super::*;
+        pub mod sprite_boss;
+    }
 }
-
-pub mod yyp {
-    mod parent_project;
-    pub use parent_project::*;
-    mod yyp;
-    pub use yyp::*;
-    mod yyp_resource;
-    pub use yyp_resource::*;
-}
-
-mod yy_boss;
-pub use crate::yy_boss::YyBoss;
-
-mod yy_resource;
-use yy_resource::YyResource;
