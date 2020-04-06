@@ -39,7 +39,7 @@ pub enum ConstGmResourceInfo {
     GmResourceInfo,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub enum ResourceType {
     #[serde(rename = "GMObject")]

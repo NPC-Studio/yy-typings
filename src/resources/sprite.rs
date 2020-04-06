@@ -83,7 +83,7 @@ pub struct Sprite {
     pub yorig: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ConstGmSprite {
     #[serde(rename = "GMSprite")]
     GmSprite,
@@ -216,15 +216,24 @@ fn sprite_type() -> usize {
 }
 
 use super::YyResource;
+use std::path::{Path, PathBuf};
 impl YyResource for Sprite {
-    fn relative_filepath(&self) -> std::path::PathBuf {
-        unimplemented!()
-    }
-    fn yy_resource_id<T: Into<YypResourceKeyId>>(&self) -> T {
-        unimplemented!()
+    fn relative_filepath(&self) -> PathBuf {
+        Path::new(&format!("sprites/{}", self.name)).to_owned()
     }
 
-    fn yy_resource_type<T: Into<ResourceType>>(&self) -> T {
-        unimplemented!()
+    fn yy_resource_id(&self) -> YypResourceKeyId {
+        self.id.into()
+    }
+    fn yy_resource_type(&self) -> ResourceType {
+        self.model_name.into()
+    }
+
+    fn serialize_additional_files(&self, directory_path: &std::path::Path) -> crate::YyResult<()> {}
+}
+
+impl Into<YypResourceKeyId> for SpriteId {
+    fn into(self) -> YypResourceKeyId {
+        YypResourceKeyId::with_id(self.0)
     }
 }
