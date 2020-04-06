@@ -222,14 +222,23 @@ impl YyResource for Sprite {
         Path::new(&format!("sprites/{}", self.name)).to_owned()
     }
 
-    fn yy_resource_id(&self) -> YypResourceKeyId {
-        self.id.into()
+    fn id(&self) -> SpriteId {
+        self.id
     }
+
     fn yy_resource_type(&self) -> ResourceType {
         self.model_name.into()
     }
 
-    fn serialize_additional_files(&self, directory_path: &std::path::Path) -> crate::YyResult<()> {}
+    fn serialize_associated_data(
+        directory_path: &Path,
+        data: &(),
+    ) -> anyhow::Result<()> {
+        unimplemented!()
+    }
+
+    type Key = SpriteId;
+    type AssociatedData = ();
 }
 
 impl Into<YypResourceKeyId> for SpriteId {

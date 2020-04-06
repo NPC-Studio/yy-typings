@@ -48,5 +48,3 @@ pub use crate::yy_boss::YyBoss;
 
 mod yy_resource;
 use yy_resource::YyResource;
-
-type YyResult<T> = Result<T, Box<dyn std::error::Error>>;
