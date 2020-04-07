@@ -137,7 +137,7 @@ impl YypBoss {
         if self.dirty {
             self.yyp
                 .resources
-                .sort_by(|lr, rr| lr.value.id.inner().cmp(&rr.value.id.inner()));
+                .sort_by(|lr, rr| lr.key.inner().cmp(&rr.key.inner()));
             // Serialize Ourselves:
             serialize(&self.absolute_path, &self.yyp)?;
 
