@@ -1,5 +1,5 @@
 use super::yy_typings::{
-    resources::{sprite::*, ResourceType},
+    resources::{sprite::*, texture_group::TextureGroupId, ResourceType},
     yyp::YypResourceKeyId,
 };
 use super::YyResource;
@@ -7,7 +7,7 @@ use image::{ImageBuffer, Rgba};
 use std::num::NonZeroUsize;
 
 pub trait SpriteExt {
-    fn new(name: String) -> Sprite;
+    fn new(name: String, texture_group_id: TextureGroupId) -> Sprite;
     fn bbox_mode(self, bbox_mode: BBoxMode) -> Self;
     fn bbox(self, bbox: Bbox) -> Self;
     fn layer(self, f: impl Fn(SpriteId) -> Layer) -> Self;
@@ -21,15 +21,15 @@ pub trait SpriteExt {
     fn playback_speed(self, speed: f64) -> Self;
     fn playback_speed_type(self, speed_type: PlaybackSpeed) -> Self;
     fn premultiply_alpha(self, premultiply_alpha: bool) -> Self;
-    fn texture_group_id(self, texture_group_id: TextureGroupId) -> Self;
     fn tile(self, tile: (bool, bool)) -> Self;
     fn dimensions(self, width: NonZeroUsize, height: NonZeroUsize) -> Self;
 }
 
 impl SpriteExt for Sprite {
-    fn new(name: String) -> Sprite {
+    fn new(name: String, texture_group_id: TextureGroupId) -> Sprite {
         Sprite {
             name,
+            texture_group_id,
             ..Default::default()
         }
     }
@@ -190,11 +190,6 @@ impl SpriteExt for Sprite {
         self
     }
 
-    fn texture_group_id(mut self, texture_group_id: TextureGroupId) -> Self {
-        self.texture_group_id = texture_group_id;
-        self
-    }
-
     fn tile(mut self, tile: (bool, bool)) -> Self {
         self.h_tile = tile.0;
         self.v_tile = tile.1;
@@ -270,7 +265,7 @@ impl LayerExt for Layer {
 use std::path::{Path, PathBuf};
 impl YyResource for Sprite {
     fn relative_filepath(&self) -> PathBuf {
-        Path::new(&format!("sprites/{}", self.name)).to_owned()
+        Path::new(&format!("sprites/{name}/{name}.yy", name = self.name)).to_owned()
     }
 
     fn id(&self) -> SpriteId {

@@ -2,10 +2,26 @@ use super::yy_typings::resources::texture_group::{GenerateMipMaps, TextureGroup,
 use regex::Regex;
 use serde_json::Value;
 
+#[derive(Debug)]
+pub struct TextureGroupController {
+    default_group: TextureGroup,
+    texture_groups: Vec<TextureGroup>,
+}
+
+impl TextureGroupController {
+    pub fn default_group(&self) -> &TextureGroup {
+        &self.default_group
+    }
+
+    pub fn texture_groups(&self) -> &[TextureGroup] {
+        &self.texture_groups
+    }
+}
+
 pub trait TextureGroupExt {
     const REGEX_OPTIONS: &'static str = r"←([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})\|(\{\r?\n[\s\S]+?\n\})";
 
-    fn parse_options_file(text: &str) -> anyhow::Result<Vec<TextureGroup>>;
+    fn parse_options_file(text: &str) -> anyhow::Result<TextureGroupController>;
     fn new(target: usize, texture_group_id: TextureGroupId, texture_group_name: String) -> Self;
     fn autocrop(self, autocrop: bool) -> Self;
     fn mipmaps(self, mipmap: GenerateMipMaps) -> Self;
@@ -15,24 +31,26 @@ pub trait TextureGroupExt {
 }
 
 impl TextureGroupExt for TextureGroup {
-    fn parse_options_file(text: &str) -> anyhow::Result<Vec<TextureGroup>> {
+    fn parse_options_file(text: &str) -> anyhow::Result<TextureGroupController> {
         let re = Regex::new(Self::REGEX_OPTIONS)?;
         let default_texture_id = TextureGroupId::with_id(
             uuid::Uuid::parse_str("1225f6b0-ac20-43bd-a82e-be73fa0b6f4f").unwrap(),
         );
 
-        let mut output = vec![];
+        let mut default_group = None;
+        let mut texture_groups = vec![];
+
         for cap in re.captures_iter(text) {
-            let mut accept_root_capture = false;
+            let mut accept_default_tex_group = false;
 
             for subcap in cap.iter() {
                 if let Some(subcap) = subcap {
-                    if accept_root_capture == false {
+                    if accept_default_tex_group == false {
                         // Chaos to make it into a string...
                         let uuid_string = format!("\"{}\"", subcap.as_str());
                         if let Ok(value) = serde_json::from_str(&uuid_string) {
                             let as_tex: TextureGroupId = value;
-                            accept_root_capture = as_tex == default_texture_id;
+                            accept_default_tex_group = as_tex == default_texture_id;
                             continue;
                         }
                     }
@@ -41,8 +59,9 @@ impl TextureGroupExt for TextureGroup {
                         let val: Value = val;
                         match serde_json::from_value(val.clone()) {
                             Ok(maybe_value) => {
-                                if accept_root_capture {
-                                    output.push(maybe_value);
+                                if accept_default_tex_group {
+                                    default_group = Some(maybe_value);
+                                    continue;
                                 }
                             }
                             Err(_) => {
@@ -56,7 +75,7 @@ impl TextureGroupExt for TextureGroup {
                                                         match serde_json::from_value(object.clone())
                                                         {
                                                             Ok(value) => {
-                                                                output.push(value);
+                                                                texture_groups.push(value);
                                                             }
                                                             Err(_) => {}
                                                         }
@@ -73,7 +92,13 @@ impl TextureGroupExt for TextureGroup {
             }
         }
 
-        Ok(output)
+        let default_group =
+            default_group.ok_or_else(|| anyhow::anyhow!("No default texture group found!"))?;
+
+        Ok(TextureGroupController {
+            default_group,
+            texture_groups,
+        })
     }
 
     fn new(targets: usize, texture_group_id: TextureGroupId, texture_group_name: String) -> Self {

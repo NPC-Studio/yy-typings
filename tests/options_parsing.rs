@@ -9,5 +9,5 @@ fn test_regex_parsing() {
 
     let read_values = TextureGroup::parse_options_file(options_text).unwrap();
 
-    assert_eq!(read_values.len(), 3);
+    assert_eq!(read_values.texture_groups().len(), 2);
 }

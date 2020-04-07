@@ -19,8 +19,8 @@ pub struct YypResource {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct YypResourceValue {
-    /// Unknown property, seems to always be an empty array
-    #[serde(default)]
+    /// If this texture is affected (I do not know how) by various configs.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub config_deltas: Option<Vec<String>>,
 
     /// GUID of the resource. This is essentially meaningless and has no relationship to

@@ -1,5 +1,5 @@
 use super::{
-    texture_group_ext::TextureGroupExt,
+    texture_group_ext::{TextureGroupController, TextureGroupExt},
     yy_typings::{
         resources::{sprite::*, texture_group::*, ResourceType},
         yyp::*,
@@ -19,7 +19,7 @@ pub struct YypBoss {
     dirty: bool,
     absolute_path: PathBuf,
     sprites: YyResourceHandler<Sprite>,
-    texture_groups: Vec<TextureGroup>,
+    texture_group_controller: TextureGroupController,
 }
 
 impl YypBoss {
@@ -30,32 +30,33 @@ impl YypBoss {
         let yy_file = fs::read_to_string(&path_to_yyp)?;
         let yyp: Yyp = serde_json::from_str(&yy_file)?;
 
+        // Load in TextureGroups...*shudder*
+        let texture_group_controller = {
+            let main_options = yyp
+                .resources
+                .iter()
+                .find_map(|value: &YypResource| {
+                    if value.value.resource_type == ResourceType::GmMainOptions {
+                        Some(value.value.resource_path.clone())
+                    } else {
+                        None
+                    }
+                })
+                .ok_or_else(|| anyhow::anyhow!("No MainOptions found!"))?;
+
+            let options_path = path_to_yyp.join(main_options);
+            let options_text = fs::read_to_string(options_path)?;
+
+            TextureGroup::parse_options_file(&options_text)?
+        };
+
         let mut yyp_boss = Self {
             yyp,
             absolute_path: path_to_yyp,
             dirty: false,
             sprites: YyResourceHandler::new(),
-            texture_groups: Vec::new(),
+            texture_group_controller,
         };
-
-        // Load in TextureGroups...*shudder*
-        if let Some(main_options) = yyp_boss
-            .yyp
-            .resources
-            .iter()
-            .find_map(|value: &YypResource| {
-                if value.value.resource_type == ResourceType::GmMainOptions {
-                    Some(value.value.resource_path.clone())
-                } else {
-                    None
-                }
-            })
-        {
-            let options_path = yyp_boss.absolute_path.join(main_options);
-            let options_text = fs::read_to_string(options_path)?;
-
-            yyp_boss.texture_groups = TextureGroup::parse_options_file(&options_text)?;
-        }
 
         // Load in Sprites
         for sprite_resources in yyp_boss
@@ -98,6 +99,8 @@ impl YypBoss {
         Ok(yyp_boss)
     }
 
+    /// Add a sprite into the YYP Boss. It is not immediately serialized,
+    /// but will be serialized the next time the entire YYP Boss is.
     pub fn add_sprite(
         &mut self,
         sprite: Sprite,
@@ -105,6 +108,10 @@ impl YypBoss {
     ) {
         self.add_new_resource(&sprite, None);
         self.sprites.add_new(sprite, associated_data);
+    }
+
+    pub fn texture_group_controller(&self) -> &TextureGroupController {
+        &self.texture_group_controller
     }
 
     /// Adds a new Resource to be tracked by the YYP. The Resource also will
@@ -138,11 +145,13 @@ impl YypBoss {
             self.yyp
                 .resources
                 .sort_by(|lr, rr| lr.key.inner().cmp(&rr.key.inner()));
-            // Serialize Ourselves:
-            serialize(&self.absolute_path, &self.yyp)?;
 
             // Check if Sprite is Dirty and Serialize that:
-            self.sprites.serialize()?;
+            self.sprites
+                .serialize(&self.absolute_path.parent().unwrap())?;
+
+            // Serialize Ourselves:
+            serialize(&self.absolute_path, &self.yyp)?;
 
             self.dirty = false;
         }
@@ -186,7 +195,7 @@ impl<T: YyResource> YyResourceHandler<T> {
         );
     }
 
-    pub fn serialize(&mut self) -> Result<()> {
+    pub fn serialize(&mut self, project_path: &Path) -> Result<()> {
         if self.dirty {
             while let Some(dirty_resource) = self.dirty_resources.pop() {
                 let resource = self
@@ -194,16 +203,17 @@ impl<T: YyResource> YyResourceHandler<T> {
                     .get(&dirty_resource)
                     .expect("This should always be valid.");
 
-                let yy_path = resource.yy_resouce.relative_filepath();
-                serialize(&yy_path, &resource.yy_resouce)?;
+                let yy_path = project_path.join(&resource.yy_resouce.relative_filepath());
 
                 if let Some(parent_dir) = yy_path.parent() {
+                    fs::create_dir_all(parent_dir)?;
                     T::serialize_associated_data(
                         &resource.yy_resouce,
                         parent_dir,
                         &resource.associated_data,
                     )?;
                 }
+                serialize(&yy_path, &resource.yy_resouce)?;
             }
         }
 

@@ -1,4 +1,4 @@
-use super::ResourceType;
+use super::{texture_group::TextureGroupId, ResourceType};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -211,7 +211,6 @@ pub enum PlaybackSpeed {
 }
 
 create_guarded_uuid!(SpriteId);
-create_guarded_uuid!(TextureGroupId);
 create_guarded_uuid!(FrameId);
 create_guarded_uuid!(ImageId);
 create_guarded_uuid!(LayerId);

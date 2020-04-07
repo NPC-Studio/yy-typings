@@ -7,13 +7,6 @@ use serde::{Deserialize, Serialize};
 /// Parent project, apparently non-public feature
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ParentProject {
-    /// Contains parent project resources
-    #[serde(rename = "alteredResources")]
-    pub altered_resources: Vec<YypResource>,
-    
-    /// Unkown property, usually an empty array
-    #[serde(rename = "hiddenResources")]
-    pub hidden_resources: Vec<YypResource>,
     /// GUID of the parent project
     pub id: ProjectId,
     /// Describes object entry type.
@@ -22,8 +15,14 @@ pub struct ParentProject {
     pub model_name: ConstGmProjectParent,
     /// A version number string, unknown use
     pub mvc: String,
-    /// Contains parent project path presumably, always contains the following string:
-    /// "${base_project}"
+    /// Contains parent project resources
+    #[serde(rename = "alteredResources")]
+    pub altered_resources: Vec<YypResource>,
+
+    /// Unkown property, usually an empty array
+    #[serde(rename = "hiddenResources")]
+    pub hidden_resources: Vec<YypResource>,
+    /// Contains parent project path representation. Not an actual system path.
     #[serde(rename = "projectPath")]
     pub project_path: String,
 }
