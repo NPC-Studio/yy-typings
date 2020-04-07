@@ -1,4 +1,4 @@
-use super::yyp::ResourceType;
+use super::ResourceType;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -210,6 +210,37 @@ pub enum PlaybackSpeed {
     FramesPerGameFrame,
 }
 
+create_guarded_uuid!(SpriteId);
+create_guarded_uuid!(TextureGroupId);
+create_guarded_uuid!(FrameId);
+create_guarded_uuid!(ImageId);
+create_guarded_uuid!(LayerId);
+
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[repr(u8)]
+pub enum BBoxMode {
+    #[default]
+    Automatic,
+    FullImage,
+    Manual,
+}
+
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[repr(u8)]
+pub enum Origin {
+    #[default]
+    TopLeft,
+    TopCenter,
+    TopRight,
+    MiddleLeft,
+    MiddleCenter,
+    MiddleRight,
+    BottomLeft,
+    BottomCenter,
+    BottomRight,
+    Custom,
+}
+
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, SmartDefault)]
 pub enum ConstGmSprite {
     #[serde(rename = "GMSprite")]
@@ -242,35 +273,4 @@ pub enum ConstGmImage {
     #[serde(rename = "GMSpriteImage")]
     #[default]
     GmSpriteImage,
-}
-
-create_guarded_uuid!(SpriteId);
-create_guarded_uuid!(TextureGroupId);
-create_guarded_uuid!(FrameId);
-create_guarded_uuid!(ImageId);
-create_guarded_uuid!(LayerId);
-
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
-#[repr(u8)]
-pub enum BBoxMode {
-    #[default]
-    Automatic,
-    FullImage,
-    Manual,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
-#[repr(u8)]
-pub enum Origin {
-    #[default]
-    TopLeft,
-    TopCenter,
-    TopRight,
-    MiddleLeft,
-    MiddleCenter,
-    MiddleRight,
-    BottomLeft,
-    BottomCenter,
-    BottomRight,
-    Custom,
 }

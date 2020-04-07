@@ -1,8 +1,8 @@
 use anyhow::Result;
-use pretty_assertions::assert_eq;
+use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 use yy_boss::boss::{sprite_ext::*, YypBoss};
-use yy_boss::yy_typings::resources::sprite::Sprite;
+use yy_boss::yy_typings::resources::sprite::*;
 
 #[test]
 fn trivial_case() {
@@ -18,10 +18,26 @@ fn adding_sprite_to_yyp() -> Result<()> {
         Path::new("./examples/test_project/yy_boss_test/yy_boss_test.yyp").to_owned(),
     )?;
 
-    let mut new_sprite = Sprite::new("juniper_test.png".to_string());
-    // new_sprite.
+    let new_sprite_yy = Sprite::new("test".to_string())
+        .dimensions(
+            NonZeroUsize::new(818).unwrap(),
+            NonZeroUsize::new(827).unwrap(),
+        )
+        .layer(|sprite_id| Layer::new(sprite_id))
+        .frame(|sprite| Frame::new(sprite))
+        .origin(OriginUtility::MiddleCenter, true)
+        .playback_speed_type(PlaybackSpeed::FramesPerSecond)
+        .playback_speed(15.0)
+        .collision_kind(CollisionKind::Rectangle)
+        .bbox_mode(BBoxMode::Manual)
+        .bbox(Bbox {
+            top_left: (0, 10),
+            bottom_right: (900, 800),
+        });
 
-    // new_yyp_boss.add_sprite()
+    let frame_buffers = unimplemented!();
 
-    // Ok(())
+    new_yyp_boss.add_sprite(new_sprite_yy, frame_buffers);
+
+    Ok(())
 }

@@ -1,6 +1,6 @@
 use super::yy_typings::{
-    resources::sprite::*,
-    yyp::{ResourceType, YypResourceKeyId},
+    resources::{sprite::*, ResourceType},
+    yyp::YypResourceKeyId,
 };
 use super::YyResource;
 use image::{ImageBuffer, Rgba};
@@ -10,6 +10,8 @@ pub trait SpriteExt {
     fn new(name: String) -> Sprite;
     fn bbox_mode(self, bbox_mode: BBoxMode) -> Self;
     fn bbox(self, bbox: Bbox) -> Self;
+    fn layer(self, f: impl Fn(SpriteId) -> Layer) -> Self;
+    fn frame(self, f: impl Fn(&Sprite) -> Frame) -> Self;
     fn collision_kind(self, collision_kind: CollisionKind) -> Self;
     fn mask_per_frame(self, mask_per_frame: bool) -> Self;
     fn coltolerance(self, col_tolerance: u8) -> Self;
@@ -21,7 +23,7 @@ pub trait SpriteExt {
     fn premultiply_alpha(self, premultiply_alpha: bool) -> Self;
     fn texture_group_id(self, texture_group_id: TextureGroupId) -> Self;
     fn tile(self, tile: (bool, bool)) -> Self;
-    fn dimensions(self, dimensions: (NonZeroUsize, NonZeroUsize)) -> Self;
+    fn dimensions(self, width: NonZeroUsize, height: NonZeroUsize) -> Self;
 }
 
 impl SpriteExt for Sprite {
@@ -30,6 +32,16 @@ impl SpriteExt for Sprite {
             name,
             ..Default::default()
         }
+    }
+
+    fn layer(mut self, f: impl Fn(SpriteId) -> Layer) -> Self {
+        self.layers.push(f(self.id));
+        self
+    }
+
+    fn frame(mut self, f: impl Fn(&Sprite) -> Frame) -> Self {
+        self.frames.push(f(&self));
+        self
     }
 
     fn bbox_mode(mut self, bbox_mode: BBoxMode) -> Self {
@@ -189,9 +201,9 @@ impl SpriteExt for Sprite {
         self
     }
 
-    fn dimensions(mut self, dimensions: (NonZeroUsize, NonZeroUsize)) -> Self {
-        self.width = dimensions.0;
-        self.height = dimensions.1;
+    fn dimensions(mut self, width: NonZeroUsize, height: NonZeroUsize) -> Self {
+        self.width = width;
+        self.height = height;
         self
     }
 }
@@ -335,4 +347,10 @@ pub enum OriginUtility {
     BottomCenter,
     BottomRight,
     Custom { x: usize, y: usize },
+}
+
+pub enum BboxModeUtility {
+    Automatic(Bbox),
+    FullImage,
+    Manual(Bbox),
 }

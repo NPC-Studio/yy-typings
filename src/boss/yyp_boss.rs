@@ -37,11 +37,9 @@ impl YypBoss {
         &mut self,
         sprite: Sprite,
         associated_data: <Sprite as YyResource>::AssociatedData,
-    ) -> Result<()> {
-        self.add_new_resource(&sprite, None)?;
+    ) {
+        self.add_new_resource(&sprite, None);
         self.sprites.add_new(sprite, associated_data);
-
-        Ok(())
     }
 
     /// Adds a new Resource to be tracked by the YYP. The Resource also will
@@ -53,7 +51,7 @@ impl YypBoss {
         &mut self,
         new_resource: &impl YyResource,
         config_deltas: Option<Vec<String>>,
-    ) -> Result<()> {
+    ) {
         // New Resource:
         let new_yy_resource = YypResource {
             key: new_resource.id().into(),
@@ -67,8 +65,6 @@ impl YypBoss {
 
         // Update the Resource
         self.yyp.resources.push(new_yy_resource);
-
-        Ok(())
     }
 
     pub fn serialize(&mut self) -> Result<()> {

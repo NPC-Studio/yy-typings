@@ -31,12 +31,15 @@ macro_rules! create_guarded_uuid {
 
 pub mod yy_typings {
     pub mod resources {
-        use super::*;
-
+        mod resource_type;
+        pub use resource_type::*;
         pub mod sprite;
+        pub mod texture_group;
     }
 
     pub mod yyp {
+        use super::resources::ResourceType;
+
         mod parent_project;
         pub use parent_project::*;
         mod yyp;
