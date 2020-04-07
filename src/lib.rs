@@ -60,6 +60,7 @@ pub mod boss {
     mod resources_ext {
         use super::*;
         pub mod sprite_ext;
+        pub mod texture_group_ext;
     }
     pub use resources_ext::*;
 }

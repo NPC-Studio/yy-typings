@@ -1,6 +1,6 @@
 use anyhow::Result;
 use std::num::NonZeroUsize;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use yy_boss::boss::{sprite_ext::*, YypBoss};
 use yy_boss::yy_typings::resources::sprite::*;
 
@@ -14,9 +14,9 @@ fn trivial_case() {
 
 #[test]
 fn adding_sprite_to_yyp() -> Result<()> {
-    let mut new_yyp_boss = YypBoss::new(
-        Path::new("./examples/test_project/yy_boss_test/yy_boss_test.yyp").to_owned(),
-    )?;
+    let yyp_path =
+        Path::new("tests/examples/test_project/yy_boss_test/yy_boss_test.yyp").to_owned();
+    let mut new_yyp_boss = YypBoss::new(yyp_path.to_owned())?;
 
     let new_sprite_yy = Sprite::new("test".to_string())
         .dimensions(
@@ -35,9 +35,13 @@ fn adding_sprite_to_yyp() -> Result<()> {
             bottom_right: (900, 800),
         });
 
-    let frame_buffers = unimplemented!();
+    let frame_buffer = (
+        new_sprite_yy.frames[0].id,
+        image::open("tests/examples/test.png")?.to_rgba(),
+    );
 
-    new_yyp_boss.add_sprite(new_sprite_yy, frame_buffers);
+    new_yyp_boss.add_sprite(new_sprite_yy, vec![frame_buffer]);
+    new_yyp_boss.serialize()?;
 
     Ok(())
 }

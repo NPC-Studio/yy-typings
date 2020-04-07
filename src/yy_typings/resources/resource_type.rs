@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub enum ResourceType {
     #[serde(rename = "GMObject")]
@@ -65,4 +65,6 @@ pub enum ResourceType {
     GmAndroidOptions,
     #[serde(rename = "GMXBoxOneOptions")]
     GmXboxOneOptions,
+    #[serde(rename = "GmTextureGroup")]
+    GmTextureGroup,
 }
