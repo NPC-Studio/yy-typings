@@ -49,13 +49,14 @@ pub mod yy_typings {
 pub mod boss {
     use super::*;
 
-    mod yy_boss;
     mod yy_resource;
-    pub use crate::boss::yy_boss::YypBoss;
+    mod yyp_boss;
     pub use yy_resource::YyResource;
+    pub use yyp_boss::YypBoss;
 
-    mod resource_boss {
+    mod resources_ext {
         use super::*;
-        pub mod sprite_boss;
+        pub mod sprite_ext;
     }
+    pub use resources_ext::*;
 }

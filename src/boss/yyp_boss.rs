@@ -33,7 +33,11 @@ impl YypBoss {
         })
     }
 
-    pub fn add_sprite(&mut self, sprite: Sprite, associated_data: ()) -> Result<()> {
+    pub fn add_sprite(
+        &mut self,
+        sprite: Sprite,
+        associated_data: <Sprite as YyResource>::AssociatedData,
+    ) -> Result<()> {
         self.add_new_resource(&sprite, None)?;
         self.sprites.add_new(sprite, associated_data);
 
@@ -128,7 +132,11 @@ impl<T: YyResource> YyResourceHandler<T> {
                 serialize(&yy_path, &resource.yy_resouce)?;
 
                 if let Some(parent_dir) = yy_path.parent() {
-                    T::serialize_associated_data(parent_dir, &resource.associated_data)?;
+                    T::serialize_associated_data(
+                        &resource.yy_resouce,
+                        parent_dir,
+                        &resource.associated_data,
+                    )?;
                 }
             }
         }

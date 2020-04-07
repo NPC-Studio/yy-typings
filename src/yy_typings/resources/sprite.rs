@@ -80,11 +80,49 @@ pub struct Sprite {
 
 impl Default for Sprite {
     fn default() -> Self {
+        // All of this setup here is to handle the invariant
+        // that sprites always have one frame, image, and layer.
+
+        let id = SpriteId::new();
+        let layer = Layer {
+            id: LayerId::new(),
+            model_name: ConstGmImageLayer::GmImageLayer,
+            mvc: "1.0".to_string(),
+            sprite_id: id,
+            blend_mode: 0,
+            is_locked: false,
+            name: "default".to_string(),
+            opacity: 100,
+            visible: true,
+        };
+        let frame_id = FrameId::new();
+
+        let frame = Frame {
+            id: frame_id,
+            model_name: Default::default(),
+            mvc: "1.0".to_owned(),
+            sprite_id: id,
+            composite_image: Image {
+                id: ImageId::new(),
+                model_name: Default::default(),
+                mvc: "1.0".to_string(),
+                frame_id,
+                layer_id: LayerId::default(),
+            },
+            images: vec![Image {
+                id: ImageId::new(),
+                model_name: Default::default(),
+                mvc: "1.0".to_string(),
+                frame_id,
+                layer_id: layer.id,
+            }],
+        };
+
         Self {
-            id: SpriteId::new(),
+            id,
             model_name: Default::default(),
             mvc: "1.12".to_owned(),
-            name: Default::default(),
+            name: "sprite-default".to_string(),
             bbox_bottom: Default::default(),
             bbox_left: Default::default(),
             bbox_right: Default::default(),
@@ -95,8 +133,8 @@ impl Default for Sprite {
             coltolerance: Default::default(),
             edge_filtering: Default::default(),
             for3d: Default::default(),
-            frames: Default::default(),
-            layers: Default::default(),
+            frames: vec![frame],
+            layers: vec![layer],
             origin: Default::default(),
             origin_locked: Default::default(),
             playback_speed: Default::default(),

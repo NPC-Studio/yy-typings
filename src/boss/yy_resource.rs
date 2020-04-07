@@ -20,5 +20,9 @@ pub trait YyResource: serde::Serialize + for<'de> serde::Deserialize<'de> {
     /// Mostly, the types themselves should implement this.
     fn yy_resource_type(&self) -> ResourceType;
 
-    fn serialize_associated_data(directory_path: &Path, data: &Self::AssociatedData) -> Result<()>;
+    fn serialize_associated_data(
+        &self,
+        directory_path: &Path,
+        data: &Self::AssociatedData,
+    ) -> Result<()>;
 }

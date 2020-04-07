@@ -3,17 +3,36 @@ use super::yy_typings::{
     yyp::{ResourceType, YypResourceKeyId},
 };
 use super::YyResource;
+use image::{ImageBuffer, Rgba};
 use std::num::NonZeroUsize;
 
-impl Sprite {
-    pub fn new(name: String) -> Sprite {
+pub trait SpriteExt {
+    fn new(name: String) -> Sprite;
+    fn bbox_mode(self, bbox_mode: BBoxMode) -> Self;
+    fn bbox(self, bbox: Bbox) -> Self;
+    fn collision_kind(self, collision_kind: CollisionKind) -> Self;
+    fn mask_per_frame(self, mask_per_frame: bool) -> Self;
+    fn coltolerance(self, col_tolerance: u8) -> Self;
+    fn edge_filtering(self, edge_filtering: bool) -> Self;
+    fn for_3d(self, for3d: bool) -> Self;
+    fn origin(self, origin: OriginUtility, locked: bool) -> Self;
+    fn playback_speed(self, speed: f64) -> Self;
+    fn playback_speed_type(self, speed_type: PlaybackSpeed) -> Self;
+    fn premultiply_alpha(self, premultiply_alpha: bool) -> Self;
+    fn texture_group_id(self, texture_group_id: TextureGroupId) -> Self;
+    fn tile(self, tile: (bool, bool)) -> Self;
+    fn dimensions(self, dimensions: (NonZeroUsize, NonZeroUsize)) -> Self;
+}
+
+impl SpriteExt for Sprite {
+    fn new(name: String) -> Sprite {
         Sprite {
             name,
             ..Default::default()
         }
     }
 
-    pub fn bbox_mode(mut self, bbox_mode: BBoxMode) -> Self {
+    fn bbox_mode(mut self, bbox_mode: BBoxMode) -> Self {
         self.bbox_mode = bbox_mode;
         match self.bbox_mode {
             BBoxMode::Automatic => {
@@ -42,7 +61,7 @@ impl Sprite {
         }
     }
 
-    pub fn bbox(mut self, bbox: Bbox) -> Self {
+    fn bbox(mut self, bbox: Bbox) -> Self {
         if self.bbox_mode == BBoxMode::Manual {
             self.bbox_left = bbox.top_left.0;
             self.bbox_top = bbox.top_left.1;
@@ -52,7 +71,7 @@ impl Sprite {
         self
     }
 
-    pub fn collision_kind(mut self, collision_kind: CollisionKind) -> Self {
+    fn collision_kind(mut self, collision_kind: CollisionKind) -> Self {
         self.colkind = collision_kind;
         if self.colkind != CollisionKind::Precise {
             self.sepmasks = false;
@@ -60,7 +79,7 @@ impl Sprite {
         self
     }
 
-    pub fn mask_per_frame(mut self, mask_per_frame: bool) -> Self {
+    fn mask_per_frame(mut self, mask_per_frame: bool) -> Self {
         if self.colkind == CollisionKind::Precise {
             self.sepmasks = mask_per_frame;
         } else {
@@ -70,22 +89,22 @@ impl Sprite {
         self
     }
 
-    pub fn coltolerance(mut self, col_tolerance: u8) -> Self {
+    fn coltolerance(mut self, col_tolerance: u8) -> Self {
         self.coltolerance = col_tolerance;
         self
     }
 
-    pub fn edge_filtering(mut self, edge_filtering: bool) -> Self {
+    fn edge_filtering(mut self, edge_filtering: bool) -> Self {
         self.edge_filtering = edge_filtering;
         self
     }
 
-    pub fn for_3d(mut self, for3d: bool) -> Self {
+    fn for_3d(mut self, for3d: bool) -> Self {
         self.for3d = for3d;
         self
     }
 
-    pub fn origin(mut self, origin: OriginUtility, locked: bool) -> Self {
+    fn origin(mut self, origin: OriginUtility, locked: bool) -> Self {
         match origin {
             OriginUtility::Custom { x, y } => {
                 self.origin = Origin::Custom;
@@ -144,41 +163,45 @@ impl Sprite {
         self
     }
 
-    pub fn playback_speed(mut self, speed: f64) -> Self {
+    fn playback_speed(mut self, speed: f64) -> Self {
         self.playback_speed = speed;
         self
     }
 
-    pub fn playback_speed_type(mut self, speed_type: PlaybackSpeed) -> Self {
+    fn playback_speed_type(mut self, speed_type: PlaybackSpeed) -> Self {
         self.playback_speed_type = speed_type;
         self
     }
 
-    pub fn premultiply_alpha(mut self, premultiply_alpha: bool) -> Self {
+    fn premultiply_alpha(mut self, premultiply_alpha: bool) -> Self {
         self.premultiply_alpha = premultiply_alpha;
         self
     }
 
-    pub fn texture_group_id(mut self, texture_group_id: TextureGroupId) -> Self {
+    fn texture_group_id(mut self, texture_group_id: TextureGroupId) -> Self {
         self.texture_group_id = texture_group_id;
         self
     }
 
-    pub fn tile(mut self, tile: (bool, bool)) -> Self {
+    fn tile(mut self, tile: (bool, bool)) -> Self {
         self.h_tile = tile.0;
         self.v_tile = tile.1;
         self
     }
 
-    pub fn dimensions(mut self, dimensions: (NonZeroUsize, NonZeroUsize)) -> Self {
+    fn dimensions(mut self, dimensions: (NonZeroUsize, NonZeroUsize)) -> Self {
         self.width = dimensions.0;
         self.height = dimensions.1;
         self
     }
 }
 
-impl Frame {
-    pub fn new(sprite: &Sprite) -> Self {
+pub trait FrameExt {
+    fn new(sprite: &Sprite) -> Self;
+}
+
+impl FrameExt for Frame {
+    fn new(sprite: &Sprite) -> Self {
         let id = FrameId::new();
         Self {
             id,
@@ -196,8 +219,12 @@ impl Frame {
     }
 }
 
-impl Image {
-    pub fn new(frame_id: FrameId, layer_id: LayerId) -> Self {
+pub trait ImageExt {
+    fn new(frame_id: FrameId, layer_id: LayerId) -> Self;
+}
+
+impl ImageExt for Image {
+    fn new(frame_id: FrameId, layer_id: LayerId) -> Self {
         Self {
             id: ImageId::new(),
             model_name: Default::default(),
@@ -208,8 +235,12 @@ impl Image {
     }
 }
 
-impl Layer {
-    pub fn new(sprite_id: SpriteId) -> Self {
+pub trait LayerExt {
+    fn new(sprite_id: SpriteId) -> Self;
+}
+
+impl LayerExt for Layer {
+    fn new(sprite_id: SpriteId) -> Self {
         Self {
             id: LayerId::new(),
             model_name: ConstGmImageLayer::GmImageLayer,
@@ -238,12 +269,47 @@ impl YyResource for Sprite {
         self.model_name.into()
     }
 
-    fn serialize_associated_data(directory_path: &Path, data: &()) -> anyhow::Result<()> {
-        unimplemented!()
+    fn serialize_associated_data(
+        &self,
+        directory_path: &Path,
+        data: &Self::AssociatedData,
+    ) -> anyhow::Result<()> {
+        let layers_path = directory_path.join("layers");
+        if layers_path.exists() == false {
+            std::fs::create_dir(&layers_path)?;
+        }
+
+        for (frame_id, image) in data {
+            let inner_id_string = frame_id.inner().to_string();
+            let image: &ImageBuffer<_, _> = image;
+
+            // Make the Core Image:
+            let path = directory_path.join(&inner_id_string).with_extension(".png");
+            image.save(path)?;
+
+            // Make the folder and layer image:
+            let folder_path = layers_path.join(&inner_id_string);
+            if folder_path.exists() == false {
+                std::fs::create_dir(&folder_path)?;
+            }
+
+            let image_layer_id = self
+                .layers
+                .first()
+                .ok_or_else(|| anyhow::anyhow!("All Sprites *must* have a single Layer!"))?
+                .id
+                .inner()
+                .to_string();
+
+            let final_layer_path = folder_path.join(&image_layer_id).with_extension(".png");
+            image.save(final_layer_path)?;
+        }
+
+        Ok(())
     }
 
     type Key = SpriteId;
-    type AssociatedData = ();
+    type AssociatedData = Vec<(FrameId, ImageBuffer<Rgba<u8>, Vec<u8>>)>;
 }
 
 impl Into<YypResourceKeyId> for SpriteId {
