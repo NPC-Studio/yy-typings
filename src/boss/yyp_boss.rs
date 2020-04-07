@@ -33,7 +33,8 @@ impl YypBoss {
         // Load in TextureGroups...*shudder*
         let texture_group_controller = {
             let main_options = yyp
-                .resources
+                .parent_project
+                .altered_resources
                 .iter()
                 .find_map(|value: &YypResource| {
                     if value.value.resource_type == ResourceType::GmMainOptions {
