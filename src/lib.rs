@@ -54,7 +54,7 @@ pub mod boss {
 
     mod yy_resource;
     mod yyp_boss;
-    pub use yy_resource::YyResource;
+    use yy_resource::YyResource;
     pub use yyp_boss::YypBoss;
 
     mod resources_ext {
