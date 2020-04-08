@@ -6,7 +6,7 @@ use super::{
     },
     YyResource,
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::collections::HashMap;
 use std::{
     fs,
@@ -32,21 +32,12 @@ impl YypBoss {
 
         // Load in TextureGroups...*shudder*
         let texture_group_controller = {
-            let main_options = yyp
-                .parent_project
-                .altered_resources
-                .iter()
-                .find_map(|value: &YypResource| {
-                    if value.value.resource_type == ResourceType::GmMainOptions {
-                        Some(value.value.resource_path.clone())
-                    } else {
-                        None
-                    }
-                })
-                .ok_or_else(|| anyhow::anyhow!("No MainOptions found!"))?;
-
-            let options_path = path_to_yyp.join(main_options);
-            let options_text = fs::read_to_string(options_path)?;
+            let options_path = path_to_yyp
+                .parent()
+                .unwrap()
+                .join("options/main/inherited/options_main.inherited.yy");
+            let options_text = fs::read_to_string(options_path)
+                .with_context(|| "We couldn't read our main options file")?;
 
             TextureGroup::parse_options_file(&options_text)?
         };
@@ -82,7 +73,7 @@ impl YypBoss {
                     let path_to_image = sprite_path
                         .parent()
                         .unwrap()
-                        .join(Path::new(&frame.id.inner().to_string()).with_extension(".png"));
+                        .join(Path::new(&frame.id.inner().to_string()).with_extension("png"));
 
                     match image::open(&path_to_image) {
                         Ok(image) => Some((frame.id, image.to_rgba())),

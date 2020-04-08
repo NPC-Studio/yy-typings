@@ -43,6 +43,7 @@ fn adding_sprite_to_yyp() -> Result<()> {
         image::open("tests/examples/test.png")?.to_rgba(),
     );
 
+
     new_yyp_boss.add_sprite(new_sprite_yy, vec![frame_buffer]);
     new_yyp_boss.serialize()?;
 

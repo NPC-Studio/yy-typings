@@ -291,7 +291,7 @@ impl YyResource for Sprite {
             let image: &ImageBuffer<_, _> = image;
 
             // Make the Core Image:
-            let path = directory_path.join(&inner_id_string).with_extension(".png");
+            let path = directory_path.join(&inner_id_string).with_extension("png");
             image.save(path)?;
 
             // Make the folder and layer image:
@@ -308,7 +308,7 @@ impl YyResource for Sprite {
                 .inner()
                 .to_string();
 
-            let final_layer_path = folder_path.join(&image_layer_id).with_extension(".png");
+            let final_layer_path = folder_path.join(&image_layer_id).with_extension("png");
             image.save(final_layer_path)?;
         }
 
