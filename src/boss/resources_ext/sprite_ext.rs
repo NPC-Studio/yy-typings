@@ -8,8 +8,7 @@ use std::num::NonZeroUsize;
 
 pub trait SpriteExt {
     fn new(name: String, texture_group_id: TextureGroupId) -> Sprite;
-    fn bbox_mode(self, bbox_mode: BBoxMode) -> Self;
-    fn bbox(self, bbox: Bbox) -> Self;
+    fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self;
     fn layer(self, f: impl Fn(SpriteId) -> Layer) -> Self;
     fn frame(self, f: impl Fn(&Sprite) -> Frame) -> Self;
     fn collision_kind(self, collision_kind: CollisionKind) -> Self;
@@ -44,42 +43,30 @@ impl SpriteExt for Sprite {
         self
     }
 
-    fn bbox_mode(mut self, bbox_mode: BBoxMode) -> Self {
-        self.bbox_mode = bbox_mode;
-        match self.bbox_mode {
-            BBoxMode::Automatic => {
-                log::warn!(
-                    "We cannot correctly handle Automatic Bbox Modes at this time.\n\
-                    Setting to the Size of Full Image..."
-                );
+    /// Sets the Bbox Mode and the desired size. Note: right now, we do not support
+    /// `BboxMode::Automatic` in anyway. It is identical to `BboxMode::Manual` for now.
+    fn bbox_mode(mut self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self {
+        let bbox_util = f(self.width.get() as isize, self.height.get() as isize);
+        self.bbox_mode = bbox_util.into();
+
+        let bbox = match bbox_util {
+            BboxModeUtility::Automatic(bbox) | BboxModeUtility::Manual(bbox) => bbox,
+            BboxModeUtility::FullImage => {
                 let width = self.width.get() as isize;
                 let height = self.height.get() as isize;
 
-                self.bbox(Bbox {
+                Bbox {
                     top_left: (0, 0),
                     bottom_right: (width, height),
-                })
+                }
             }
-            BBoxMode::FullImage => {
-                let width = self.width.get() as isize;
-                let height = self.height.get() as isize;
+        };
 
-                self.bbox(Bbox {
-                    top_left: (0, 0),
-                    bottom_right: (width, height),
-                })
-            }
-            BBoxMode::Manual => self,
-        }
-    }
+        self.bbox_left = bbox.top_left.0;
+        self.bbox_top = bbox.top_left.1;
+        self.bbox_right = bbox.bottom_right.0;
+        self.bbox_bottom = bbox.bottom_right.1;
 
-    fn bbox(mut self, bbox: Bbox) -> Self {
-        if self.bbox_mode == BBoxMode::Manual {
-            self.bbox_left = bbox.top_left.0;
-            self.bbox_top = bbox.top_left.1;
-            self.bbox_right = bbox.bottom_right.0;
-            self.bbox_bottom = bbox.bottom_right.1;
-        }
         self
     }
 
@@ -325,7 +312,7 @@ impl Into<YypResourceKeyId> for SpriteId {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Bbox {
     pub top_left: (isize, isize),
     pub bottom_right: (isize, isize),
@@ -344,8 +331,19 @@ pub enum OriginUtility {
     Custom { x: usize, y: usize },
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum BboxModeUtility {
     Automatic(Bbox),
     FullImage,
     Manual(Bbox),
+}
+
+impl From<BboxModeUtility> for BBoxMode {
+    fn from(o: BboxModeUtility) -> Self {
+        match o {
+            BboxModeUtility::Automatic(_) => BBoxMode::Automatic,
+            BboxModeUtility::FullImage => BBoxMode::FullImage,
+            BboxModeUtility::Manual(_) => BBoxMode::Manual,
+        }
+    }
 }

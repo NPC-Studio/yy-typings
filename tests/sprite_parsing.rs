@@ -18,33 +18,32 @@ fn adding_sprite_to_yyp() -> Result<()> {
         Path::new("tests/examples/test_project/yy_boss_test/yy_boss_test.yyp").to_owned();
     let mut new_yyp_boss = YypBoss::new(yyp_path.to_owned())?;
 
+    let frame_buffer = image::open("tests/examples/test.png")?.to_rgba();
+
     let new_sprite_yy = Sprite::new(
         "test".to_string(),
         new_yyp_boss.texture_group_controller().default_group().id,
     )
     .dimensions(
-        NonZeroUsize::new(818).unwrap(),
-        NonZeroUsize::new(827).unwrap(),
+        NonZeroUsize::new(frame_buffer.width() as usize).unwrap(),
+        NonZeroUsize::new(frame_buffer.height() as usize).unwrap(),
     )
-    .layer(|sprite_id| Layer::new(sprite_id))
-    .frame(|sprite| Frame::new(sprite))
+    .layer(Layer::new)
+    .frame(Frame::new)
     .origin(OriginUtility::MiddleCenter, true)
     .playback_speed_type(PlaybackSpeed::FramesPerSecond)
     .playback_speed(15.0)
     .collision_kind(CollisionKind::Rectangle)
-    .bbox_mode(BBoxMode::Manual)
-    .bbox(Bbox {
-        top_left: (0, 10),
-        bottom_right: (900, 800),
+    .bbox_mode(|width, height| {
+        BboxModeUtility::Manual(Bbox {
+            top_left: (0, 0),
+            bottom_right: (width - 10, height - 10),
+        })
     });
 
-    let frame_buffer = (
-        new_sprite_yy.frames[0].id,
-        image::open("tests/examples/test.png")?.to_rgba(),
-    );
+    let frame_id = new_sprite_yy.frames[0].id;
 
-
-    new_yyp_boss.add_sprite(new_sprite_yy, vec![frame_buffer]);
+    new_yyp_boss.add_sprite(new_sprite_yy, vec![(frame_id, frame_buffer)]);
     new_yyp_boss.serialize()?;
 
     Ok(())
