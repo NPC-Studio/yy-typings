@@ -24,7 +24,7 @@ The first half of this crate are typings for the `.yyp` and various `.YY` files.
 - [ ] Notes
 - [ ] Included Files
 - [ ] Extensions
-- [-] Options*
+- [x] Options*
 - [ ] Configurations
 
 ***Options are not directly user accessible, but are provided through other structures like TextureGroups. The Options file itself is very non-spec, and it difficult to get a cohesive picture of.**
