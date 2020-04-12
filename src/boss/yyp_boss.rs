@@ -64,7 +64,8 @@ impl YypBoss {
                 .unwrap()
                 .join(&sprite_resource.value.resource_path);
 
-            let sprite_yy: Sprite = deserialize(&sprite_path)?;
+            let sprite_yy: Sprite = deserialize(&sprite_path)
+                .with_context(|| format!("Sprite path is {:?}", sprite_path))?;
 
             let frame_buffers: Vec<_> = sprite_yy
                 .frames
@@ -89,6 +90,10 @@ impl YypBoss {
         }
 
         Ok(yyp_boss)
+    }
+
+    pub fn absolute_path(&self) -> &Path {
+        &self.absolute_path
     }
 
     /// Add a sprite into the YYP Boss. It is not immediately serialized,

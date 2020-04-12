@@ -117,43 +117,43 @@ impl SpriteExt for Sprite {
             }
             OriginUtility::TopCenter => {
                 self.origin = Origin::TopCenter;
-                self.xorig = self.width.get() / 2;
+                self.xorig = (self.width.get() / 2) as isize;
                 self.yorig = 0;
             }
             OriginUtility::TopRight => {
                 self.origin = Origin::TopRight;
-                self.xorig = self.width.get() - 1;
+                self.xorig = (self.width.get() - 1) as isize;
                 self.yorig = 0;
             }
             OriginUtility::MiddleLeft => {
                 self.origin = Origin::MiddleLeft;
                 self.xorig = 0;
-                self.yorig = self.height.get() / 2;
+                self.yorig = (self.height.get() / 2) as isize;
             }
             OriginUtility::MiddleCenter => {
                 self.origin = Origin::MiddleCenter;
-                self.xorig = self.width.get() / 2;
-                self.yorig = self.height.get() / 2;
+                self.xorig = (self.width.get() / 2) as isize;
+                self.yorig = (self.height.get() / 2) as isize;
             }
             OriginUtility::MiddleRight => {
                 self.origin = Origin::MiddleRight;
-                self.xorig = self.width.get() / 2;
-                self.yorig = self.height.get() / 2;
+                self.xorig = (self.width.get() / 2) as isize;
+                self.yorig = (self.height.get() / 2) as isize;
             }
             OriginUtility::BottomLeft => {
                 self.origin = Origin::BottomLeft;
                 self.xorig = 0;
-                self.yorig = self.height.get() - 1;
+                self.yorig = (self.height.get() - 1) as isize;
             }
             OriginUtility::BottomCenter => {
                 self.origin = Origin::BottomCenter;
-                self.xorig = self.width.get() / 2;
-                self.yorig = self.height.get() - 1;
+                self.xorig = (self.width.get() / 2) as isize;
+                self.yorig = (self.height.get() - 1) as isize;
             }
             OriginUtility::BottomRight => {
                 self.origin = Origin::BottomRight;
-                self.xorig = self.width.get() - 1;
-                self.yorig = self.height.get() - 1;
+                self.xorig = (self.width.get() - 1) as isize;
+                self.yorig = (self.height.get() - 1) as isize;
             }
         }
 
@@ -328,7 +328,7 @@ pub enum OriginUtility {
     BottomLeft,
     BottomCenter,
     BottomRight,
-    Custom { x: usize, y: usize },
+    Custom { x: isize, y: isize },
 }
 
 #[derive(Debug, Copy, Clone)]

@@ -67,9 +67,9 @@ pub struct Sprite {
     pub width: NonZeroUsize,
 
     #[serde(rename = "xorig")]
-    pub xorig: usize,
+    pub xorig: isize,
     #[serde(rename = "yorig")]
-    pub yorig: usize,
+    pub yorig: isize,
     /// This is probably always null, unless you make a swatch,
     /// but why are you doing that! Just don't do that. Easy.
     pub swatch_colours: serde_json::Value,
