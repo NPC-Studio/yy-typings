@@ -28,7 +28,7 @@ pub struct YypResourceValue {
     pub id: YypResourceId,
 
     /// Contains the relative backslash-escaped path to the resource's .yy file
-    pub resource_path: std::path::PathBuf,
+    pub resource_path: String,
 
     /// Describes the resource type
     pub resource_type: ResourceType,

@@ -6,6 +6,8 @@ use super::YyResource;
 use image::{ImageBuffer, Rgba};
 use std::num::NonZeroUsize;
 
+pub type SpriteImageBuffer = ImageBuffer<Rgba<u8>, Vec<u8>>;
+
 pub trait SpriteExt {
     fn new(name: String, texture_group_id: TextureGroupId) -> Sprite;
     fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self;
@@ -249,6 +251,7 @@ impl LayerExt for Layer {
     }
 }
 
+use anyhow::Context;
 use std::path::{Path, PathBuf};
 impl YyResource for Sprite {
     fn relative_filepath(&self) -> PathBuf {
@@ -279,7 +282,9 @@ impl YyResource for Sprite {
 
             // Make the Core Image:
             let path = directory_path.join(&inner_id_string).with_extension("png");
-            image.save(path)?;
+            image.save(&path).with_context(|| {
+                format!("We couldn't serialize the Core Image at path {:?}", path)
+            })?;
 
             // Make the folder and layer image:
             let folder_path = layers_path.join(&inner_id_string);
@@ -296,14 +301,16 @@ impl YyResource for Sprite {
                 .to_string();
 
             let final_layer_path = folder_path.join(&image_layer_id).with_extension("png");
-            image.save(final_layer_path)?;
+            image
+                .save(&final_layer_path)
+                .with_context(|| format!("We couldn't save an Image to {:?}", final_layer_path))?;
         }
 
         Ok(())
     }
 
     type Key = SpriteId;
-    type AssociatedData = Vec<(FrameId, ImageBuffer<Rgba<u8>, Vec<u8>>)>;
+    type AssociatedData = Vec<(FrameId, SpriteImageBuffer)>;
 }
 
 impl Into<YypResourceKeyId> for SpriteId {
@@ -318,6 +325,7 @@ pub struct Bbox {
     pub bottom_right: (isize, isize),
 }
 
+#[derive(Debug, Copy, Clone, strum_macros::EnumIter, strum_macros::Display)]
 pub enum OriginUtility {
     TopLeft,
     TopCenter,
@@ -331,7 +339,7 @@ pub enum OriginUtility {
     Custom { x: isize, y: isize },
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, strum_macros::EnumIter, strum_macros::Display)]
 pub enum BboxModeUtility {
     Automatic(Bbox),
     FullImage,

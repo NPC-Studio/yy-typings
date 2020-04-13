@@ -191,7 +191,7 @@ pub struct Layer {
     pub visible: bool,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
 #[repr(u8)]
 pub enum CollisionKind {
     Precise,
@@ -202,7 +202,7 @@ pub enum CollisionKind {
     RotatedRectangle = 5,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
 #[repr(u8)]
 pub enum PlaybackSpeed {
     #[default]
@@ -215,7 +215,7 @@ create_guarded_uuid!(FrameId);
 create_guarded_uuid!(ImageId);
 create_guarded_uuid!(LayerId);
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
 #[repr(u8)]
 pub enum BBoxMode {
     #[default]
@@ -224,7 +224,7 @@ pub enum BBoxMode {
     Manual,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
 #[repr(u8)]
 pub enum Origin {
     #[default]

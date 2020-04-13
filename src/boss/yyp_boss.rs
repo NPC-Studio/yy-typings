@@ -1,4 +1,5 @@
 use super::{
+    sprite_ext::SpriteImageBuffer,
     texture_group_ext::{TextureGroupController, TextureGroupExt},
     yy_typings::{
         resources::{sprite::*, texture_group::*, ResourceType},
@@ -7,6 +8,7 @@ use super::{
     YyResource,
 };
 use anyhow::{Context, Result};
+use log::info;
 use std::collections::HashMap;
 use std::{
     fs,
@@ -62,10 +64,15 @@ impl YypBoss {
                 .absolute_path
                 .parent()
                 .unwrap()
-                .join(&sprite_resource.value.resource_path);
+                .join(&sprite_resource.value.resource_path.replace("\\", "/"));
 
-            let sprite_yy: Sprite = deserialize(&sprite_path)
-                .with_context(|| format!("Sprite path is {:?}", sprite_path))?;
+            let sprite_yy: Sprite = deserialize(&sprite_path).with_context(|| {
+                format!(
+                    "Sprite path is {:#?} and exists: {}",
+                    sprite_path,
+                    sprite_path.exists()
+                )
+            })?;
 
             let frame_buffers: Vec<_> = sprite_yy
                 .frames
@@ -86,7 +93,7 @@ impl YypBoss {
                 })
                 .collect();
 
-            yyp_boss.sprites.add_new(sprite_yy, frame_buffers);
+            yyp_boss.sprites.add_new_clean(sprite_yy, frame_buffers);
         }
 
         Ok(yyp_boss)
@@ -101,7 +108,7 @@ impl YypBoss {
     pub fn add_sprite(
         &mut self,
         sprite: Sprite,
-        associated_data: <Sprite as YyResource>::AssociatedData,
+        associated_data: Vec<(FrameId, SpriteImageBuffer)>,
     ) {
         self.add_new_resource(&sprite, None);
         self.sprites.add_new(sprite, associated_data);
@@ -127,7 +134,10 @@ impl YypBoss {
             value: YypResourceValue {
                 config_deltas,
                 id: YypResourceId::new(),
-                resource_path: new_resource.relative_filepath().to_owned(),
+                resource_path: new_resource
+                    .relative_filepath()
+                    .to_string_lossy()
+                    .to_string(),
                 resource_type: new_resource.yy_resource_type(),
             },
         };
@@ -143,6 +153,7 @@ impl YypBoss {
                 .resources
                 .sort_by(|lr, rr| lr.key.inner().cmp(&rr.key.inner()));
 
+            info!("Resources Serialized...");
             // Check if Sprite is Dirty and Serialize that:
             self.sprites
                 .serialize(&self.absolute_path.parent().unwrap())?;
@@ -182,7 +193,10 @@ impl<T: YyResource> YyResourceHandler<T> {
     pub fn add_new(&mut self, value: T, associated_data: T::AssociatedData) {
         self.dirty_resources.push(value.id());
         self.dirty = true;
+        self.add_new_clean(value, associated_data);
+    }
 
+    fn add_new_clean(&mut self, value: T, associated_data: T::AssociatedData) {
         self.resources.insert(
             value.id(),
             YyResourceData {
@@ -204,6 +218,7 @@ impl<T: YyResource> YyResourceHandler<T> {
 
                 if let Some(parent_dir) = yy_path.parent() {
                     fs::create_dir_all(parent_dir)?;
+                    info!("About to Serialize Associated Data...");
                     T::serialize_associated_data(
                         &resource.yy_resouce,
                         parent_dir,
