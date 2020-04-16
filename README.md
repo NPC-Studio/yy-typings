@@ -1,6 +1,6 @@
 # YY-BOSS
 
-This is a library, created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by [Jack Spira](https://twitter.com/sanbox_irl). This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public, but largely because it's specific to our own workflows. Using this tool, one should be able to generate their own pipeline without difficulty.
+This is a library, created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by NPC Studio. [Jack Spira](https://twitter.com/sanbox_irl) wrote the first version of this tool and maintains it. This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public, but largely because it's specific to our own workflows. Using this tool, one should be able to generate their own pipeline without difficulty.
 
 This repository is divided into two halves, neither of which are wide enough to cover GMS2, but both of which are deep enough for GMS2 so far.
 
