@@ -14,8 +14,8 @@ pub trait GmFolderExt {
     fn root_folder(self) -> Self;
     fn user_folder(self) -> Self;
     fn localised_folder_name(self, localized_folder_name: LocalisedFolderName) -> Self;
-    fn child(self, child: GmFolderId) -> Self;
-    fn children(self, children: &[GmFolderId]) -> Self;
+    fn child(self, child: YypResourceKeyId) -> Self;
+    fn children(self, children: &[YypResourceKeyId]) -> Self;
 }
 
 impl GmFolderExt for GmFolder {
@@ -70,12 +70,12 @@ impl GmFolderExt for GmFolder {
         self
     }
 
-    fn child(mut self, child: GmFolderId) -> Self {
+    fn child(mut self, child: YypResourceKeyId) -> Self {
         self.children.push(child);
         self
     }
-    
-    fn children(mut self, children: &[GmFolderId]) -> Self {
+
+    fn children(mut self, children: &[YypResourceKeyId]) -> Self {
         for child in children.into_iter() {
             self.children.push(*child);
         }

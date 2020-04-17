@@ -1,4 +1,4 @@
-use super::ResourceType;
+use super::{ResourceType, YypResourceKeyId};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -20,7 +20,7 @@ pub struct GmFolder {
     pub name: GmFolderId,
 
     /// These are the children ID views which sit below the views in the tree.
-    pub children: Vec<GmFolderId>,
+    pub children: Vec<YypResourceKeyId>,
 
     /// `filter_type` is used for search and filtering purpoes in GMS2's ide.
     /// Only certain values should be placed here, and they almost certainly are the

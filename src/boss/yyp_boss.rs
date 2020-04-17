@@ -1,6 +1,7 @@
 use super::{
+    folder_graph::*,
     yy_typings::{
-        resources::{sprite::*, texture_group::*, ResourceType},
+        resources::{folder::*, sprite::*, texture_group::*, ResourceType},
         yyp::*,
     },
     SpriteImageBuffer, TextureGroupController, TextureGroupExt, YyResource,
@@ -16,10 +17,11 @@ use std::{
 #[derive(Debug)]
 pub struct YypBoss {
     yyp: Yyp,
-    dirty: bool,
     absolute_path: PathBuf,
     sprites: YyResourceHandler<Sprite>,
     texture_group_controller: TextureGroupController,
+    folders: FolderGraph,
+    dirty: bool,
 }
 
 impl YypBoss {
@@ -48,29 +50,25 @@ impl YypBoss {
             dirty: false,
             sprites: YyResourceHandler::new(),
             texture_group_controller,
+            folders: FolderGraph::new(),
         };
 
         // Load in Sprites
-        for sprite_resources in yyp_boss
+        for sprite_resource in yyp_boss
             .yyp
             .resources
             .iter()
             .filter(|value| value.value.resource_type == ResourceType::GmSprite)
         {
-            let sprite_resource: &YypResource = sprite_resources;
+            let sprite_resource: &YypResource = sprite_resource;
             let sprite_path = yyp_boss
                 .absolute_path
                 .parent()
                 .unwrap()
                 .join(&sprite_resource.value.resource_path.replace("\\", "/"));
 
-            let sprite_yy: Sprite = deserialize(&sprite_path).with_context(|| {
-                format!(
-                    "Sprite path is {:#?} and exists: {}",
-                    sprite_path,
-                    sprite_path.exists()
-                )
-            })?;
+            let sprite_yy: Sprite = deserialize(&sprite_path)
+                .with_context(|| format!("Error importing sprite with Path {:#?}", sprite_path))?;
 
             let frame_buffers: Vec<_> = sprite_yy
                 .frames
@@ -94,6 +92,52 @@ impl YypBoss {
             yyp_boss.sprites.add_new_clean(sprite_yy, frame_buffers);
         }
 
+        // Load in Views
+        fn import_view(
+            view: &YypResource,
+            absolute_dir: &Path,
+            folder_graph: &mut FolderGraph,
+            resources: &Vec<YypResource>,
+        ) -> Result<NodeId> {
+            let view_path = absolute_dir.join(&view.value.resource_path.replace("\\", "/"));
+
+            let view_yy: GmFolder = deserialize(&view_path)
+                .with_context(|| format!("Error importing view with path {:#?}", view_path))?;
+
+            let folder = folder_graph.instantiate_node(view_yy.id.into());
+
+            for child in view_yy.children.iter() {
+                let child: &YypResourceKeyId = child;
+                if let Some(resource) = resources.iter().find(|r| r.key == *child) {
+                    let resource: &YypResource = resource;
+                    let new_branch = match resource.value.resource_type {
+                        ResourceType::GmFolder => {
+                            import_view(resource, absolute_dir, folder_graph, resources)?
+                        }
+                        _ => folder_graph.instantiate_node((*child).into()),
+                    };
+
+                    folder.append(new_branch, folder_graph);
+                }
+            }
+
+            Ok(folder)
+        }
+
+        for view in yyp_boss
+            .yyp
+            .resources
+            .iter()
+            .filter(|v| v.value.resource_type == ResourceType::GmFolder)
+        {
+            let view: &YypResource = view;
+            import_view(
+                view,
+                yyp_boss.absolute_path.parent().unwrap(),
+                &mut yyp_boss.folders,
+                &yyp_boss.yyp.resources,
+            )?;
+        }
         Ok(yyp_boss)
     }
 

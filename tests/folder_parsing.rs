@@ -1,18 +1,21 @@
 use anyhow::Result;
 use pretty_assertions::assert_eq;
 use uuid::Uuid;
-use yy_boss::{boss::GmFolderExt, yy_typings::resources::folder::*};
+use yy_boss::{
+    boss::GmFolderExt,
+    yy_typings::{resources::folder::*, yyp::YypResourceKeyId},
+};
 
 #[test]
 fn trivial_case() -> Result<()> {
     let folder_example: &str = include_str!("./examples/gm_folder_example.yy");
 
-    fn quick_id_maker(id: &str) -> GmFolderId {
-        GmFolderId::with_id(Uuid::parse_str(id).unwrap())
+    fn quick_id_maker(id: &str) -> YypResourceKeyId {
+        YypResourceKeyId::with_id(Uuid::parse_str(id).unwrap())
     }
 
     let parse: GmFolder = serde_json::from_str(folder_example)?;
-    let id = quick_id_maker("8ffab7ea-0bee-4ae6-be7b-a92447f0944a");
+    let id = GmFolderId::with_id(Uuid::parse_str("8ffab7ea-0bee-4ae6-be7b-a92447f0944a").unwrap());
 
     let mockup_parse = GmFolder {
         id,
@@ -50,15 +53,15 @@ fn trivial_case() -> Result<()> {
 fn builder() -> Result<()> {
     let folder_example: &str = include_str!("./examples/gm_folder_example.yy");
 
-    fn quick_id_maker(id: &str) -> GmFolderId {
-        GmFolderId::with_id(Uuid::parse_str(id).unwrap())
+    fn quick_id_maker(id: &str) -> YypResourceKeyId {
+        YypResourceKeyId::with_id(Uuid::parse_str(id).unwrap())
     }
 
     let parse: GmFolder = serde_json::from_str(folder_example)?;
 
     let mockup_parse = GmFolder::new_with_id(
         "Default".to_string(),
-        quick_id_maker("8ffab7ea-0bee-4ae6-be7b-a92447f0944a"),
+        GmFolderId::with_id(Uuid::parse_str("8ffab7ea-0bee-4ae6-be7b-a92447f0944a").unwrap()),
     )
     .root_folder()
     .children(&vec![

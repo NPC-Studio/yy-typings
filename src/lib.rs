@@ -31,8 +31,11 @@ macro_rules! create_guarded_uuid {
 
 pub mod yy_typings {
     pub mod resources {
+        use super::yyp::YypResourceKeyId;
+
         mod resource_type;
         pub use resource_type::*;
+
         pub mod folder;
         pub mod sprite;
         pub mod texture_group;
@@ -55,9 +58,34 @@ pub mod boss {
 
     mod yy_resource;
     mod yyp_boss;
+
     use yy_resource::YyResource;
     pub use yyp_boss::YypBoss;
 
+    #[allow(dead_code)]
+    mod folder_graph {
+        #[macro_use]
+        mod relations;
+
+        mod graph;
+        mod graph_id;
+        mod node;
+        mod node_error;
+        mod siblings_range;
+        mod traverse;
+
+        use super::yy_typings::yyp::YypResourceKeyId;
+        pub use node_error::*;
+
+        /// The Folder Graph of the Views file in a GMS2 project.
+        pub type FolderGraph = graph::Graph<YypResourceKeyId>;
+
+        /// The Node of each Folder
+        pub type Node = node::GraphNode<YypResourceKeyId>;
+
+        // The NodeId of each Folder
+        pub type NodeId = graph_id::GraphId<YypResourceKeyId>;
+    }
     mod resources_ext {
         use super::*;
 
