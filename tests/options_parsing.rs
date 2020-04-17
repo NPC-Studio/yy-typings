@@ -1,6 +1,6 @@
 use pretty_assertions::assert_eq;
 use yy_boss::{
-    boss::texture_group_ext::TextureGroupExt, yy_typings::resources::texture_group::TextureGroup,
+    boss::TextureGroupExt, yy_typings::resources::texture_group::TextureGroup,
 };
 
 #[test]

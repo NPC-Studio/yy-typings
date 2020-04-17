@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::num::NonZeroUsize;
 use std::path::Path;
-use yy_boss::boss::{sprite_ext::*, YypBoss};
+use yy_boss::boss::*;
 use yy_boss::yy_typings::resources::sprite::*;
 
 #[test]

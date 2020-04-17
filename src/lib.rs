@@ -33,6 +33,7 @@ pub mod yy_typings {
     pub mod resources {
         mod resource_type;
         pub use resource_type::*;
+        pub mod folder;
         pub mod sprite;
         pub mod texture_group;
     }
@@ -59,8 +60,15 @@ pub mod boss {
 
     mod resources_ext {
         use super::*;
-        pub mod sprite_ext;
-        pub mod texture_group_ext;
+
+        mod sprite_ext;
+        pub use sprite_ext::*;
+
+        mod texture_group_ext;
+        pub use texture_group_ext::*;
+
+        mod folder_ext;
+        pub use folder_ext::*;
     }
     pub use resources_ext::*;
 }

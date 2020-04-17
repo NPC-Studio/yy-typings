@@ -1,11 +1,9 @@
 use super::{
-    sprite_ext::SpriteImageBuffer,
-    texture_group_ext::{TextureGroupController, TextureGroupExt},
     yy_typings::{
         resources::{sprite::*, texture_group::*, ResourceType},
         yyp::*,
     },
-    YyResource,
+    SpriteImageBuffer, TextureGroupController, TextureGroupExt, YyResource,
 };
 use anyhow::{Context, Result};
 use log::info;
