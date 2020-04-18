@@ -319,6 +319,12 @@ impl Into<YypResourceKeyId> for SpriteId {
     }
 }
 
+impl Into<SpriteId> for YypResourceKeyId {
+    fn into(self) -> SpriteId {
+        SpriteId::with_id(self.inner())
+    }
+}
+
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Bbox {
     pub top_left: (isize, isize),

@@ -1,4 +1,5 @@
 use super::{
+    folder_graph::LeafId,
     yy_typings::{
         resources::{folder::*, ResourceType},
         yyp::YypResourceKeyId,
@@ -103,11 +104,17 @@ impl YyResource for GmFolder {
     }
 
     type Key = GmFolderId;
-    type AssociatedData = ();
+    type AssociatedData = LeafId;
 }
 
 impl Into<YypResourceKeyId> for GmFolderId {
     fn into(self) -> YypResourceKeyId {
         YypResourceKeyId::with_id(self.inner())
+    }
+}
+
+impl Into<GmFolderId> for YypResourceKeyId {
+    fn into(self) -> GmFolderId {
+        GmFolderId::with_id(self.inner())
     }
 }

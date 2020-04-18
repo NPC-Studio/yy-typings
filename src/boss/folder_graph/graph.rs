@@ -1,6 +1,5 @@
 use super::{graph_id::GraphId, node::GraphNode};
 use serde::{Deserialize, Serialize};
-use std::fmt;
 use std::ops::{Index, IndexMut};
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Default, Debug)]
@@ -101,8 +100,8 @@ const TREE_DELIMITER: char = '├';
 const TREE_DOWN: char = '└';
 const TREE_VERT: char = '|';
 
-impl<T: fmt::Display> Graph<T> {
-    pub(super) fn print_tree(&self, format_node: impl Fn(&GraphNode<T>)) {
+impl<T> Graph<T> {
+    pub(crate) fn print_tree(&self, format_node: impl Fn(&GraphNode<T>)) {
         println!("Scene Graph Root");
 
         let mut top_level_iterator = self.iter_roots().peekable();

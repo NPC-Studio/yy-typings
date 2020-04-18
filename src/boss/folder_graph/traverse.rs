@@ -79,6 +79,34 @@ impl<'a, T> Iterator for NodeChildren<'a, T> {
     }
 }
 
+/// An iterator of references to the children of a given node.
+#[derive(Clone)]
+pub struct NodeChildrenId<'a, T> {
+    scene_graph: &'a Graph<T>,
+    node_id: Option<GraphId<T>>,
+}
+
+impl<'a, T> NodeChildrenId<'a, T> {
+    pub(super) fn new(scene_graph: &'a Graph<T>, current: &GraphNode<T>) -> Self {
+        Self {
+            scene_graph,
+            node_id: current.first_child,
+        }
+    }
+}
+
+impl<'a, T> Iterator for NodeChildrenId<'a, T> {
+    type Item = (GraphId<T>, &'a GraphNode<T>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let node_id = self.node_id.take()?;
+        let node: &GraphNode<T> = &self.scene_graph[node_id];
+
+        self.node_id = node.next_sibling;
+        Some((node_id, node))
+    }
+}
+
 #[derive(Clone)]
 /// An iterator of references to a given node and its descendants, in tree order.
 pub struct Descendants<'a, T>(Traverse<'a, T>);

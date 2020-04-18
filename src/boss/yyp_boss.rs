@@ -19,8 +19,9 @@ pub struct YypBoss {
     yyp: Yyp,
     absolute_path: PathBuf,
     sprites: YyResourceHandler<Sprite>,
+    folders: YyResourceHandler<GmFolder>,
     texture_group_controller: TextureGroupController,
-    folders: FolderGraph,
+    folder_graph: FolderGraph,
     dirty: bool,
 }
 
@@ -49,8 +50,9 @@ impl YypBoss {
             absolute_path: path_to_yyp,
             dirty: false,
             sprites: YyResourceHandler::new(),
+            folders: YyResourceHandler::new(),
             texture_group_controller,
-            folders: FolderGraph::new(),
+            folder_graph: FolderGraph::new(),
         };
 
         // Load in Sprites
@@ -97,31 +99,35 @@ impl YypBoss {
             view: &YypResource,
             absolute_dir: &Path,
             folder_graph: &mut FolderGraph,
+            resource_handler: &mut YyResourceHandler<GmFolder>,
             resources: &Vec<YypResource>,
-        ) -> Result<NodeId> {
+        ) -> Result<LeafId> {
             let view_path = absolute_dir.join(&view.value.resource_path.replace("\\", "/"));
 
             let view_yy: GmFolder = deserialize(&view_path)
                 .with_context(|| format!("Error importing view with path {:#?}", view_path))?;
 
-            let folder = folder_graph.instantiate_node(view_yy.id.into());
+            let leaf_id = folder_graph.instantiate_node(view_yy.id.into());
+            resource_handler.add_new_clean(view_yy.clone(), leaf_id);
 
             for child in view_yy.children.iter() {
-                let child: &YypResourceKeyId = child;
                 if let Some(resource) = resources.iter().find(|r| r.key == *child) {
-                    let resource: &YypResource = resource;
                     let new_branch = match resource.value.resource_type {
-                        ResourceType::GmFolder => {
-                            import_view(resource, absolute_dir, folder_graph, resources)?
-                        }
+                        ResourceType::GmFolder => import_view(
+                            resource,
+                            absolute_dir,
+                            folder_graph,
+                            resource_handler,
+                            resources,
+                        )?,
                         _ => folder_graph.instantiate_node((*child).into()),
                     };
 
-                    folder.append(new_branch, folder_graph);
+                    leaf_id.append(new_branch, folder_graph);
                 }
             }
 
-            Ok(folder)
+            Ok(leaf_id)
         }
 
         for view in yyp_boss
@@ -130,13 +136,26 @@ impl YypBoss {
             .iter()
             .filter(|v| v.value.resource_type == ResourceType::GmFolder)
         {
-            let view: &YypResource = view;
-            import_view(
-                view,
-                yyp_boss.absolute_path.parent().unwrap(),
-                &mut yyp_boss.folders,
-                &yyp_boss.yyp.resources,
-            )?;
+            let view_path = yyp_boss
+                .absolute_path
+                .parent()
+                .unwrap()
+                .join(&view.value.resource_path.replace("\\", "/"));
+
+            let view_yy: GmFolder = deserialize(&view_path)
+                .with_context(|| format!("Error importing view with path {:#?}", view_path))?;
+
+            if view_yy.is_default_view && view_yy.filter_type == "root" {
+                import_view(
+                    view,
+                    yyp_boss.absolute_path.parent().unwrap(),
+                    &mut yyp_boss.folder_graph,
+                    &mut yyp_boss.folders,
+                    &yyp_boss.yyp.resources,
+                )?;
+
+                break;
+            }
         }
         Ok(yyp_boss)
     }
@@ -151,9 +170,13 @@ impl YypBoss {
         &mut self,
         sprite: Sprite,
         associated_data: Vec<(FrameId, SpriteImageBuffer)>,
+        folder_id: GmFolderId,
     ) {
+        let sprite_id = sprite.id;
         self.add_new_resource(&sprite, None);
         self.sprites.add_new(sprite, associated_data);
+
+        self.push_to_view(folder_id, sprite_id);
     }
 
     pub fn texture_group_controller(&self) -> &TextureGroupController {
@@ -208,11 +231,134 @@ impl YypBoss {
 
         Ok(())
     }
+
+    fn push_to_view(&mut self, folder_id: GmFolderId, id: impl Into<YypResourceKeyId>) {
+        let folder_data = self.folders.resources.get_mut(&folder_id).unwrap();
+        let resource_id = id.into();
+
+        folder_data.yy_resource.children.push(resource_id);
+
+        let leaf: LeafId = folder_data.associated_data;
+        leaf.append(
+            self.folder_graph.instantiate_node(resource_id),
+            &mut self.folder_graph,
+        );
+    }
+}
+
+impl YypBoss {
+    pub fn root_sprite_folder(&self) -> Option<GmFolderId> {
+        let main_root: &Leaf = self.folder_graph.iter_roots().nth(0).unwrap();
+        main_root.children(&self.folder_graph).find_map(|child| {
+            let inner: YypResourceKeyId = *child.inner();
+            self.folders
+                .resources
+                .get(&inner.into())
+                .and_then(|folder_data| {
+                    if folder_data.yy_resource.folder_name == "sprites" {
+                        Some(folder_data.yy_resource.id)
+                    } else {
+                        None
+                    }
+                })
+        })
+    }
+
+    pub fn root_children(&self) -> impl Iterator<Item = (LeafId, &YypResourceKeyId)> {
+        let main_root: &Leaf = self.folder_graph.iter_roots().nth(0).unwrap();
+        main_root
+            .children_id(&self.folder_graph)
+            .map(|(id, child)| (id, child.inner()))
+    }
+
+    pub fn children_at_branch(
+        &self,
+        leaf_id: LeafId,
+    ) -> impl Iterator<Item = (LeafId, &YypResourceKeyId)> {
+        let main_root: &Leaf = &self.folder_graph[leaf_id];
+        main_root
+            .children_id(&self.folder_graph)
+            .map(|(id, child)| (id, child.inner()))
+    }
+
+    pub fn key_info(&self, resource_key: &YypResourceKeyId) -> Option<(String, ResourceType)> {
+        self.yyp
+            .resources
+            .iter()
+            .find(|v| v.key == *resource_key)
+            .and_then(|key| match key.value.resource_type {
+                ResourceType::GmSprite => self
+                    .sprites
+                    .resources
+                    .get(&(*resource_key).into())
+                    .map(|sprite| (sprite.yy_resource.name.clone(), ResourceType::GmSprite)),
+                ResourceType::GmFolder => {
+                    self.folders
+                        .resources
+                        .get(&(*resource_key).into())
+                        .map(|folder| {
+                            (
+                                folder.yy_resource.folder_name.clone(),
+                                ResourceType::GmFolder,
+                            )
+                        })
+                }
+                _ => None,
+            })
+    }
+
+    pub fn pretty_print_views(&self) {
+        self.folder_graph.print_tree(|leaf| {
+            if let Some(resource) = self.yyp.resources.iter().find(|r| r.key == *leaf.inner()) {
+                let resource: &YypResource = resource;
+                let path = self
+                    .absolute_path
+                    .parent()
+                    .unwrap()
+                    .join(&resource.value.resource_path.replace("\\", "/"));
+
+                match resource.value.resource_type {
+                    ResourceType::GmFolder => {
+                        if let Ok(file) = deserialize_json(&path) {
+                            if let serde_json::Value::Object(map) = file {
+                                if let serde_json::Value::String(name) = &map["folderName"] {
+                                    println!("{}", name);
+                                } else {
+                                    println!("<err: unknown {:?}>", resource.value.resource_type);
+                                }
+                            } else {
+                                println!("<err: unexpected json>")
+                            }
+                        } else {
+                            println!("<err: unknown json>");
+                        }
+                    }
+                    _ => {
+                        if let Ok(file) = deserialize_json(&path) {
+                            if let serde_json::Value::Object(map) = file {
+                                if let serde_json::Value::String(name) = &map["name"] {
+                                    println!("{}", name);
+                                } else {
+                                    println!("<err: unknown {:?}>", resource.value.resource_type);
+                                }
+                            } else {
+                                println!("<err: unexpected json>")
+                            }
+                        } else {
+                            println!("<err: unknown json>");
+                        }
+                    }
+                }
+            } else {
+                println!("<err: unknown resource>")
+            }
+        });
+    }
 }
 
 #[derive(Debug, Default)]
 pub struct YyResourceData<T: YyResource> {
-    pub yy_resouce: T,
+    pub yy_resource: T,
     pub associated_data: T::AssociatedData,
 }
 
@@ -242,7 +388,7 @@ impl<T: YyResource> YyResourceHandler<T> {
         self.resources.insert(
             value.id(),
             YyResourceData {
-                yy_resouce: value,
+                yy_resource: value,
                 associated_data,
             },
         );
@@ -256,18 +402,18 @@ impl<T: YyResource> YyResourceHandler<T> {
                     .get(&dirty_resource)
                     .expect("This should always be valid.");
 
-                let yy_path = project_path.join(&resource.yy_resouce.relative_filepath());
+                let yy_path = project_path.join(&resource.yy_resource.relative_filepath());
 
                 if let Some(parent_dir) = yy_path.parent() {
                     fs::create_dir_all(parent_dir)?;
                     info!("About to Serialize Associated Data...");
                     T::serialize_associated_data(
-                        &resource.yy_resouce,
+                        &resource.yy_resource,
                         parent_dir,
                         &resource.associated_data,
                     )?;
                 }
-                serialize(&yy_path, &resource.yy_resouce)?;
+                serialize(&yy_path, &resource.yy_resource)?;
             }
         }
 
@@ -285,6 +431,12 @@ fn deserialize<T>(path: &Path) -> Result<T>
 where
     for<'de> T: serde::Deserialize<'de>,
 {
+    let file_string = fs::read_to_string(path)?;
+    let data = serde_json::from_str(&file_string)?;
+    Ok(data)
+}
+
+fn deserialize_json(path: &Path) -> Result<serde_json::Value> {
     let file_string = fs::read_to_string(path)?;
     let data = serde_json::from_str(&file_string)?;
     Ok(data)

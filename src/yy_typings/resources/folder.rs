@@ -4,7 +4,7 @@ use smart_default::SmartDefault;
 
 create_guarded_uuid!(GmFolderId);
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct GmFolder {
     /// The UUID of this Folder. It will also be the same as the Name.
@@ -57,7 +57,7 @@ impl From<ConstGmFolder> for ResourceType {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
 pub enum LocalisedFolderName {
     #[serde(rename = "")]
     Empty,

@@ -1,4 +1,8 @@
-use super::{graph::Graph, graph_id::GraphId, traverse::NodeChildren};
+use super::{
+    graph::Graph,
+    graph_id::GraphId,
+    traverse::{NodeChildren, NodeChildrenId},
+};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -61,6 +65,11 @@ impl<T> GraphNode<T> {
     /// Returns an iterator of references to this node’s children.
     pub fn children<'a>(&self, scene_graph: &'a Graph<T>) -> NodeChildren<'a, T> {
         NodeChildren::new(scene_graph, self)
+    }
+
+    /// Returns an iterator of references to this node’s children.
+    pub fn children_id<'a>(&self, scene_graph: &'a Graph<T>) -> NodeChildrenId<'a, T> {
+        NodeChildrenId::new(scene_graph, self)
     }
 
     /// Checks if the node is detached. `is_detached()` != `parent().is_some()`

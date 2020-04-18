@@ -81,10 +81,10 @@ pub mod boss {
         pub type FolderGraph = graph::Graph<YypResourceKeyId>;
 
         /// The Node of each Folder
-        pub type Node = node::GraphNode<YypResourceKeyId>;
+        pub type Leaf = node::GraphNode<YypResourceKeyId>;
 
         // The NodeId of each Folder
-        pub type NodeId = graph_id::GraphId<YypResourceKeyId>;
+        pub type LeafId = graph_id::GraphId<YypResourceKeyId>;
     }
     mod resources_ext {
         use super::*;

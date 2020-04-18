@@ -43,7 +43,12 @@ fn adding_sprite_to_yyp() -> Result<()> {
 
     let frame_id = new_sprite_yy.frames[0].id;
 
-    new_yyp_boss.add_sprite(new_sprite_yy, vec![(frame_id, frame_buffer)]);
+    let default_sprite = new_yyp_boss.root_sprite_folder().unwrap();
+    new_yyp_boss.add_sprite(
+        new_sprite_yy,
+        vec![(frame_id, frame_buffer)],
+        default_sprite,
+    );
     new_yyp_boss.serialize()?;
 
     Ok(())
