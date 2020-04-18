@@ -75,16 +75,16 @@ pub mod boss {
         mod traverse;
 
         use super::yy_typings::yyp::YypResourceKeyId;
-        pub use node_error::*;
+        pub(crate) use node_error::*;
 
         /// The Folder Graph of the Views file in a GMS2 project.
-        pub type FolderGraph = graph::Graph<YypResourceKeyId>;
+        pub(crate) type FolderGraph = graph::Graph<YypResourceKeyId>;
 
         /// The Node of each Folder
-        pub type Leaf = node::GraphNode<YypResourceKeyId>;
+        pub(crate) type Leaf = node::GraphNode<YypResourceKeyId>;
 
         // The NodeId of each Folder
-        pub type LeafId = graph_id::GraphId<YypResourceKeyId>;
+        pub(crate) type LeafId = graph_id::GraphId<YypResourceKeyId>;
     }
     mod resources_ext {
         use super::*;

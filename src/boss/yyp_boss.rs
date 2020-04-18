@@ -4,7 +4,7 @@ use super::{
         resources::{folder::*, sprite::*, texture_group::*, ResourceType},
         yyp::*,
     },
-    SpriteImageBuffer, TextureGroupController, TextureGroupExt, YyResource,
+    GmFolderExt, SpriteImageBuffer, TextureGroupController, TextureGroupExt, YyResource,
 };
 use anyhow::{Context, Result};
 use log::info;
@@ -161,6 +161,7 @@ impl YypBoss {
                 break;
             }
         }
+
         Ok(yyp_boss)
     }
 
@@ -182,7 +183,7 @@ impl YypBoss {
         self.add_new_resource(&mut sprite, None);
         self.sprites.add_new(sprite, associated_data);
 
-        self.push_to_view(folder_id, sprite_id);
+        self.append_under_folder(folder_id, sprite_id);
     }
 
     pub fn texture_group_controller(&self) -> &TextureGroupController {
@@ -239,6 +240,8 @@ impl YypBoss {
             // Check if Sprite is Dirty and Serialize that:
             self.sprites
                 .serialize(&self.absolute_path.parent().unwrap())?;
+            self.folders
+                .serialize(&self.absolute_path.parent().unwrap())?;
 
             // Serialize Ourselves:
             serialize(&self.absolute_path, &self.yyp)?;
@@ -247,19 +250,6 @@ impl YypBoss {
         }
 
         Ok(())
-    }
-
-    fn push_to_view(&mut self, folder_id: GmFolderId, id: impl Into<YypResourceKeyId>) {
-        let folder_data = self.folders.resources.get_mut(&folder_id).unwrap();
-        let resource_id = id.into();
-
-        folder_data.yy_resource.children.push(resource_id);
-
-        let leaf: LeafId = folder_data.associated_data;
-        leaf.append(
-            self.folder_graph.instantiate_node(resource_id),
-            &mut self.folder_graph,
-        );
     }
 }
 
@@ -281,21 +271,54 @@ impl YypBoss {
         })
     }
 
-    pub fn root_children(&self) -> impl Iterator<Item = (LeafId, &YypResourceKeyId)> {
-        let main_root: &Leaf = self.folder_graph.iter_roots().nth(0).unwrap();
-        main_root
-            .children_id(&self.folder_graph)
-            .map(|(id, child)| (id, child.inner()))
+    /// This gets the Root Sprite folder; if it doesn't exist, it creates it.
+    pub fn root_sprite_folder_infallible(&mut self) -> GmFolderId {
+        if let Some(root) = self.root_sprite_folder() {
+            root
+        } else {
+            let root_folder_id = self.get_root_folder();
+
+            let new_folder =
+                GmFolder::new("sprites".to_string()).filter_type("GMSprites".to_string());
+
+            let id = new_folder.id;
+            let new_leaf_id = self.append_under_folder(root_folder_id, new_folder.id);
+            self.folders.add_new(new_folder, new_leaf_id);
+
+            id
+        }
     }
 
     pub fn children_at_branch(
         &self,
-        leaf_id: LeafId,
-    ) -> impl Iterator<Item = (LeafId, &YypResourceKeyId)> {
-        let main_root: &Leaf = &self.folder_graph[leaf_id];
-        main_root
-            .children_id(&self.folder_graph)
-            .map(|(id, child)| (id, child.inner()))
+        resource_key: &YypResourceKeyId,
+    ) -> Option<impl Iterator<Item = &YypResourceKeyId>> {
+        self.folders
+            .resources
+            .get(&(*resource_key).into())
+            .map(|folder_data| {
+                let leaf = folder_data.associated_data;
+                self.folder_graph[leaf]
+                    .children(&self.folder_graph)
+                    .map(|id| id.inner())
+            })
+    }
+
+    pub fn parent_at_branch(&self, resource_key: &YypResourceKeyId) -> Option<GmFolderId> {
+        self.folder_graph
+            .iter()
+            .find(|graph_node: &&Leaf| graph_node.inner() == resource_key)
+            .and_then(|leaf| {
+                let leaf: &Leaf = leaf;
+
+                leaf.parent().map(|leaf_id| {
+                    let leaf_id = self.folder_graph.get(leaf_id).unwrap();
+                    let resource_key = *leaf_id.inner();
+
+                    assert!(self.folders.resources.get(&resource_key.into()).is_some());
+                    resource_key.into()
+                })
+            })
     }
 
     pub fn key_info(&self, resource_key: &YypResourceKeyId) -> Option<(String, ResourceType)> {
@@ -370,6 +393,36 @@ impl YypBoss {
                 println!("<err: unknown resource>")
             }
         });
+    }
+
+    fn append_under_folder(
+        &mut self,
+        folder_id: GmFolderId,
+        id: impl Into<YypResourceKeyId>,
+    ) -> LeafId {
+        let folder_data = self.folders.resources.get_mut(&folder_id).unwrap();
+        let resource_id = id.into();
+
+        folder_data.yy_resource.children.push(resource_id);
+
+        let leaf: LeafId = folder_data.associated_data;
+
+        let new_leaf_id = self.folder_graph.instantiate_node(resource_id);
+
+        leaf.append(new_leaf_id, &mut self.folder_graph);
+
+        new_leaf_id
+    }
+
+    fn get_root_folder(&self) -> GmFolderId {
+        let main_root: &Leaf = self.folder_graph.iter_roots().nth(0).unwrap();
+        let main_folder_id = *main_root.inner();
+        self.folders
+            .resources
+            .get(&main_folder_id.into())
+            .unwrap()
+            .yy_resource
+            .id
     }
 }
 
