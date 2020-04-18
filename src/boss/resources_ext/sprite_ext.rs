@@ -254,6 +254,14 @@ impl LayerExt for Layer {
 use anyhow::Context;
 use std::path::{Path, PathBuf};
 impl YyResource for Sprite {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+
     fn relative_filepath(&self) -> PathBuf {
         Path::new(&format!("sprites/{name}/{name}.yy", name = self.name)).to_owned()
     }

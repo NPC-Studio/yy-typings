@@ -6,6 +6,11 @@ pub trait YyResource: serde::Serialize + for<'de> serde::Deserialize<'de> {
     type Key: std::hash::Hash + PartialEq + Eq + Into<YypResourceKeyId>;
     type AssociatedData: std::fmt::Debug;
 
+    /// Get's the resource's name.
+    fn name(&self) -> &str;
+
+    fn set_name(&mut self, name: String);
+
     /// Get the relative filepath from the directory of the YYP
     /// to the resource yy file. For a sprite called `spr_player`,
     /// that path would be `sprites/spr_player/spr_player.yy`.

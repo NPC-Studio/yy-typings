@@ -87,6 +87,14 @@ impl GmFolderExt for GmFolder {
 
 use std::path::{Path, PathBuf};
 impl YyResource for GmFolder {
+    fn name(&self) -> &str {
+        &self.folder_name
+    }
+
+    fn set_name(&mut self, name: String) {
+        self.folder_name = name;
+    }
+
     fn relative_filepath(&self) -> PathBuf {
         Path::new(&format!("views/{name}.yy", name = self.name.inner())).to_owned()
     }

@@ -10,6 +10,7 @@ use anyhow::{Context, Result};
 use log::info;
 use std::collections::HashMap;
 use std::{
+    collections::HashSet,
     fs,
     path::{Path, PathBuf},
 };
@@ -22,6 +23,7 @@ pub struct YypBoss {
     folders: YyResourceHandler<GmFolder>,
     texture_group_controller: TextureGroupController,
     folder_graph: FolderGraph,
+    resource_names: HashSet<String>,
     dirty: bool,
 }
 
@@ -53,6 +55,7 @@ impl YypBoss {
             folders: YyResourceHandler::new(),
             texture_group_controller,
             folder_graph: FolderGraph::new(),
+            resource_names: HashSet::new(),
         };
 
         // Load in Sprites
@@ -91,6 +94,7 @@ impl YypBoss {
                 })
                 .collect();
 
+            yyp_boss.resource_names.insert(sprite_yy.name.clone());
             yyp_boss.sprites.add_new_clean(sprite_yy, frame_buffers);
         }
 
@@ -166,14 +170,16 @@ impl YypBoss {
 
     /// Add a sprite into the YYP Boss. It is not immediately serialized,
     /// but will be serialized the next time the entire YYP Boss is.
+    ///
+    /// Please note -- the name of the Sprite MIGHT change if that name already exists!
     pub fn add_sprite(
         &mut self,
-        sprite: Sprite,
+        mut sprite: Sprite,
         associated_data: Vec<(FrameId, SpriteImageBuffer)>,
         folder_id: GmFolderId,
     ) {
         let sprite_id = sprite.id;
-        self.add_new_resource(&sprite, None);
+        self.add_new_resource(&mut sprite, None);
         self.sprites.add_new(sprite, associated_data);
 
         self.push_to_view(folder_id, sprite_id);
@@ -190,9 +196,20 @@ impl YypBoss {
     /// files for scripts or objects.
     fn add_new_resource(
         &mut self,
-        new_resource: &impl YyResource,
+        new_resource: &mut impl YyResource,
         config_deltas: Option<Vec<String>>,
     ) {
+        let mut iteration_count = 0;
+        let mut name = new_resource.name().to_owned();
+        while self.resource_names.contains(&name) {
+            name = format!("{}_{}", name, iteration_count);
+            iteration_count += 1;
+        }
+        if name != new_resource.name() {
+            new_resource.set_name(name.clone());
+        }
+        self.resource_names.insert(name);
+
         // New Resource:
         let new_yy_resource = YypResource {
             key: new_resource.id().into(),
