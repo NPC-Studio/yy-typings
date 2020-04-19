@@ -186,6 +186,17 @@ impl YypBoss {
         self.append_under_folder(folder_id, sprite_id);
     }
 
+    pub fn add_folder(&mut self, folder: GmFolder, folder_id: GmFolderId) {
+        let id = folder.id;
+
+        // We add it "unnamed" because folder names can be duplicates of each other,
+        // so we don't want to track their names.
+        self.add_new_unnamed_resource(&folder, None);
+        let leaf_id = self.append_under_folder(folder_id, id);
+
+        self.folders.add_new(folder, leaf_id);
+    }
+
     pub fn texture_group_controller(&self) -> &TextureGroupController {
         &self.texture_group_controller
     }
@@ -211,23 +222,7 @@ impl YypBoss {
         }
         self.resource_names.insert(name);
 
-        // New Resource:
-        let new_yy_resource = YypResource {
-            key: new_resource.id().into(),
-            value: YypResourceValue {
-                config_deltas,
-                id: YypResourceId::new(),
-                resource_path: new_resource
-                    .relative_filepath()
-                    .to_string_lossy()
-                    .to_string(),
-                resource_type: new_resource.yy_resource_type(),
-            },
-        };
-
-        // Update the Resource
-        self.yyp.resources.push(new_yy_resource);
-        self.dirty = true;
+        self.add_new_unnamed_resource(new_resource, config_deltas);
     }
 
     pub fn serialize(&mut self) -> Result<()> {
@@ -250,6 +245,30 @@ impl YypBoss {
         }
 
         Ok(())
+    }
+
+    fn add_new_unnamed_resource(
+        &mut self,
+        new_resource: &impl YyResource,
+        config_deltas: Option<Vec<String>>,
+    ) {
+        // New Resource:
+        let new_yy_resource = YypResource {
+            key: new_resource.id().into(),
+            value: YypResourceValue {
+                config_deltas,
+                id: YypResourceId::new(),
+                resource_path: new_resource
+                    .relative_filepath()
+                    .to_string_lossy()
+                    .to_string(),
+                resource_type: new_resource.yy_resource_type(),
+            },
+        };
+
+        // Update the Resource
+        self.yyp.resources.push(new_yy_resource);
+        self.dirty = true;
     }
 }
 
@@ -400,17 +419,22 @@ impl YypBoss {
         folder_id: GmFolderId,
         id: impl Into<YypResourceKeyId>,
     ) -> LeafId {
-        let folder_data = self.folders.resources.get_mut(&folder_id).unwrap();
-        let resource_id = id.into();
+        let resource_id: YypResourceKeyId = id.into();
 
+        // Make as Dirty
+        self.folders.dirty = true;
+        self.folders.dirty_resources.push(folder_id);
+
+        // Get the Folder and append the resource id to it.
+        let folder_data = self.folders.resources.get_mut(&folder_id).unwrap();
         folder_data.yy_resource.children.push(resource_id);
 
+        // Get the LeafID for our abstract FolderGraph, and then append a new node to it.
         let leaf: LeafId = folder_data.associated_data;
-
         let new_leaf_id = self.folder_graph.instantiate_node(resource_id);
-
         leaf.append(new_leaf_id, &mut self.folder_graph);
 
+        // Return the Leaf Id
         new_leaf_id
     }
 
@@ -476,7 +500,6 @@ impl<T: YyResource> YyResourceHandler<T> {
 
                 if let Some(parent_dir) = yy_path.parent() {
                     fs::create_dir_all(parent_dir)?;
-                    info!("About to Serialize Associated Data...");
                     T::serialize_associated_data(
                         &resource.yy_resource,
                         parent_dir,
