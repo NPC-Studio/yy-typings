@@ -16,8 +16,10 @@ pub struct GmFolder {
     /// Appears to be 1.1 at time of writing.
     pub mvc: String,
 
-    /// This is the UUID of the Folder. It should *always* match the `id` field.
-    pub name: GmFolderId,
+    /// This is the UUID of the Folder in every case except for when this is a Room Parent.
+    /// In such a case, it will be the UUID followed by `-room`. One can safely read the Folder ID 
+    /// from the ID field, or can read the first 32 bytes of the `name` string.
+    pub name: String,
 
     /// These are the children ID views which sit below the views in the tree.
     pub children: Vec<YypResourceKeyId>,

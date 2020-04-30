@@ -21,7 +21,7 @@ fn trivial_case() -> Result<()> {
         id,
         model_name: ConstGmFolder::GmFolder,
         mvc: GmFolder::MVC.to_string(),
-        name: id,
+        name: id.inner().to_string(),
         children: vec![
             quick_id_maker("37b40014-5c69-4b59-bc54-c93d14f6e7a6"),
             quick_id_maker("c6293a12-a386-49e9-824f-66ba4d2edcae"),

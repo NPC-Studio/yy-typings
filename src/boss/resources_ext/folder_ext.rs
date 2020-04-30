@@ -26,7 +26,7 @@ impl GmFolderExt for GmFolder {
             id,
             model_name: ConstGmFolder::GmFolder,
             mvc: GmFolder::MVC.to_string(),
-            name: id,
+            name: id.inner().to_string(),
             children: vec![],
             filter_type: String::new(),
             folder_name,
@@ -39,7 +39,7 @@ impl GmFolderExt for GmFolder {
             id,
             model_name: ConstGmFolder::GmFolder,
             mvc: GmFolder::MVC.to_string(),
-            name: id,
+            name: id.inner().to_string(),
             children: vec![],
             filter_type: String::new(),
             folder_name,
@@ -96,7 +96,7 @@ impl YyResource for GmFolder {
     }
 
     fn relative_filepath(&self) -> PathBuf {
-        Path::new(&format!("views/{name}.yy", name = self.name.inner())).to_owned()
+        Path::new(&format!("views/{name}.yy", name = self.name)).to_owned()
     }
 
     fn id(&self) -> GmFolderId {
