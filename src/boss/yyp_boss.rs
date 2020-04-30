@@ -281,7 +281,11 @@ impl YypBoss {
                 .resources
                 .get(&inner.into())
                 .and_then(|folder_data| {
-                    if folder_data.yy_resource.folder_name == "sprites" {
+                    if folder_data
+                        .yy_resource
+                        .folder_name
+                        .eq_ignore_ascii_case("sprites")
+                    {
                         Some(folder_data.yy_resource.id)
                     } else {
                         None
