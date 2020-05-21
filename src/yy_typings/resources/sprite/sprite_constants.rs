@@ -6,7 +6,7 @@ use smart_default::SmartDefault;
 pub enum ConstGmSprite {
     #[serde(rename = "GMSprite")]
     #[default]
-    GmSprite,
+    Const,
 }
 
 impl From<ConstGmSprite> for ResourceType {
@@ -19,40 +19,75 @@ impl From<ConstGmSprite> for ResourceType {
 pub enum ConstGmImageLayer {
     #[serde(rename = "GMImageLayer")]
     #[default]
-    GmImageLayer,
+    Const,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault)]
 pub enum ConstGmSpriteFrame {
     #[serde(rename = "GMSpriteFrame")]
     #[default]
-    GmSpriteFrame,
+    Const,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault)]
 pub enum ConstGmImage {
     #[serde(rename = "GMSpriteBitmap")]
     #[default]
-    GmSpriteBitmap,
+    Const,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault)]
 pub enum ConstGmSequence {
     #[serde(rename = "GMSequence")]
     #[default]
-    GmSequence,
+    Const,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault)]
 pub enum ConstGmSpriteEvent {
     #[serde(rename = "KeyframeStore<MessageEventKeyframe>")]
     #[default]
-    GmSpriteEvent,
+    Const,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault)]
 pub enum ConstGmSpriteMoment {
     #[serde(rename = "KeyframeStore<MomentsEventKeyframe>")]
     #[default]
-    GmSpriteEvent,
+    Const,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteTrackName {
+    #[serde(rename = "frames")]
+    #[default]
+    Const,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteFramesTrack {
+    #[serde(rename = "GMSpriteFramesTrack")]
+    #[default]
+    Const,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteKeyframes {
+    #[serde(rename = "KeyframeStore<SpriteFrameKeyframe>")]
+    #[default]
+    Const,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteKeyframe {
+    #[serde(rename = "Keyframe<SpriteFrameKeyframe>")]
+    #[default]
+    Const,
+}
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+pub enum ConstGmSpriteZeroChannel {
+    #[serde(rename = "SpriteFrameKeyframe")]
+    #[default]
+    Const,
 }

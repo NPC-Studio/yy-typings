@@ -60,7 +60,7 @@ pub struct Image {
     pub tags: Tags,
 
     /// The resource name of the GM Image.
-    pub model_name: ConstGmImage,
+    pub resource_type: ConstGmImage,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
