@@ -1,13 +1,13 @@
-use pretty_assertions::assert_eq;
-use yy_boss::{
-    boss::TextureGroupExt, yy_typings::resources::texture_group::TextureGroup,
-};
+// use pretty_assertions::assert_eq;
+// use yy_boss::{
+//     boss::TextureGroupExt, yy_typings::resources::texture_group::TextureGroup,
+// };
 
-#[test]
-fn test_regex_parsing() {
-    // let options_text = include_str!("./examples/options_example.yy");
+// #[test]
+// fn test_regex_parsing() {
+//     // let options_text = include_str!("./examples/options_example.yy");
 
-    // let read_values = TextureGroup::parse_options_file(options_text).unwrap();
+//     // let read_values = TextureGroup::parse_options_file(options_text).unwrap();
 
-    // assert_eq!(read_values.texture_groups().len(), 2);
-}
+//     // assert_eq!(read_values.texture_groups().len(), 2);
+// }
