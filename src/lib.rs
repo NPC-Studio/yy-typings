@@ -122,45 +122,7 @@ pub mod boss {
     pub use resources_ext::*;
 }
 
-pub mod utilities {
-    use regex::Regex;
-    #[derive(Debug, Clone)]
-    pub struct TrailingCommaUtility {
-        regex: Regex,
-    }
-
-    impl TrailingCommaUtility {
-        pub fn new() -> TrailingCommaUtility {
-            TrailingCommaUtility {
-                regex: Regex::new(r"(,)([\s\n]+)?([},\]])").unwrap(),
-            }
-        }
-
-        pub fn clear_trailing_comma(&mut self, input: &mut String) {
-            Self::clear_trailing_comma_internal(input, &self.regex);
-        }
-
-        /// This function clears a trailing comma from a JSON. It is relatively inefficent, and
-        /// does two allocations per call.
-        pub fn clear_trailing_comma_once(input: &mut String) {
-            let re = Regex::new(r"(,)([\s\n]+)?([},\]])").unwrap();
-
-            Self::clear_trailing_comma_internal(input, &re);
-        }
-
-        fn clear_trailing_comma_internal(input: &mut String, re: &Regex) {
-            *input = re
-                .replace_all(input, |caps: &regex::Captures| {
-                    format!(
-                        "{}{}",
-                        &caps
-                            .get(2)
-                            .map(|matches| matches.as_str())
-                            .unwrap_or_else(|| ""),
-                        &caps[3]
-                    )
-                })
-                .to_string();
-        }
-    }
+pub mod utils {
+    mod trailing_comma_utility;
+    pub use trailing_comma_utility::TrailingCommaUtility;
 }

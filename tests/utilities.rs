@@ -1,10 +1,9 @@
 // use pretty_assertions::{assert_eq, assert_ne};
-use yy_boss::utilities::TrailingCommaUtility;
+use yy_boss::utils::TrailingCommaUtility;
 
 #[test]
 fn trivial_trailing_commas() {
-    let mut input = "{member,}".to_string();
-    TrailingCommaUtility::clear_trailing_comma_once(&mut input);
+    let input = TrailingCommaUtility::clear_trailing_comma_once(&"{member,}");
     assert_eq!(input, "{member}");
 }
 
@@ -26,9 +25,5 @@ fn trailing_commas_test() {
 }
 
 fn test_harness(tcu: &mut TrailingCommaUtility, input: &str, output: &str) {
-    let mut input = input.to_string();
-
-    tcu.clear_trailing_comma(&mut input);
-    assert_eq!(input, output);
-    println!("Succeeded...");
+    assert_eq!(tcu.clear_trailing_comma(&input), output);
 }

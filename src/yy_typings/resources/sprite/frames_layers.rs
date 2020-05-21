@@ -50,9 +50,10 @@ pub struct Image {
     pub resource_version: String,
 
     /// This appears to only ever be two values:
-    ///
-    ///     -- `None` for normal images
-    ///     -- `Some("composite")` for the composite image.
+    /// 
+    /// - `None` for normal images
+    /// - `Some("composite")` for the composite image.
+    /// 
     /// It may have other purposes.
     pub name: Option<String>,
 

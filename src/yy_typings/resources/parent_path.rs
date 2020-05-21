@@ -6,7 +6,7 @@ use std::path::PathBuf;
 /// parent.
 ///
 /// For example, a project like so:
-///```
+///```text
 /// root
 /// |---sprites
 ///     |---spr_player
@@ -14,7 +14,7 @@ use std::path::PathBuf;
 ///         |---frame1
 ///```
 /// `spr_player` will have a `ParentPath`:
-/// ```rs
+/// ```norun
 /// ParentPath {
 ///    name: "Sprites",
 ///    path: "folders/Sprites.yy"
@@ -22,7 +22,7 @@ use std::path::PathBuf;
 /// ```
 ///
 /// and frame0 might have a `ParentPath`:
-/// ```
+/// ```norun
 /// ParentPath {
 ///     name: "spr_player",
 ///     path: "sprites/spr_player/spr_player.yy",
