@@ -82,10 +82,10 @@ impl YypBoss {
                     let path_to_image = sprite_path
                         .parent()
                         .unwrap()
-                        .join(Path::new(&frame.id.inner().to_string()).with_extension("png"));
+                        .join(Path::new(&frame.name.inner().to_string()).with_extension("png"));
 
                     match image::open(&path_to_image) {
-                        Ok(image) => Some((frame.id, image.to_rgba())),
+                        Ok(image) => Some((frame.name, image.to_rgba())),
                         Err(e) => {
                             log::error!("We couldn't read {:?} -- {}", path_to_image, e);
                             None
@@ -179,11 +179,12 @@ impl YypBoss {
         associated_data: Vec<(FrameId, SpriteImageBuffer)>,
         folder_id: GmFolderId,
     ) {
-        let sprite_id = sprite.id;
-        self.add_new_resource(&mut sprite, None);
-        self.sprites.add_new(sprite, associated_data);
+        todo!()
+        // let sprite_id = sprite.id;
+        // self.add_new_resource(&mut sprite, None);
+        // self.sprites.add_new(sprite, associated_data);
 
-        self.append_under_folder(folder_id, sprite_id);
+        // self.append_under_folder(folder_id, sprite_id);
     }
 
     pub fn add_folder(&mut self, folder: GmFolder, folder_id: GmFolderId) {

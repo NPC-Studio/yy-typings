@@ -36,8 +36,29 @@ pub mod yy_typings {
         mod resource_type;
         pub use resource_type::*;
 
+        mod parent_path;
+        pub use parent_path::ParentPath;
+
+        mod tags;
+        pub use tags::Tags;
+
+        pub mod sprite {
+            pub use super::*;
+
+            mod sprite;
+            pub use sprite::*;
+
+            mod sprite_constants;
+            pub use sprite_constants::*;
+
+            mod sequence;
+            pub use sequence::*;
+
+            mod frames_layers;
+            pub use frames_layers::*;
+        }
+
         pub mod folder;
-        pub mod sprite;
         pub mod texture_group;
     }
 

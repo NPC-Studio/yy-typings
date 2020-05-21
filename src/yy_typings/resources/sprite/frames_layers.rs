@@ -1,0 +1,98 @@
+use super::{sprite_constants::*, ParentPath, Tags};
+use serde::{Deserialize, Serialize};
+
+create_guarded_uuid!(FrameId);
+create_guarded_uuid!(LayerId);
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Frame {
+    /// This is the actual image you'll see in the game.
+    /// It's a composite of the images below. It's LayerID will
+    /// always be UUID::default, or 0000...0000, but it's
+    /// FrameID will always == Self.Id.
+    pub composite_image: Image,
+
+    /// These are the images which compose the composite image.
+    /// At the minimum, there will be one Image. It's LayerID will
+    /// correspond to the LayerId of a Sprite above.
+    pub images: Vec<Image>,
+
+    /// This is the path to the sprite parent. It will always have the name
+    /// of the Sprite name, and the path to the sprite `.yy` file.
+    pub parent: ParentPath,
+
+    /// The version of this particular resource.
+    pub resource_version: String,
+    /// This is the name of the Frame, which will always be a UUID.
+    pub name: FrameId,
+    /// These are the tags affixed to this frame.
+    pub tags: Tags,
+    /// This is the type of Resource.
+    pub resource_type: ConstGmSpriteFrame,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Image {
+    /// Although named FrameId, this is actually the path to the the parent
+    /// frame resource. The `name` field will correspond to the `Frame.name` field.
+    #[serde(rename = "FrameId")]
+    pub frame_id: ParentPath,
+
+    /// This always corresponds to the LayerId which this SpriteImage corresponds to.
+    /// It will be null in the case of the `composite_image` field -- otherwise, it will
+    /// contain a valid path to the parent layer.
+    #[serde(rename = "LayerId")]
+    pub layer_id: Option<ParentPath>,
+
+    /// The version of the resource.
+    pub resource_version: String,
+
+    /// This appears to only ever be two values:
+    ///
+    ///     -- `None` for normal images
+    ///     -- `Some("composite")` for the composite image.
+    /// It may have other purposes.
+    pub name: Option<String>,
+
+    /// The tags assigned to each image. You can apparently tag an image.
+    pub tags: Tags,
+
+    /// The resource name of the GM Image.
+    pub model_name: ConstGmImage,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Layer {
+    /// Defines the visibility of the layer. It will default to true on
+    /// import. It is changed in the GMS2 Sprite Editor.
+    pub visible: bool,
+
+    /// Defines if the layer is locked to editing. Only has an effect on the
+    /// GMS2 Sprite Editor.
+    pub is_locked: bool,
+
+    /// Defines the blendmode in the GMS2 editor. @todo Must be typed at a later
+    /// date.
+    pub blend_mode: usize,
+
+    /// Between 0-100
+    pub opacity: f64,
+
+    /// This is the actual name shown in the GMS2 Sprite Editor.
+    pub display_name: String,
+
+    /// Currently "1.0"
+    pub resource_version: String,
+
+    /// The legacy name of the LayerId.
+    pub name: LayerId,
+
+    /// The tags assigned to each layer.
+    pub tags: Tags,
+
+    /// The name of the Resource Type, which is always "GMImageLayer".
+    pub resource_type: ConstGmImageLayer,
+}
