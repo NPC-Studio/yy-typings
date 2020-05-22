@@ -105,9 +105,6 @@ pub mod boss {
 
         mod sprite_ext;
         pub use sprite_ext::*;
-
-        mod texture_group_ext;
-        pub use texture_group_ext::*;
     }
     pub use resources_ext::*;
 }

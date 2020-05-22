@@ -1,9 +1,10 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags};
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use smart_default::SmartDefault;
+use std::path::{Path, PathBuf};
 
 /// GMS2 project file typings
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     /// Contains all project resources, ordered by KeyID.
@@ -42,6 +43,7 @@ pub struct Yyp {
     #[serde(rename = "MetaData")]
     pub meta_data: YypMetaData,
     /// The version of the YYP. Currently, that is "1.3"
+    #[default("1.3".to_string())]
     pub resource_version: String,
     /// The actual human-readable name of the Project, such as "Forager"
     /// or "Fields of Mistria" or "Test1122 please work".
@@ -53,14 +55,15 @@ pub struct Yyp {
     pub resource_type: ConstGmProject,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 pub struct YypMetaData {
     #[serde(rename = "IDEVersion")]
+    #[default("23.1.1.141".to_string())]
     pub ide_version: String,
 }
 
 /// Represents a resource entry in a YYP
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct YypResource {
     /// This is the path to the Filesystem
     pub id: FilesystemPath,
@@ -74,15 +77,16 @@ pub struct YypResource {
 ///
 /// The first node within the YypConfig tree is **always** "Default".
 /// It may have no children.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 pub struct YypConfig {
+    #[default("Default".to_string())]
     pub name: String,
     pub children: Vec<YypConfig>,
 }
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the root**.
 /// Therefore, to create a tree, one must walk from the root to the final destination.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
@@ -94,6 +98,7 @@ pub struct YypFolder {
     pub order: usize,
 
     /// The resource version of this Resource. Currently `"1.0"`.
+    #[default("1.0".to_string())]
     pub resource_version: String,
     /// The human-readable name of this Folder. The last part of the `folder_path` and this name
     /// should agree. Human readable names include examples such as "Sprites", "Light Data", or
@@ -107,31 +112,37 @@ pub struct YypFolder {
     pub resource_type: ConstGmFolder,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct YypIncludedFile {
     #[serde(rename = "CopyToMask")]
+    #[default(-1)]
     pub copy_to_mask: isize,
+    #[default(Path::new("datafiles").to_owned())]
     pub file_path: PathBuf,
+    #[default("1.0".to_string())]
     pub resource_version: String,
     pub name: String,
     pub resource_type: ConstGmIncludedFile,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault)]
 pub enum ConstGmProject {
     #[serde(rename = "GMProject")]
+    #[default]
     Const,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault)]
 pub enum ConstGmFolder {
     #[serde(rename = "GMFolder")]
+    #[default]
     Const,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault)]
 pub enum ConstGmIncludedFile {
     #[serde(rename = "GMIncludedFile")]
+    #[default]
     Const,
 }

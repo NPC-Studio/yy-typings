@@ -5,35 +5,30 @@ use smart_default::SmartDefault;
 
 create_guarded_uuid!(TextureGroupId);
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
-    pub targets: usize,
-    #[serde(default)]
-    pub id: TextureGroupId,
-    #[serde(default)]
-    pub model_name: ConstGmTextureGroup,
-    #[serde(default)]
-    pub mvc: String,
-    #[serde(default)]
-    pub group_name: String,
-    #[serde(default)]
+    #[default(true)]
+    pub is_scaled: bool,
+    #[default(true)]
     pub autocrop: bool,
-    #[serde(default)]
+    #[default(2)]
     pub border: usize,
-    #[serde(default)]
-    pub group_parent: TextureGroupId,
-    #[serde(default)]
     pub mips_to_generate: GenerateMipMaps,
-    #[serde(default)]
-    pub scaled: bool,
+    #[default(461609314234257646)]
+    pub targets: usize,
+    #[default("1.0".to_string())]
+    pub resource_version: String,
+    #[default("Default".to_string())]
+    pub name: String,
+    pub resource_type: ConstGmTextureGroup,
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize, SmartDefault)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, SmartDefault, Eq, PartialEq)]
 pub enum ConstGmTextureGroup {
     #[serde(rename = "GMTextureGroup")]
     #[default]
-    GmTextureGroup,
+    Const,
 }
 
 impl From<ConstGmTextureGroup> for ResourceType {
@@ -42,7 +37,18 @@ impl From<ConstGmTextureGroup> for ResourceType {
     }
 }
 
-#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault)]
+#[derive(
+    Debug,
+    Serialize_repr,
+    Deserialize_repr,
+    SmartDefault,
+    PartialEq,
+    PartialOrd,
+    Eq,
+    Ord,
+    Clone,
+    Copy,
+)]
 #[repr(i8)]
 pub enum GenerateMipMaps {
     True = -1,
