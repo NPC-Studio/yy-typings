@@ -11,7 +11,7 @@ use yy_boss::{
 #[test]
 fn trivial_sprite_parsing() -> Result<()> {
     let all_sprites: Dir = include_dir!("tests/examples/sprite_examples");
-    let mut tcu = TrailingCommaUtility::new();
+    let tcu = TrailingCommaUtility::new();
 
     for sprite_file in all_sprites.find("**/*.yy").unwrap() {
         match sprite_file {

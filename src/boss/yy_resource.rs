@@ -1,29 +1,24 @@
-use super::yy_typings::{resources::ResourceType, yyp::YypResourceKeyId};
+use super::yy_typings::{FilesystemPath, ViewPath};
 use anyhow::Result;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 pub trait YyResource: serde::Serialize + for<'de> serde::Deserialize<'de> {
-    type Key: std::hash::Hash + PartialEq + Eq + Into<YypResourceKeyId>;
     type AssociatedData: std::fmt::Debug;
 
     /// Get's the resource's name.
     fn name(&self) -> &str;
 
+    /// Sets the name of the resource.
     fn set_name(&mut self, name: String);
 
     /// Get the relative filepath from the directory of the YYP
     /// to the resource yy file. For a sprite called `spr_player`,
     /// that path would be `sprites/spr_player/spr_player.yy`.
-    fn relative_filepath(&self) -> PathBuf;
+    fn filesystem_path(&self) -> FilesystemPath;
 
-    /// Convert a local Resource Id, such as `SpriteId` into
-    /// a `YypResourceKeyId`. Generally, each Guarded UUID should
-    /// already implement it.
-    fn id(&self) -> Self::Key;
+    fn parent_path(&self) -> ViewPath;
 
-    /// Convert each local resource type in the YyResource Type.
-    /// Mostly, the types themselves should implement this.
-    fn yy_resource_type(&self) -> ResourceType;
+    // fn ensure_associated_data_is_loaded(&mut self);
 
     fn serialize_associated_data(
         &self,

@@ -1,4 +1,3 @@
-use super::ResourceType;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -7,12 +6,6 @@ pub enum ConstGmSprite {
     #[serde(rename = "GMSprite")]
     #[default]
     Const,
-}
-
-impl From<ConstGmSprite> for ResourceType {
-    fn from(_: ConstGmSprite) -> Self {
-        Self::GmSprite
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]

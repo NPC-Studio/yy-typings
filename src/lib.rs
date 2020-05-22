@@ -34,9 +34,6 @@ macro_rules! create_guarded_uuid {
 }
 
 pub mod yy_typings {
-    mod resource_type;
-    pub use resource_type::*;
-
     mod parent_path;
     pub use parent_path::*;
 
@@ -70,36 +67,31 @@ pub mod yy_typings {
 pub mod boss {
     use super::*;
 
-    // mod yy_resource;
-    // mod yyp_boss;
+    mod yy_resource;
+    mod yyp_boss;
 
-    // use yy_resource::YyResource;
-    // pub use yyp_boss::YypBoss;
+    use yy_resource::YyResource;
+    pub use yyp_boss::YypBoss;
 
-    // #[allow(dead_code)]
-    // mod folder_graph {
-    //     #[macro_use]
-    //     mod relations;
+    #[allow(dead_code)]
+    mod folder_graph {
+        #[macro_use]
+        mod relations;
 
-    //     mod graph;
-    //     mod graph_id;
-    //     mod node;
-    //     mod node_error;
-    //     mod siblings_range;
-    //     mod traverse;
+        mod graph;
+        mod graph_id;
+        mod node;
+        mod node_error;
+        mod siblings_range;
+        mod traverse;
 
-    //     use super::yy_typings::yyp::YypResourceKeyId;
-    //     pub(crate) use node_error::*;
+        pub(crate) use node_error::*;
 
-    //     /// The Folder Graph of the Views file in a GMS2 project.
-    //     pub(crate) type FolderGraph = graph::Graph<YypResourceKeyId>;
-
-    //     /// The Node of each Folder
-    //     pub(crate) type Leaf = node::GraphNode<YypResourceKeyId>;
-
-    //     // The NodeId of each Folder
-    //     pub(crate) type LeafId = graph_id::GraphId<YypResourceKeyId>;
-    // }
+        /// The Folder Graph of the Views file in a GMS2 project.
+        pub(crate) type FolderGraph = graph::Graph<String>;
+        pub(crate) type Leaf = node::GraphNode<String>;
+        pub(crate) type LeafId = graph_id::GraphId<String>;
+    }
     mod resources_ext {
         use super::*;
 

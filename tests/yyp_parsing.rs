@@ -12,7 +12,7 @@ use yy_boss::{
 #[test]
 fn trivial_yyp_parse() {
     let all_yyps: Dir = include_dir!("tests/examples/yyp_examples");
-    let mut tcu = TrailingCommaUtility::new();
+    let tcu = TrailingCommaUtility::new();
 
     for sprite_file in all_yyps.find("**/*.yyp").unwrap() {
         match sprite_file {

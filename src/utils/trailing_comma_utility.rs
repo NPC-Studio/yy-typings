@@ -12,7 +12,7 @@ impl TrailingCommaUtility {
         }
     }
 
-    pub fn clear_trailing_comma<'a>(&mut self, input: &'a str) -> Cow<'a, str> {
+    pub fn clear_trailing_comma<'a>(&self, input: &'a str) -> Cow<'a, str> {
         Self::clear_trailing_comma_internal(input, &self.regex)
     }
 

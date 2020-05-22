@@ -1,4 +1,3 @@
-use super::ResourceType;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -29,12 +28,6 @@ pub enum ConstGmTextureGroup {
     #[serde(rename = "GMTextureGroup")]
     #[default]
     Const,
-}
-
-impl From<ConstGmTextureGroup> for ResourceType {
-    fn from(_: ConstGmTextureGroup) -> Self {
-        Self::GmTextureGroup
-    }
 }
 
 #[derive(
