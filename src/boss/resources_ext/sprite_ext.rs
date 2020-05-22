@@ -1,5 +1,5 @@
 use super::yy_typings::{
-    resources::{sprite::*, texture_group::TextureGroupId, ResourceType},
+    resources::{sprite::*, ResourceType},
     yyp::YypResourceKeyId,
 };
 use super::YyResource;
@@ -9,50 +9,76 @@ use std::num::NonZeroUsize;
 pub type SpriteImageBuffer = ImageBuffer<Rgba<u8>, Vec<u8>>;
 
 pub trait SpriteExt {
-    fn new(name: String, texture_group_id: TextureGroupId) -> Sprite;
+    fn harness(self, edit: impl Fn(&mut Self)) -> Self;
+    fn new(name: &str, texture_group_id: &str) -> Sprite;
+    fn parent(self, parent: ViewPath) -> Sprite;
     fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self;
-    fn layer(self, f: impl Fn(SpriteId) -> Layer) -> Self;
-    fn frame(self, f: impl Fn(&Sprite) -> Frame) -> Self;
+    fn layer(self, f: impl Fn(&mut Sprite) -> Layer) -> Self;
+    fn frame(self, f: impl Fn(&mut Sprite) -> Frame) -> Self;
     fn collision_kind(self, collision_kind: CollisionKind) -> Self;
-    fn mask_per_frame(self, mask_per_frame: bool) -> Self;
-    fn coltolerance(self, col_tolerance: u8) -> Self;
-    fn edge_filtering(self, edge_filtering: bool) -> Self;
-    fn for_3d(self, for3d: bool) -> Self;
     fn origin(self, origin: OriginUtility, locked: bool) -> Self;
     fn playback_speed(self, speed: f64) -> Self;
     fn playback_speed_type(self, speed_type: PlaybackSpeed) -> Self;
-    fn premultiply_alpha(self, premultiply_alpha: bool) -> Self;
-    fn tile(self, tile: (bool, bool)) -> Self;
     fn dimensions(self, width: NonZeroUsize, height: NonZeroUsize) -> Self;
 }
 
 impl SpriteExt for Sprite {
-    fn new(name: String, texture_group_id: TextureGroupId) -> Sprite {
+    fn harness(mut self, edit: impl Fn(&mut Self)) -> Self {
+        edit(&mut self);
+        self
+    }
+
+    fn new(name: &str, texture_group_id: &str) -> Sprite {
+        Sprite {
+            name: name.to_string(),
+            texture_group_id: TextureGroupPath {
+                path: Path::new(&format!("texturegroups/{}", texture_group_id)).to_owned(),
+                name: texture_group_id.to_string(),
+            },
+            ..Sprite::default()
+        }
+    }
+
+    fn parent(self, parent: ViewPath) -> Sprite {
+        self.harness(|me| me.parent = parent.clone())
+    }
+
+    fn bbox_mode(mut self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self {
+        let bbox_util = f(self.width.get() as isize, self.height.get() as isize);
+        self.bbox_mode = bbox_util.into();
+
+        let bbox = match bbox_util {
+            BboxModeUtility::Automatic(bbox) | BboxModeUtility::Manual(bbox) => bbox,
+            BboxModeUtility::FullImage => {
+                let width = self.width.get() as isize;
+                let height = self.height.get() as isize;
+
+                Bbox {
+                    top_left: (0, 0),
+                    bottom_right: (width, height),
+                }
+            }
+        };
+
+        self.bbox_left = bbox.top_left.0;
+        self.bbox_top = bbox.top_left.1;
+        self.bbox_right = bbox.bottom_right.0;
+        self.bbox_bottom = bbox.bottom_right.1;
+        self
+    }
+    fn layer(self, f: impl Fn(&mut Sprite) -> Layer) -> Self {
         todo!()
     }
-    fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self {
-        todo!()
-    }
-    fn layer(self, f: impl Fn(SpriteId) -> Layer) -> Self {
-        todo!()
-    }
-    fn frame(self, f: impl Fn(&Sprite) -> Frame) -> Self {
+    fn frame(self, f: impl Fn(&mut Sprite) -> Frame) -> Self {
         todo!()
     }
     fn collision_kind(self, collision_kind: CollisionKind) -> Self {
-        todo!()
-    }
-    fn mask_per_frame(self, mask_per_frame: bool) -> Self {
-        todo!()
-    }
-    fn coltolerance(self, col_tolerance: u8) -> Self {
-        todo!()
-    }
-    fn edge_filtering(self, edge_filtering: bool) -> Self {
-        todo!()
-    }
-    fn for_3d(self, for3d: bool) -> Self {
-        todo!()
+        self.harness(|me| {
+            me.collision_kind = collision_kind;
+            if me.collision_kind != CollisionKind::Precise {
+                me.separate_masks = false;
+            }
+        })
     }
     fn origin(self, origin: OriginUtility, locked: bool) -> Self {
         todo!()
@@ -63,23 +89,17 @@ impl SpriteExt for Sprite {
     fn playback_speed_type(self, speed_type: PlaybackSpeed) -> Self {
         todo!()
     }
-    fn premultiply_alpha(self, premultiply_alpha: bool) -> Self {
-        todo!()
-    }
-    fn tile(self, tile: (bool, bool)) -> Self {
-        todo!()
-    }
     fn dimensions(self, width: NonZeroUsize, height: NonZeroUsize) -> Self {
         todo!()
     }
 }
 
 pub trait FrameExt {
-    fn new(sprite: &Sprite) -> Self;
+    fn new(sprite: &mut Sprite) -> Self;
 }
 
 impl FrameExt for Frame {
-    fn new(sprite: &Sprite) -> Self {
+    fn new(sprite: &mut Sprite) -> Self {
         todo!()
     }
 }
@@ -95,11 +115,11 @@ impl ImageExt for Image {
 }
 
 pub trait LayerExt {
-    fn new(sprite_id: SpriteId) -> Self;
+    fn new(sprite_id: String) -> Self;
 }
 
 impl LayerExt for Layer {
-    fn new(sprite_id: SpriteId) -> Self {
+    fn new(sprite_id: String) -> Self {
         todo!()
     }
 }
@@ -119,7 +139,7 @@ impl YyResource for Sprite {
         Path::new(&format!("sprites/{name}/{name}.yy", name = self.name)).to_owned()
     }
 
-    fn id(&self) -> SpriteId {
+    fn id(&self) -> YypResourceKeyId {
         todo!()
     }
 
@@ -172,20 +192,8 @@ impl YyResource for Sprite {
         Ok(())
     }
 
-    type Key = SpriteId;
+    type Key = YypResourceKeyId;
     type AssociatedData = Vec<(FrameId, SpriteImageBuffer)>;
-}
-
-impl Into<YypResourceKeyId> for SpriteId {
-    fn into(self) -> YypResourceKeyId {
-        YypResourceKeyId::with_id(self.inner())
-    }
-}
-
-impl Into<SpriteId> for YypResourceKeyId {
-    fn into(self) -> SpriteId {
-        SpriteId::with_id(self.inner())
-    }
 }
 
 #[derive(Debug, Default, Copy, Clone)]

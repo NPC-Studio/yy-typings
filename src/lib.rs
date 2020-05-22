@@ -41,7 +41,7 @@ pub mod yy_typings {
         pub use resource_type::*;
 
         mod parent_path;
-        pub use parent_path::ParentPath;
+        pub use parent_path::*;
 
         mod tags;
         pub use tags::Tags;

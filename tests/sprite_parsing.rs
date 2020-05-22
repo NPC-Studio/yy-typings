@@ -2,7 +2,11 @@ use anyhow::Result;
 use include_dir::{include_dir, Dir, DirEntry};
 use pretty_assertions::assert_eq;
 use std::{num::NonZeroUsize, path::Path};
-use yy_boss::{utils::TrailingCommaUtility, yy_typings::resources::sprite::*};
+use yy_boss::{
+    boss::{Bbox, BboxModeUtility, FrameExt, LayerExt, OriginUtility, SpriteExt},
+    utils::TrailingCommaUtility,
+    yy_typings::resources::sprite::*,
+};
 
 #[test]
 fn trivial_sprite_parsing() -> Result<()> {
@@ -48,7 +52,7 @@ fn deep_check() {
         for3d: false,
         width: NonZeroUsize::new(48).unwrap(),
         height: NonZeroUsize::new(48).unwrap(),
-        texture_group_id: ParentPath {
+        texture_group_id: TextureGroupPath {
             name: "Default".to_string(),
             path: Path::new("texturegroups/Default").to_owned(),
         },
@@ -58,7 +62,7 @@ fn deep_check() {
         frames: vec![
             Frame {
                 composite_image: Image {
-                    frame_id: ParentPath {
+                    frame_id: FilesystemPath {
                         name: "7669a695-40b5-47eb-a089-f81c0f6be6b8".to_string(),
                         path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                     },
@@ -67,18 +71,18 @@ fn deep_check() {
                     ..Image::default()
                 },
                 images: vec![Image {
-                    frame_id: ParentPath {
+                    frame_id: FilesystemPath {
                         name: "7669a695-40b5-47eb-a089-f81c0f6be6b8".to_string(),
                         path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                     },
-                    layer_id: Some(ParentPath {
+                    layer_id: Some(FilesystemPath {
                         name: "37cbf63f-f6a9-4b91-a9fd-3537b374e9db".to_string(),
                         path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                     }),
                     name: None,
                     ..Image::default()
                 }],
-                parent: ParentPath {
+                parent: FilesystemPath {
                     name: "spr_jack".to_string(),
                     path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                 },
@@ -89,7 +93,7 @@ fn deep_check() {
             },
             Frame {
                 composite_image: Image {
-                    frame_id: ParentPath {
+                    frame_id: FilesystemPath {
                         name: "a52625ab-2499-4b46-9785-58ee50a1b048".to_string(),
                         path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                     },
@@ -98,18 +102,18 @@ fn deep_check() {
                     ..Image::default()
                 },
                 images: vec![Image {
-                    frame_id: ParentPath {
+                    frame_id: FilesystemPath {
                         name: "a52625ab-2499-4b46-9785-58ee50a1b048".to_string(),
                         path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                     },
-                    layer_id: Some(ParentPath {
+                    layer_id: Some(FilesystemPath {
                         name: "37cbf63f-f6a9-4b91-a9fd-3537b374e9db".to_string(),
                         path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                     }),
                     name: None,
                     ..Image::default()
                 }],
-                parent: ParentPath {
+                parent: FilesystemPath {
                     name: "spr_jack".to_string(),
                     path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
                 },
@@ -120,7 +124,7 @@ fn deep_check() {
             },
         ],
         sequence: SpriteSequence {
-            sprite_id: ParentPath {
+            sprite_id: FilesystemPath {
                 name: "spr_jack".to_string(),
                 path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
             },
@@ -140,7 +144,7 @@ fn deep_check() {
                                 key: 0.0,
                                 channels: Channels {
                                     zero: SpriteZeroChannel {
-                                        id: ParentPath {
+                                        id: FilesystemPath {
                                             name: "7669a695-40b5-47eb-a089-f81c0f6be6b8"
                                                 .to_string(),
                                             path: Path::new("sprites/spr_jack/spr_jack.yy")
@@ -159,7 +163,7 @@ fn deep_check() {
                                 key: 1.0,
                                 channels: Channels {
                                     zero: SpriteZeroChannel {
-                                        id: ParentPath {
+                                        id: FilesystemPath {
                                             name: "a52625ab-2499-4b46-9785-58ee50a1b048"
                                                 .to_string(),
                                             path: Path::new("sprites/spr_jack/spr_jack.yy")
@@ -185,7 +189,7 @@ fn deep_check() {
             backdrop_y_offset: 0.0,
             xorigin: 23,
             yorigin: 42,
-            parent: ParentPath {
+            parent: FilesystemPath {
                 name: "spr_jack".to_string(),
                 path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
             },
@@ -200,7 +204,7 @@ fn deep_check() {
             name: LayerId::with_string("37cbf63f-f6a9-4b91-a9fd-3537b374e9db"),
             ..Layer::default()
         }],
-        parent: ParentPath {
+        parent: ViewPath {
             name: "Sprites".to_string(),
             path: Path::new("folders/Sprites.yy").to_owned(),
         },
@@ -211,4 +215,27 @@ fn deep_check() {
     };
 
     assert_eq!(sprite, expected_sprite);
+}
+
+#[test]
+fn deep_check_builder() {
+    let sprite = include_str!("./examples/sprite_examples/test0.yy");
+    let sprite: Sprite =
+        serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(sprite)).unwrap();
+
+    let expected_sprite = Sprite::new("spr_jack", "Default")
+        .collision_kind(CollisionKind::Rectangle)
+        .dimensions(
+            NonZeroUsize::new(48).unwrap(),
+            NonZeroUsize::new(48).unwrap(),
+        )
+        .bbox_mode(|_, _| {
+            BboxModeUtility::Automatic(Bbox {
+                top_left: (7, 5),
+                bottom_right: (38, 47),
+            })
+        })
+        .origin(OriginUtility::Custom { x: 23, y: 42 }, false);
+
+    assert_eq!(sprite, expected_sprite)
 }

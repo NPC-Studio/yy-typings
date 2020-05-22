@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, ParentPath, Tags};
+use super::{sprite_constants::*, FilesystemPath, Tags};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -21,7 +21,7 @@ pub struct Frame {
 
     /// This is the path to the sprite parent. It will always have the name
     /// of the Sprite name, and the path to the sprite `.yy` file.
-    pub parent: ParentPath,
+    pub parent: FilesystemPath,
 
     /// The version of this particular resource.
     #[default("1.0".to_string())]
@@ -41,13 +41,13 @@ pub struct Image {
     /// Although named FrameId, this is actually the path to the the parent
     /// frame resource. The `name` field will correspond to the `Frame.name` field.
     #[serde(rename = "FrameId")]
-    pub frame_id: ParentPath,
+    pub frame_id: FilesystemPath,
 
     /// This always corresponds to the LayerId which this SpriteImage corresponds to.
     /// It will be null in the case of the `composite_image` field -- otherwise, it will
     /// contain a valid path to the parent layer.
     #[serde(rename = "LayerId")]
-    pub layer_id: Option<ParentPath>,
+    pub layer_id: Option<FilesystemPath>,
 
     /// The version of the resource.
     #[default("1.0".to_string())]

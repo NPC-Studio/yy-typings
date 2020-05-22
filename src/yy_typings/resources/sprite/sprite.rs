@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, Frame, Layer, ParentPath, SpriteSequence, Tags};
+use super::{sprite_constants::*, Frame, Layer, SpriteSequence, Tags, TextureGroupPath, ViewPath};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -45,7 +45,7 @@ pub struct Sprite {
     pub height: NonZeroUsize,
 
     /// This is the Path to the Texture Group Id.
-    pub texture_group_id: ParentPath,
+    pub texture_group_id: TextureGroupPath,
 
     /// This is probably always null, unless you make a swatch,
     /// but why are you doing that! Just don't do that. Easy.
@@ -65,7 +65,7 @@ pub struct Sprite {
     pub layers: Vec<Layer>,
 
     /// Defines the parent of the YY folder path.
-    pub parent: ParentPath,
+    pub parent: ViewPath,
 
     /// Version string. Right now, this is loosely typed and ignored,
     /// but will be used in the future to aid in parsing.
@@ -90,8 +90,6 @@ pub enum CollisionKind {
     Diamond,
     RotatedRectangle = 5,
 }
-
-create_guarded_uuid!(SpriteId);
 
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
 #[repr(u8)]

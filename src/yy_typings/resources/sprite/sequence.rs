@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, ParentPath, Tags};
+use super::{sprite_constants::*, FilesystemPath, Tags};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -9,7 +9,7 @@ create_guarded_uuid!(SpriteSequenceId);
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSequence {
     /// The path to the parent sprite.
-    pub sprite_id: ParentPath,
+    pub sprite_id: FilesystemPath,
 
     /// The Units of time of the Sequence. It will always be 1 in a Sprite.
     #[default = 1]
@@ -74,7 +74,7 @@ pub struct SpriteSequence {
     pub event_stub_script: Option<()>,
     /// This is a duplicate of `sprite_id`, and should always
     /// be the same value. It is unknown why there is duplicate data.
-    pub parent: ParentPath,
+    pub parent: FilesystemPath,
 
     /// The resource version. Currently `1.3`.
     #[default("1.3".to_string())]
@@ -272,7 +272,7 @@ pub struct Channels {
 #[serde(rename_all = "camelCase")]
 pub struct SpriteZeroChannel {
     #[serde(rename = "Id")]
-    pub id: ParentPath,
+    pub id: FilesystemPath,
     #[default("1.0".to_string())]
     pub resource_version: String,
     pub resource_type: ConstGmSpriteZeroChannel,

@@ -175,9 +175,9 @@ impl YypBoss {
     /// Please note -- the name of the Sprite MIGHT change if that name already exists!
     pub fn add_sprite(
         &mut self,
-        mut sprite: Sprite,
-        associated_data: Vec<(FrameId, SpriteImageBuffer)>,
-        folder_id: GmFolderId,
+        _sprite: Sprite,
+        _associated_data: Vec<(FrameId, SpriteImageBuffer)>,
+        _folder_id: GmFolderId,
     ) {
         todo!()
         // let sprite_id = sprite.id;
@@ -207,6 +207,7 @@ impl YypBoss {
     ///
     /// This might include serializing sprites or sprite frames for Sprites, or `.gml`
     /// files for scripts or objects.
+    #[allow(dead_code)]
     fn add_new_resource(
         &mut self,
         new_resource: &mut impl YyResource,

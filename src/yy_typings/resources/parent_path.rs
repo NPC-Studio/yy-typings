@@ -29,7 +29,29 @@ use std::path::PathBuf;
 /// }
 /// ```
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
-pub struct ParentPath {
+pub struct FilesystemPath {
+    /// The human readable name of the parent. for a `spr_player`, this
+    /// might correspond to `Sprites`.
+    pub name: String,
+    /// The direct path from the `.yyp` directory to the resource needed. This
+    /// is not directly related to parentage at all, as GMS2 does not use the FileSystem
+    /// for parentage.
+    pub path: PathBuf,
+}
+
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+pub struct ViewPath {
+    /// The human readable name of the parent. for a `spr_player`, this
+    /// might correspond to `Sprites`.
+    pub name: String,
+    /// The direct path from the `.yyp` directory to the resource needed. This
+    /// is not directly related to parentage at all, as GMS2 does not use the FileSystem
+    /// for parentage.
+    pub path: PathBuf,
+}
+
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+pub struct TextureGroupPath {
     /// The human readable name of the parent. for a `spr_player`, this
     /// might correspond to `Sprites`.
     pub name: String,
