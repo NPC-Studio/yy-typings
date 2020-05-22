@@ -34,83 +34,72 @@ macro_rules! create_guarded_uuid {
 }
 
 pub mod yy_typings {
-    pub mod resources {
-        use super::yyp::YypResourceKeyId;
+    mod resource_type;
+    pub use resource_type::*;
 
-        mod resource_type;
-        pub use resource_type::*;
+    mod parent_path;
+    pub use parent_path::*;
 
-        mod parent_path;
-        pub use parent_path::*;
+    mod tags;
+    pub use tags::Tags;
 
-        mod tags;
-        pub use tags::Tags;
+    mod audio_group;
+    pub use audio_group::AudioGroup;
 
-        pub mod sprite {
-            pub use super::*;
+    pub mod sprite {
+        pub use super::*;
 
-            mod sprite;
-            pub use sprite::*;
+        mod sprite;
+        pub use sprite::*;
 
-            mod sprite_constants;
-            pub use sprite_constants::*;
+        mod sprite_constants;
+        pub use sprite_constants::*;
 
-            mod sequence;
-            pub use sequence::*;
+        mod sequence;
+        pub use sequence::*;
 
-            mod frames_layers;
-            pub use frames_layers::*;
-        }
-
-        pub mod folder;
-        pub mod texture_group;
+        mod frames_layers;
+        pub use frames_layers::*;
     }
 
-    pub mod yyp {
-        use super::resources::ResourceType;
-
-        mod parent_project;
-        pub use parent_project::*;
-        mod yyp;
-        pub use yyp::*;
-        mod yyp_resource;
-        pub use yyp_resource::*;
-    }
+    pub mod texture_group;
+    mod yyp;
+    pub use yyp::*;
 }
 
 pub mod boss {
     use super::*;
 
-    mod yy_resource;
-    mod yyp_boss;
+    // mod yy_resource;
+    // mod yyp_boss;
 
-    use yy_resource::YyResource;
-    pub use yyp_boss::YypBoss;
+    // use yy_resource::YyResource;
+    // pub use yyp_boss::YypBoss;
 
-    #[allow(dead_code)]
-    mod folder_graph {
-        #[macro_use]
-        mod relations;
+    // #[allow(dead_code)]
+    // mod folder_graph {
+    //     #[macro_use]
+    //     mod relations;
 
-        mod graph;
-        mod graph_id;
-        mod node;
-        mod node_error;
-        mod siblings_range;
-        mod traverse;
+    //     mod graph;
+    //     mod graph_id;
+    //     mod node;
+    //     mod node_error;
+    //     mod siblings_range;
+    //     mod traverse;
 
-        use super::yy_typings::yyp::YypResourceKeyId;
-        pub(crate) use node_error::*;
+    //     use super::yy_typings::yyp::YypResourceKeyId;
+    //     pub(crate) use node_error::*;
 
-        /// The Folder Graph of the Views file in a GMS2 project.
-        pub(crate) type FolderGraph = graph::Graph<YypResourceKeyId>;
+    //     /// The Folder Graph of the Views file in a GMS2 project.
+    //     pub(crate) type FolderGraph = graph::Graph<YypResourceKeyId>;
 
-        /// The Node of each Folder
-        pub(crate) type Leaf = node::GraphNode<YypResourceKeyId>;
+    //     /// The Node of each Folder
+    //     pub(crate) type Leaf = node::GraphNode<YypResourceKeyId>;
 
-        // The NodeId of each Folder
-        pub(crate) type LeafId = graph_id::GraphId<YypResourceKeyId>;
-    }
+    //     // The NodeId of each Folder
+    //     pub(crate) type LeafId = graph_id::GraphId<YypResourceKeyId>;
+    // }
     mod resources_ext {
         use super::*;
 
@@ -119,9 +108,6 @@ pub mod boss {
 
         mod texture_group_ext;
         pub use texture_group_ext::*;
-
-        mod folder_ext;
-        pub use folder_ext::*;
     }
     pub use resources_ext::*;
 }

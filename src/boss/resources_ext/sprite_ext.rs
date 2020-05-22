@@ -1,10 +1,7 @@
-use super::yy_typings::{
-    resources::{sprite::*, ResourceType},
-    yyp::YypResourceKeyId,
-};
-use super::YyResource;
+use super::yy_typings::sprite::*;
 use image::{ImageBuffer, Rgba};
 use std::num::NonZeroUsize;
+use std::path::Path;
 
 pub type SpriteImageBuffer = ImageBuffer<Rgba<u8>, Vec<u8>>;
 
@@ -236,77 +233,77 @@ impl SpriteExt for Sprite {
     }
 }
 
-use anyhow::Context;
-use std::path::{Path, PathBuf};
-impl YyResource for Sprite {
-    fn name(&self) -> &str {
-        &self.name
-    }
+// use anyhow::Context;
+// use std::path::{Path, PathBuf};
+// impl YyResource for Sprite {
+//     fn name(&self) -> &str {
+//         &self.name
+//     }
 
-    fn set_name(&mut self, name: String) {
-        self.name = name;
-    }
+//     fn set_name(&mut self, name: String) {
+//         self.name = name;
+//     }
 
-    fn relative_filepath(&self) -> PathBuf {
-        Path::new(&format!("sprites/{name}/{name}.yy", name = self.name)).to_owned()
-    }
+//     fn relative_filepath(&self) -> PathBuf {
+//         Path::new(&format!("sprites/{name}/{name}.yy", name = self.name)).to_owned()
+//     }
 
-    fn id(&self) -> YypResourceKeyId {
-        todo!()
-    }
+//     fn id(&self) -> YypResourceKeyId {
+//         todo!()
+//     }
 
-    fn yy_resource_type(&self) -> ResourceType {
-        self.resource_type.into()
-    }
+//     fn yy_resource_type(&self) -> ResourceType {
+//         self.resource_type.into()
+//     }
 
-    fn serialize_associated_data(
-        &self,
-        directory_path: &Path,
-        data: &Self::AssociatedData,
-    ) -> anyhow::Result<()> {
-        let layers_path = directory_path.join("layers");
-        if layers_path.exists() == false {
-            std::fs::create_dir(&layers_path)?;
-        }
+//     fn serialize_associated_data(
+//         &self,
+//         directory_path: &Path,
+//         data: &Self::AssociatedData,
+//     ) -> anyhow::Result<()> {
+//         let layers_path = directory_path.join("layers");
+//         if layers_path.exists() == false {
+//             std::fs::create_dir(&layers_path)?;
+//         }
 
-        for (frame_id, image) in data {
-            let inner_id_string = frame_id.inner().to_string();
-            let image: &ImageBuffer<_, _> = image;
+//         for (frame_id, image) in data {
+//             let inner_id_string = frame_id.inner().to_string();
+//             let image: &ImageBuffer<_, _> = image;
 
-            // Make the Core Image:
-            let path = directory_path.join(&inner_id_string).with_extension("png");
-            image.save(&path).with_context(|| {
-                format!("We couldn't serialize the Core Image at path {:?}", path)
-            })?;
+//             // Make the Core Image:
+//             let path = directory_path.join(&inner_id_string).with_extension("png");
+//             image.save(&path).with_context(|| {
+//                 format!("We couldn't serialize the Core Image at path {:?}", path)
+//             })?;
 
-            // Make the folder and layer image:
-            let folder_path = layers_path.join(&inner_id_string);
-            if folder_path.exists() == false {
-                std::fs::create_dir(&folder_path)?;
-            }
+//             // Make the folder and layer image:
+//             let folder_path = layers_path.join(&inner_id_string);
+//             if folder_path.exists() == false {
+//                 std::fs::create_dir(&folder_path)?;
+//             }
 
-            todo!()
+//             todo!()
 
-            // let image_layer_id = self
-            //     .layers
-            //     .first()
-            //     .ok_or_else(|| anyhow::anyhow!("All Sprites *must* have a single Layer!"))?
-            //     .id
-            //     .inner()
-            //     .to_string();
+//             // let image_layer_id = self
+//             //     .layers
+//             //     .first()
+//             //     .ok_or_else(|| anyhow::anyhow!("All Sprites *must* have a single Layer!"))?
+//             //     .id
+//             //     .inner()
+//             //     .to_string();
 
-            // let final_layer_path = folder_path.join(&image_layer_id).with_extension("png");
-            // image
-            //     .save(&final_layer_path)
-            //     .with_context(|| format!("We couldn't save an Image to {:?}", final_layer_path))?;
-        }
+//             // let final_layer_path = folder_path.join(&image_layer_id).with_extension("png");
+//             // image
+//             //     .save(&final_layer_path)
+//             //     .with_context(|| format!("We couldn't save an Image to {:?}", final_layer_path))?;
+//         }
 
-        Ok(())
-    }
+//         Ok(())
+//     }
 
-    type Key = YypResourceKeyId;
-    type AssociatedData = Vec<(FrameId, SpriteImageBuffer)>;
-}
+//     type Key = YypResourceKeyId;
+//     type AssociatedData = Vec<(FrameId, SpriteImageBuffer)>;
+// }
 
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Bbox {

@@ -5,7 +5,7 @@ use std::{num::NonZeroUsize, path::Path};
 use yy_boss::{
     boss::{Bbox, BboxModeUtility, OriginUtility, SpriteExt},
     utils::TrailingCommaUtility,
-    yy_typings::resources::sprite::*,
+    yy_typings::sprite::*,
 };
 
 #[test]

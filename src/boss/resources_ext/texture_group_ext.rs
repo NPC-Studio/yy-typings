@@ -1,4 +1,4 @@
-use super::yy_typings::resources::texture_group::{GenerateMipMaps, TextureGroup, TextureGroupId};
+use super::yy_typings::texture_group::{GenerateMipMaps, TextureGroup, TextureGroupId};
 use regex::Regex;
 use serde_json::Value;
 
