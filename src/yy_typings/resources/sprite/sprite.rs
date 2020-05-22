@@ -17,10 +17,12 @@ pub struct Sprite {
     pub resource_sprite_type: usize,
 
     pub origin: Origin,
-
     pub pre_multiply_alpha: bool,
     pub edge_filtering: bool,
     pub collision_tolerance: u8,
+    /// The precision for Vector sprites. Its default is `2.525`, a number
+    /// which is very odd in my opinion.
+    #[default(2.525)]
     pub swf_precision: f64,
 
     #[serde(rename = "bbox_left")]
@@ -69,11 +71,11 @@ pub struct Sprite {
 
     /// Version string. Right now, this is loosely typed and ignored,
     /// but will be used in the future to aid in parsing.
+    #[default("1.0".to_string())]
     pub resource_version: String,
 
     /// The human readable name of the resource, such as `spr_player`.
     pub name: String,
-
     /// These are the tags assigned in the GMS2 Editor to each sprite.
     pub tags: Tags,
     /// ModelName. Always GMSprite.

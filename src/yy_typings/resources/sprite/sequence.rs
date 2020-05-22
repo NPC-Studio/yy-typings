@@ -216,12 +216,13 @@ impl Default for Track {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframes {
     #[serde(rename = "Keyframes")]
     pub keyframes: Vec<SpriteKeyframe>,
 
+    #[default("1.0".to_string())]
     pub resource_version: String,
     pub resource_type: ConstGmSpriteKeyframes,
 }
@@ -229,6 +230,7 @@ pub struct SpriteKeyframes {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframe {
+    /// A SpriteSequenceId, apparently with no relation to any other ID.
     pub id: SpriteSequenceId,
     #[serde(rename = "Key")]
     pub key: f64,

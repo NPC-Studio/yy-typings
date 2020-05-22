@@ -3,7 +3,7 @@ use include_dir::{include_dir, Dir, DirEntry};
 use pretty_assertions::assert_eq;
 use std::{num::NonZeroUsize, path::Path};
 use yy_boss::{
-    boss::{Bbox, BboxModeUtility, FrameExt, LayerExt, OriginUtility, SpriteExt},
+    boss::{Bbox, BboxModeUtility, OriginUtility, SpriteExt},
     utils::TrailingCommaUtility,
     yy_typings::resources::sprite::*,
 };
@@ -174,8 +174,7 @@ fn deep_check() {
                                 ..SpriteKeyframe::default()
                             },
                         ],
-                        resource_version: "1.0".to_string(),
-                        resource_type: ConstGmSpriteKeyframes::Const,
+                        ..SpriteKeyframes::default()
                     }
                 },
                 ..Default::default()
@@ -207,10 +206,8 @@ fn deep_check() {
             name: "Sprites".to_string(),
             path: Path::new("folders/Sprites.yy").to_owned(),
         },
-        resource_version: "1.0".to_string(),
         name: "spr_jack".to_string(),
-        tags: vec![],
-        resource_type: ConstGmSprite::Const,
+        ..Sprite::default()
     };
 
     assert_eq!(sprite, expected_sprite);
@@ -223,7 +220,18 @@ fn deep_check_builder() {
         serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(sprite)).unwrap();
 
     let expected_sprite = Sprite::new("spr_jack", "Default")
-        .collision_kind(CollisionKind::Rectangle)
+        .parent(ViewPath {
+            name: "Sprites".to_string(),
+            path: Path::new("folders/Sprites.yy").to_owned(),
+        })
+        .with(|spr| {
+            // Align with `test.0.yy` file...
+            let mut layer: &mut Layer = &mut spr.layers[0];
+            layer.display_name = "Layer 1 (2)".to_string();
+            layer.name = LayerId::with_string("37cbf63f-f6a9-4b91-a9fd-3537b374e9db");
+
+            spr.sequence.visible_range = Some(VisibleRange { x: 0.0, y: 0.0 });
+        })
         .dimensions(
             NonZeroUsize::new(48).unwrap(),
             NonZeroUsize::new(48).unwrap(),
@@ -234,7 +242,17 @@ fn deep_check_builder() {
                 bottom_right: (38, 47),
             })
         })
-        .origin(OriginUtility::Custom { x: 23, y: 42 }, false);
+        .collision_kind(CollisionKind::Rectangle)
+        .origin(OriginUtility::Custom { x: 23, y: 42 }, false)
+        .frame(FrameId::with_string("7669a695-40b5-47eb-a089-f81c0f6be6b8"))
+        .frame(FrameId::with_string("a52625ab-2499-4b46-9785-58ee50a1b048"))
+        .with(|spr| {
+            let track: &mut Track = &mut spr.sequence.tracks[0];
+            track.keyframes.keyframes[0].id =
+                SpriteSequenceId::with_string("7ac201d7-c56c-400f-8f97-c42ad0d98fba");
+            track.keyframes.keyframes[1].id =
+                SpriteSequenceId::with_string("d457b008-1cb9-43a5-8024-7576b09a0421");
+        });
 
     assert_eq!(sprite, expected_sprite)
 }

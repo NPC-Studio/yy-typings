@@ -44,7 +44,7 @@ pub struct Image {
     pub frame_id: FilesystemPath,
 
     /// This always corresponds to the LayerId which this SpriteImage corresponds to.
-    /// It will be null in the case of the `composite_image` field -- otherwise, it will
+    /// It will be `None` in the case of the `composite_image` field -- otherwise, it will
     /// contain a valid path to the parent layer.
     #[serde(rename = "LayerId")]
     pub layer_id: Option<FilesystemPath>,

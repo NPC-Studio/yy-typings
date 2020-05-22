@@ -9,20 +9,19 @@ use std::num::NonZeroUsize;
 pub type SpriteImageBuffer = ImageBuffer<Rgba<u8>, Vec<u8>>;
 
 pub trait SpriteExt {
-    fn harness(self, edit: impl Fn(&mut Self)) -> Self;
+    fn with(self, edit: impl Fn(&mut Self)) -> Self;
     fn new(name: &str, texture_group_id: &str) -> Sprite;
     fn parent(self, parent: ViewPath) -> Sprite;
     fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self;
-    fn frame(self, f: impl Fn(&mut Sprite) -> Frame) -> Self;
     fn collision_kind(self, collision_kind: CollisionKind) -> Self;
+    fn frame(self, frame_id: FrameId) -> Self;
     fn origin(self, origin: OriginUtility, locked: bool) -> Self;
-    fn playback_speed(self, speed: f64) -> Self;
-    fn playback_speed_type(self, speed_type: PlaybackSpeed) -> Self;
+    fn playback_speed(self, pback_speed: PlaybackSpeed, speed: f64) -> Self;
     fn dimensions(self, width: NonZeroUsize, height: NonZeroUsize) -> Self;
 }
 
 impl SpriteExt for Sprite {
-    fn harness(mut self, edit: impl Fn(&mut Self)) -> Self {
+    fn with(mut self, edit: impl Fn(&mut Self)) -> Self {
         edit(&mut self);
         self
     }
@@ -70,7 +69,7 @@ impl SpriteExt for Sprite {
     }
 
     fn parent(self, parent: ViewPath) -> Sprite {
-        self.harness(|me| me.parent = parent.clone())
+        self.with(|me| me.parent = parent.clone())
     }
 
     fn bbox_mode(mut self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self {
@@ -96,11 +95,67 @@ impl SpriteExt for Sprite {
         self.bbox_bottom = bbox.bottom_right.1;
         self
     }
-    fn frame(self, f: impl Fn(&mut Sprite) -> Frame) -> Self {
-        
+
+    fn frame(self, frame_name: FrameId) -> Self {
+        self.with(|me| {
+            let path_to_sprite = format!("sprites/{0}/{0}.yy", me.name);
+            let path_to_sprite = Path::new(&path_to_sprite);
+            // Update the Frame
+            me.frames.push(Frame {
+                composite_image: Image {
+                    frame_id: FilesystemPath {
+                        name: frame_name.inner().to_string(),
+                        path: path_to_sprite.to_owned(),
+                    },
+                    layer_id: None,
+                    name: Some("composite".to_string()),
+                    ..Image::default()
+                },
+                images: me
+                    .layers
+                    .iter()
+                    .map(|layer| Image {
+                        frame_id: FilesystemPath {
+                            name: frame_name.inner().to_string(),
+                            path: path_to_sprite.to_owned(),
+                        },
+                        layer_id: Some(FilesystemPath {
+                            name: layer.name.inner().to_string(),
+                            path: path_to_sprite.to_owned(),
+                        }),
+                        name: None,
+                        ..Image::default()
+                    })
+                    .collect(),
+                parent: FilesystemPath {
+                    name: me.name.clone(),
+                    path: path_to_sprite.to_owned(),
+                },
+                name: frame_name,
+                ..Frame::default()
+            });
+
+            // Update the Sequence
+            let track: &mut Track = &mut me.sequence.tracks[0];
+            track.keyframes.keyframes.push(SpriteKeyframe {
+                id: SpriteSequenceId::new(),
+                key: me.frames.len() as f64 - 1.0,
+                channels: Channels {
+                    zero: SpriteZeroChannel {
+                        id: FilesystemPath {
+                            name: frame_name.inner().to_string(),
+                            path: path_to_sprite.to_owned(),
+                        },
+                        ..Default::default()
+                    },
+                },
+                ..SpriteKeyframe::default()
+            });
+            me.sequence.length = me.frames.len() as f64;
+        })
     }
     fn collision_kind(self, collision_kind: CollisionKind) -> Self {
-        self.harness(|me| {
+        self.with(|me| {
             me.collision_kind = collision_kind;
             if me.collision_kind != CollisionKind::Precise {
                 me.separate_masks = false;
@@ -108,46 +163,76 @@ impl SpriteExt for Sprite {
         })
     }
     fn origin(self, origin: OriginUtility, locked: bool) -> Self {
-        todo!()
+        self.with(|me| {
+            let w = me.width.get();
+            let h = me.height.get();
+
+            match origin {
+                OriginUtility::Custom { x, y } => {
+                    me.origin = Origin::Custom;
+                    me.sequence.xorigin = x;
+                    me.sequence.yorigin = y;
+                }
+                OriginUtility::TopLeft => {
+                    me.origin = Origin::TopLeft;
+                    me.sequence.xorigin = 0;
+                    me.sequence.yorigin = 0;
+                }
+                OriginUtility::TopCenter => {
+                    me.origin = Origin::TopCenter;
+                    me.sequence.xorigin = (w / 2) as isize;
+                    me.sequence.yorigin = 0;
+                }
+                OriginUtility::TopRight => {
+                    me.origin = Origin::TopRight;
+                    me.sequence.xorigin = (w - 1) as isize;
+                    me.sequence.yorigin = 0;
+                }
+                OriginUtility::MiddleLeft => {
+                    me.origin = Origin::MiddleLeft;
+                    me.sequence.xorigin = 0;
+                    me.sequence.yorigin = (h / 2) as isize;
+                }
+                OriginUtility::MiddleCenter => {
+                    me.origin = Origin::MiddleCenter;
+                    me.sequence.xorigin = (w / 2) as isize;
+                    me.sequence.yorigin = (h / 2) as isize;
+                }
+                OriginUtility::MiddleRight => {
+                    me.origin = Origin::MiddleRight;
+                    me.sequence.xorigin = (w - 1) as isize;
+                    me.sequence.yorigin = (h / 2) as isize;
+                }
+                OriginUtility::BottomLeft => {
+                    me.origin = Origin::BottomLeft;
+                    me.sequence.xorigin = 0;
+                    me.sequence.yorigin = (h - 1) as isize;
+                }
+                OriginUtility::BottomCenter => {
+                    me.origin = Origin::BottomCenter;
+                    me.sequence.xorigin = (w / 2) as isize;
+                    me.sequence.yorigin = (h - 1) as isize;
+                }
+                OriginUtility::BottomRight => {
+                    me.origin = Origin::BottomRight;
+                    me.sequence.xorigin = (w - 1) as isize;
+                    me.sequence.yorigin = (h - 1) as isize;
+                }
+            }
+            me.sequence.lock_origin = locked;
+        })
     }
-    fn playback_speed(self, speed: f64) -> Self {
-        todo!()
-    }
-    fn playback_speed_type(self, speed_type: PlaybackSpeed) -> Self {
-        todo!()
+    fn playback_speed(self, speed_type: PlaybackSpeed, speed: f64) -> Self {
+        self.with(|me| {
+            me.sequence.playback_speed_type = speed_type;
+            me.sequence.playback_speed = speed;
+        })
     }
     fn dimensions(self, width: NonZeroUsize, height: NonZeroUsize) -> Self {
-        todo!()
-    }
-}
-
-pub trait FrameExt {
-    fn new(sprite: &mut Sprite) -> Self;
-}
-
-impl FrameExt for Frame {
-    fn new(sprite: &mut Sprite) -> Self {
-        todo!()
-    }
-}
-
-pub trait ImageExt {
-    fn new(frame_id: FrameId, layer_id: LayerId) -> Self;
-}
-
-impl ImageExt for Image {
-    fn new(frame_id: FrameId, layer_id: LayerId) -> Self {
-        todo!()
-    }
-}
-
-pub trait LayerExt {
-    fn new(sprite_id: String) -> Self;
-}
-
-impl LayerExt for Layer {
-    fn new(sprite_id: String) -> Self {
-        todo!()
+        self.with(|me| {
+            me.width = width;
+            me.height = height;
+        })
     }
 }
 
