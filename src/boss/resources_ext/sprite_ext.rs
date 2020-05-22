@@ -13,7 +13,6 @@ pub trait SpriteExt {
     fn new(name: &str, texture_group_id: &str) -> Sprite;
     fn parent(self, parent: ViewPath) -> Sprite;
     fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self;
-    fn layer(self, f: impl Fn(&mut Sprite) -> Layer) -> Self;
     fn frame(self, f: impl Fn(&mut Sprite) -> Frame) -> Self;
     fn collision_kind(self, collision_kind: CollisionKind) -> Self;
     fn origin(self, origin: OriginUtility, locked: bool) -> Self;
@@ -35,6 +34,37 @@ impl SpriteExt for Sprite {
                 path: Path::new(&format!("texturegroups/{}", texture_group_id)).to_owned(),
                 name: texture_group_id.to_string(),
             },
+            sequence: SpriteSequence {
+                sprite_id: FilesystemPath {
+                    name: name.to_string(),
+                    path: Path::new(&format!("sprites/{spr}/{spr}.yy", spr = name)).to_owned(),
+                },
+                playback_speed: 15.0,
+                playback_speed_type: PlaybackSpeed::FramesPerSecond,
+                length: 1.0,
+                tracks: vec![Track::default()],
+                visible_range: None,
+                backdrop_width: 1920,
+                backdrop_height: 1080,
+                xorigin: 0,
+                yorigin: 0,
+                parent: FilesystemPath {
+                    name: name.to_string(),
+                    path: Path::new(&format!("sprites/{spr}/{spr}.yy", spr = name)).to_owned(),
+                },
+                ..SpriteSequence::default()
+            },
+            layers: vec![Layer {
+                visible: true,
+                is_locked: false,
+                blend_mode: 0,
+                opacity: 100.0,
+                display_name: "default".to_string(),
+                resource_version: "1.0".to_owned(),
+                name: LayerId::new(),
+                tags: vec![],
+                resource_type: ConstGmImageLayer::Const,
+            }],
             ..Sprite::default()
         }
     }
@@ -66,11 +96,8 @@ impl SpriteExt for Sprite {
         self.bbox_bottom = bbox.bottom_right.1;
         self
     }
-    fn layer(self, f: impl Fn(&mut Sprite) -> Layer) -> Self {
-        todo!()
-    }
     fn frame(self, f: impl Fn(&mut Sprite) -> Frame) -> Self {
-        todo!()
+        
     }
     fn collision_kind(self, collision_kind: CollisionKind) -> Self {
         self.harness(|me| {

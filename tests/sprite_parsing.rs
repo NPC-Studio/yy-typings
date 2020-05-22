@@ -130,7 +130,6 @@ fn deep_check() {
             },
             playback_speed: 15.0,
             playback_speed_type: PlaybackSpeed::FramesPerSecond,
-            auto_record: true,
             length: 2.0,
             tracks: vec![Track {
                 keyframes: {
