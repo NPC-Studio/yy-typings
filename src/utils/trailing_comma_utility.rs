@@ -17,7 +17,7 @@ impl TrailingCommaUtility {
     }
 
     /// This function clears a trailing comma from a JSON. It is relatively inefficent, and
-    /// does two allocations per call.
+    /// does one allocations per call.
     pub fn clear_trailing_comma_once(input: &str) -> Cow<'_, str> {
         let re = Regex::new(r"(,)([\s\n]+)?([},\]])").unwrap();
 

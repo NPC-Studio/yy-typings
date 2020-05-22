@@ -4,7 +4,7 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 use std::num::NonZeroUsize;
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Sprite {
     pub bbox_mode: BBoxMode,

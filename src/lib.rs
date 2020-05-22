@@ -21,6 +21,10 @@ macro_rules! create_guarded_uuid {
                 Self(id)
             }
 
+            pub fn with_string(input: &str) -> Self {
+                Self(uuid::Uuid::parse_str(input).unwrap())
+            }
+
             /// Gives access to the inner ID. Try to not use this one too much!
             pub fn inner(&self) -> uuid::Uuid {
                 self.0

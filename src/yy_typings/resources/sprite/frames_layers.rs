@@ -1,10 +1,11 @@
 use super::{sprite_constants::*, ParentPath, Tags};
 use serde::{Deserialize, Serialize};
+use smart_default::SmartDefault;
 
 create_guarded_uuid!(FrameId);
 create_guarded_uuid!(LayerId);
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Frame {
     /// This is the actual image you'll see in the game.
@@ -23,16 +24,18 @@ pub struct Frame {
     pub parent: ParentPath,
 
     /// The version of this particular resource.
+    #[default("1.0".to_string())]
     pub resource_version: String,
     /// This is the name of the Frame, which will always be a UUID.
     pub name: FrameId,
-    /// These are the tags affixed to this frame.
+    /// These are the tags affixed to this frame, which is not possible.
+    #[default(vec![])]
     pub tags: Tags,
     /// This is the type of Resource.
     pub resource_type: ConstGmSpriteFrame,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Image {
     /// Although named FrameId, this is actually the path to the the parent
@@ -47,13 +50,14 @@ pub struct Image {
     pub layer_id: Option<ParentPath>,
 
     /// The version of the resource.
+    #[default("1.0".to_string())]
     pub resource_version: String,
 
     /// This appears to only ever be two values:
-    /// 
+    ///
     /// - `None` for normal images
     /// - `Some("composite")` for the composite image.
-    /// 
+    ///
     /// It may have other purposes.
     pub name: Option<String>,
 
@@ -64,7 +68,7 @@ pub struct Image {
     pub resource_type: ConstGmImage,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Layer {
     /// Defines the visibility of the layer. It will default to true on
@@ -86,6 +90,7 @@ pub struct Layer {
     pub display_name: String,
 
     /// Currently "1.0"
+    #[default("1.0".to_string())]
     pub resource_version: String,
 
     /// The legacy name of the LayerId.

@@ -5,16 +5,18 @@ use smart_default::SmartDefault;
 
 create_guarded_uuid!(SpriteSequenceId);
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSequence {
     /// The path to the parent sprite.
     pub sprite_id: ParentPath,
 
     /// The Units of time of the Sequence. It will always be 1 in a Sprite.
+    #[default = 1]
     pub time_units: usize,
 
     /// Will always be One.
+    #[default = 1]
     pub playback: usize,
 
     /// The playback speed of the Sequence.
@@ -24,9 +26,11 @@ pub struct SpriteSequence {
     pub playback_speed_type: PlaybackSpeed,
 
     /// Whether to autorecord the sequence. This will always be true for sprites.
+    #[default = true]
     pub auto_record: bool,
 
     /// The volume of the sequence. Always 1.
+    #[default = 1.0]
     pub volume: f64,
 
     /// The number of frames of the Sprite. GMS2 records this as an f64 due to its shared
@@ -46,12 +50,17 @@ pub struct SpriteSequence {
     /// Whether the origin of the sprite is locked in the GMS2
     /// Editor. It has no effect otherwise.
     pub lock_origin: bool,
+
+    #[default(true)]
     pub show_backdrop: bool,
+    #[default(false)]
     pub show_backdrop_image: bool,
+    #[default(String::new())]
     pub backdrop_image_path: String,
+    #[default(0.5)]
     pub backdrop_image_opacity: f64,
-    pub backdrop_width: f64,
-    pub backdrop_height: f64,
+    pub backdrop_width: u64,
+    pub backdrop_height: u64,
     pub backdrop_x_offset: f64,
     pub backdrop_y_offset: f64,
     pub xorigin: isize,
@@ -59,27 +68,31 @@ pub struct SpriteSequence {
 
     /// This can be a `{}`, which basically is
     /// impossible for us to parse. So that's a mess.
+    #[default(serde_json::Value::Object(serde_json::Map::new()))]
     pub event_to_function: serde_json::Value,
+    #[default(None)]
     pub event_stub_script: Option<()>,
     /// This is a duplicate of `sprite_id`, and should always
     /// be the same value. It is unknown why there is duplicate data.
     pub parent: ParentPath,
 
     /// The resource version. Currently `1.3`.
+    #[default("1.3".to_string())]
     pub resource_version: String,
 
-    /// The name of the sequence. It *can* be an empty string,
-    /// but does not appear to ever be `null`.
+    /// The name of the SpriteSequence, which is always an empty string.
+    #[default(String::new())]
     pub name: String,
 
-    /// The tags given to this resource.
+    /// The tags given to this resource. Empty.
+    #[default(vec![])]
     pub tags: Tags,
 
     /// This is the resource type. Always GMSequence.
     pub resource_type: ConstGmSequence,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct VisibleRange {
     pub x: f64,
@@ -88,7 +101,7 @@ pub struct VisibleRange {
 
 /// These are the "events" which a Sprite is subscribed to. It will always be
 /// its default value. It exists due to sharing resources with Sequences.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteEvents {
     /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not have access to all the resources
@@ -116,7 +129,7 @@ impl Default for SpriteEvents {
 
 /// These are the "moments" which a Sprite is subscribed to. It will always be
 /// its default value. This is due to sharing resources with Sequences.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteMoments {
     /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not have access to all the resources
@@ -142,7 +155,7 @@ impl Default for SpriteMoments {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Track {
     /// The name of the track. The trackname is always "frames".
@@ -180,7 +193,30 @@ pub struct Track {
     pub resource_type: ConstGmSpriteFramesTrack,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+impl Default for Track {
+    fn default() -> Self {
+        Self {
+            name: ConstGmSpriteTrackName::Const,
+            sprite_id: None,
+            /// the only thing to be customized
+            keyframes: SpriteKeyframes::default(),
+            track_colour: 0,
+            inherits_track_colour: true,
+            builtin_name: 0,
+            traits: 0,
+            interpolation: 1,
+            tracks: vec![],
+            events: vec![],
+            modifiers: vec![],
+            is_creation_track: false,
+            resource_version: "1.0".to_string(),
+            tags: vec![],
+            resource_type: ConstGmSpriteFramesTrack::Const,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframes {
     #[serde(rename = "Keyframes")]
@@ -190,7 +226,7 @@ pub struct SpriteKeyframes {
     pub resource_type: ConstGmSpriteKeyframes,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframe {
     pub id: SpriteSequenceId,
@@ -210,17 +246,34 @@ pub struct SpriteKeyframe {
     pub resource_type: ConstGmSpriteKeyframe,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+impl Default for SpriteKeyframe {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            key: Default::default(),
+            length: 1.0,
+            stretch: false,
+            disabled: false,
+            is_creation_key: false,
+            channels: Channels::default(),
+            resource_version: "1.0".to_string(),
+            resource_type: ConstGmSpriteKeyframe::Const,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
 pub struct Channels {
     #[serde(rename = "0")]
     pub zero: SpriteZeroChannel,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteZeroChannel {
     #[serde(rename = "Id")]
     pub id: ParentPath,
+    #[default("1.0".to_string())]
     pub resource_version: String,
     pub resource_type: ConstGmSpriteZeroChannel,
 }

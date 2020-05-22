@@ -21,6 +21,7 @@ regex = "1.3"
 strum = "0.18"
 strum_macros = "0.18"
 thiserror = "1"
+include_dir = { version = "0.6", features = ["search"]}
 
 [dev-dependencies]
 pretty_assertions = "0.6.1"
