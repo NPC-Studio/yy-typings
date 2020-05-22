@@ -72,26 +72,9 @@ pub mod boss {
 
     use yy_resource::YyResource;
     pub use yyp_boss::YypBoss;
+    mod folder_graph;
+    pub use folder_graph::FolderGraph;
 
-    #[allow(dead_code)]
-    mod folder_graph {
-        #[macro_use]
-        mod relations;
-
-        mod graph;
-        mod graph_id;
-        mod node;
-        mod node_error;
-        mod siblings_range;
-        mod traverse;
-
-        pub(crate) use node_error::*;
-
-        /// The Folder Graph of the Views file in a GMS2 project.
-        pub(crate) type FolderGraph = graph::Graph<String>;
-        pub(crate) type Leaf = node::GraphNode<String>;
-        pub(crate) type LeafId = graph_id::GraphId<String>;
-    }
     mod resources_ext {
         use super::*;
 
