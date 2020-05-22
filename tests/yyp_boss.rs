@@ -7,7 +7,7 @@ fn trivial_yyp_boss() {
     let root_path = Path::new("tests/examples/yyp_boss");
     let all_yyps: Dir = include_dir!("tests/examples/yyp_boss");
 
-    for yyps in all_yyps.find("**/*.yyp").unwrap() {
+    for yyps in all_yyps.find("**/*.yyp").unwrap().skip(1) {
         match yyps {
             DirEntry::File(file) => {
                 let path = root_path.join(file.path);

@@ -1,10 +1,9 @@
 use super::{
-    folder_graph::*,
     utils::TrailingCommaUtility,
     yy_typings::{sprite::*, Yyp},
     SpriteImageBuffer, YyResource,
 };
-use anyhow::{Context, Result};
+use anyhow::{format_err, Context, Result};
 use log::info;
 use std::collections::HashMap;
 use std::{
@@ -18,14 +17,14 @@ pub struct YypBoss {
     yyp: Yyp,
     absolute_path: PathBuf,
     sprites: YyResourceHandler<Sprite>,
-    folder_graph: FolderGraph,
+    pub folder_graph: FolderGraph,
     resource_names: HashSet<String>,
     tcu: TrailingCommaUtility,
     dirty: bool,
 }
 
 impl YypBoss {
-    /// Creates a new YyBoss Manager and performs startup FS.
+    /// Creates a new YyBoss Manager and performs startup file reading.
     pub fn new(path_to_yyp: &Path) -> Result<YypBoss> {
         let tcu = TrailingCommaUtility::new();
         let yyp_file = fs::read_to_string(&path_to_yyp)
@@ -37,10 +36,40 @@ impl YypBoss {
             absolute_path: path_to_yyp.to_owned(),
             dirty: false,
             sprites: YyResourceHandler::new(),
-            folder_graph: FolderGraph::new(),
+            folder_graph: FolderGraph::root(),
             resource_names: HashSet::new(),
             tcu,
         };
+
+        // Load in Folders
+        for new_folder in yyp_boss.yyp.folders.iter() {
+            let mut folder_graph = &mut yyp_boss.folder_graph;
+
+            for section in new_folder.folder_path.iter().skip(1) {
+                let section_name = section.to_string_lossy();
+                let section_name = if section_name.ends_with(".yy") {
+                    new_folder.name.clone()
+                } else {
+                    section_name.to_string()
+                };
+
+                let maybe_subfolder = folder_graph
+                    .subfolders
+                    .iter_mut()
+                    .find(|sf| sf.name == section_name);
+
+                if maybe_subfolder.is_none() {
+                    folder_graph.subfolders.push(FolderGraph::new(section_name));
+                    folder_graph = folder_graph.subfolders.last_mut().unwrap();
+                } else {
+                    folder_graph = folder_graph
+                        .subfolders
+                        .iter_mut()
+                        .find(|sf| sf.name == section_name)
+                        .unwrap();
+                }
+            }
+        }
 
         // Load in Sprites
         for sprite_resource in yyp_boss
@@ -79,73 +108,14 @@ impl YypBoss {
                 })
                 .collect();
 
+            YypBoss::add_file_iteratable(
+                &mut yyp_boss.folder_graph,
+                sprite_yy.parent.clone(),
+                sprite_yy.filesystem_path(),
+            )?;
             yyp_boss.resource_names.insert(sprite_yy.name.clone());
             yyp_boss.sprites.add_new_startup(sprite_yy, frame_buffers);
         }
-
-        // // Load in Views
-        // fn import_view(
-        //     view: &YypResource,
-        //     absolute_dir: &Path,
-        //     folder_graph: &mut FolderGraph,
-        //     resource_handler: &mut YyResourceHandler<GmFolder>,
-        //     resources: &Vec<YypResource>,
-        // ) -> Result<LeafId> {
-        //     let view_path = absolute_dir.join(&view.value.resource_path.replace("\\", "/"));
-
-        //     let view_yy: GmFolder = deserialize(&view_path)
-        //         .with_context(|| format!("Error importing view with path {:#?}", view_path))?;
-
-        //     let leaf_id = folder_graph.instantiate_node(view_yy.id.into());
-        //     resource_handler.add_new_clean(view_yy.clone(), leaf_id);
-
-        //     for child in view_yy.children.iter() {
-        //         if let Some(resource) = resources.iter().find(|r| r.key == *child) {
-        //             let new_branch = match resource.value.resource_type {
-        //                 ResourceType::GmFolder => import_view(
-        //                     resource,
-        //                     absolute_dir,
-        //                     folder_graph,
-        //                     resource_handler,
-        //                     resources,
-        //                 )?,
-        //                 _ => folder_graph.instantiate_node((*child).into()),
-        //             };
-
-        //             leaf_id.append(new_branch, folder_graph);
-        //         }
-        //     }
-
-        //     Ok(leaf_id)
-        // }
-
-        // for view in yyp_boss
-        //     .yyp
-        //     .resources
-        //     .iter()
-        //     .filter(|v| v.value.resource_type == ResourceType::GmFolder)
-        // {
-        //     let view_path = yyp_boss
-        //         .absolute_path
-        //         .parent()
-        //         .unwrap()
-        //         .join(&view.value.resource_path.replace("\\", "/"));
-
-        //     let view_yy: GmFolder = deserialize(&view_path)
-        //         .with_context(|| format!("Error importing view with path {:#?}", view_path))?;
-
-        //     if view_yy.is_default_view && view_yy.filter_type == "root" {
-        //         import_view(
-        //             view,
-        //             yyp_boss.absolute_path.parent().unwrap(),
-        //             &mut yyp_boss.folder_graph,
-        //             &mut yyp_boss.folders,
-        //             &yyp_boss.yyp.resources,
-        //         )?;
-
-        //         break;
-        //     }
-        // }
 
         Ok(yyp_boss)
     }
@@ -180,6 +150,40 @@ impl YypBoss {
         // let leaf_id = self.append_under_folder(folder_id, id);
 
         // self.folders.add_new(folder, leaf_id);
+    }
+
+    /// Adds a file to the Virtual File System.
+    pub fn add_file(
+        &mut self,
+        parent_path: ViewPath,
+        filesystem_path: FilesystemPath,
+    ) -> Result<()> {
+        YypBoss::add_file_iteratable(&mut self.folder_graph, parent_path, filesystem_path)
+    }
+
+    /// Stupid ass borrow checker
+    fn add_file_iteratable(
+        mut folder: &mut FolderGraph,
+        parent_path: ViewPath,
+        filesystem_path: FilesystemPath,
+    ) -> Result<()> {
+        for path in parent_path.path.iter().skip(1) {
+            let path_name = path.to_string_lossy();
+            let path_name = if let Some(pos) = path_name.find(".yy") {
+                std::borrow::Cow::Borrowed(&path_name[..pos])
+            } else {
+                path_name
+            };
+
+            folder = folder
+                .subfolders
+                .iter_mut()
+                .find(|sf| sf.name == path_name)
+                .ok_or_else(|| format_err!("Couldn't find subfolder {}", path_name))?;
+        }
+        folder.files.push(filesystem_path);
+
+        Ok(())
     }
 
     /// Adds a new Resource to be tracked by the YYP. The Resource also will
@@ -495,6 +499,27 @@ impl<T: YyResource> YyResourceHandler<T> {
         }
 
         Ok(())
+    }
+}
+
+#[derive(Debug)]
+pub struct FolderGraph {
+    pub name: String,
+    pub subfolders: Vec<FolderGraph>,
+    pub files: Vec<FilesystemPath>,
+}
+
+impl FolderGraph {
+    pub fn root() -> FolderGraph {
+        FolderGraph::new("folders".to_string())
+    }
+
+    pub fn new(name: String) -> FolderGraph {
+        FolderGraph {
+            name,
+            subfolders: vec![],
+            files: vec![],
+        }
     }
 }
 
