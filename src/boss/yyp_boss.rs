@@ -338,6 +338,12 @@ impl YypBoss {
     }
 }
 
+impl Into<Yyp> for YypBoss {
+    fn into(self) -> Yyp {
+        self.yyp
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct YyResourceData<T: YyResource> {
     pub yy_resource: T,
