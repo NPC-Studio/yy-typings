@@ -80,6 +80,8 @@ pub mod boss {
 
         mod sprite_ext;
         pub use sprite_ext::*;
+
+        pub type SpriteImageBuffer = image::ImageBuffer<image::Rgba<u8>, Vec<u8>>;
     }
     pub use resources_ext::*;
 }
