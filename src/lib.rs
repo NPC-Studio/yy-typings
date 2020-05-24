@@ -74,7 +74,6 @@ pub mod boss {
     pub use yyp_boss::YypBoss;
     mod folder_graph;
     pub use folder_graph::FolderGraph;
-
     mod resources_ext {
         use super::*;
 

@@ -294,6 +294,12 @@ impl YypBoss {
         }
     }
 
+    /// Shows the underlying Yyp. This is exposed mostly
+    /// for integration tests.
+    pub fn yyp(&self) -> &Yyp {
+        &self.yyp
+    }
+
     /// This could be a very hefty allocation!
     pub fn root_folder(&self) -> FolderGraph {
         self.folder_graph.clone()
@@ -344,10 +350,26 @@ impl Into<Yyp> for YypBoss {
     }
 }
 
-#[derive(Debug, Default)]
+impl PartialEq for YypBoss {
+    fn eq(&self, other: &Self) -> bool {
+        self.yyp == other.yyp
+    }
+}
+
+#[derive(Default)]
 pub struct YyResourceData<T: YyResource> {
     pub yy_resource: T,
     pub associated_data: T::AssociatedData,
+}
+
+impl<T: YyResource + std::fmt::Debug> std::fmt::Debug for YyResourceData<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{:?} !!**ASSOCIATED DATA IS NOT PRINTED IN DEBUG OUTPUT**!!",
+            self.yy_resource
+        )
+    }
 }
 
 #[derive(Debug, Default)]
@@ -366,7 +388,6 @@ impl<T: YyResource> YyResourceHandler<T> {
         }
     }
 
-    #[allow(dead_code)]
     pub fn add_new(&mut self, value: T, associated_data: T::AssociatedData) {
         self.dirty_resources.push(value.filesystem_path());
         self.dirty = true;

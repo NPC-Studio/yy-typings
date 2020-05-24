@@ -82,7 +82,18 @@ pub struct Sprite {
     pub resource_type: ConstGmSprite,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
+#[derive(
+    Serialize_repr,
+    Deserialize_repr,
+    PartialEq,
+    Debug,
+    SmartDefault,
+    Copy,
+    Clone,
+    Eq,
+    Ord,
+    PartialOrd,
+)]
 #[repr(u8)]
 pub enum CollisionKind {
     Precise,
@@ -93,7 +104,18 @@ pub enum CollisionKind {
     RotatedRectangle = 5,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
+#[derive(
+    Serialize_repr,
+    Deserialize_repr,
+    PartialEq,
+    Debug,
+    SmartDefault,
+    Copy,
+    Clone,
+    Eq,
+    Ord,
+    PartialOrd,
+)]
 #[repr(u8)]
 pub enum BBoxMode {
     #[default]
@@ -102,7 +124,18 @@ pub enum BBoxMode {
     Manual,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
+#[derive(
+    Serialize_repr,
+    Deserialize_repr,
+    PartialEq,
+    Debug,
+    SmartDefault,
+    Copy,
+    Clone,
+    Eq,
+    Ord,
+    PartialOrd,
+)]
 #[repr(u8)]
 pub enum Origin {
     #[default]

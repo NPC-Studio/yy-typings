@@ -8,6 +8,7 @@ pub type SpriteImageBuffer = ImageBuffer<Rgba<u8>, Vec<u8>>;
 pub trait SpriteExt {
     fn with(self, edit: impl Fn(&mut Self)) -> Self;
     fn new(name: &str, texture_group_id: &str) -> Sprite;
+    fn with_layer(name: &str, texture_group_id: &str, layer: Layer) -> Sprite;
     fn parent(self, parent: ViewPath) -> Sprite;
     fn bbox_mode(self, f: impl Fn(isize, isize) -> BboxModeUtility) -> Self;
     fn collision_kind(self, collision_kind: CollisionKind) -> Self;
@@ -23,7 +24,7 @@ impl SpriteExt for Sprite {
         self
     }
 
-    fn new(name: &str, texture_group_id: &str) -> Sprite {
+    fn with_layer(name: &str, texture_group_id: &str, layer: Layer) -> Sprite {
         Sprite {
             name: name.to_string(),
             texture_group_id: TextureGroupPath {
@@ -50,7 +51,16 @@ impl SpriteExt for Sprite {
                 },
                 ..SpriteSequence::default()
             },
-            layers: vec![Layer {
+            layers: vec![layer],
+            ..Sprite::default()
+        }
+    }
+
+    fn new(name: &str, texture_group_id: &str) -> Sprite {
+        Sprite::with_layer(
+            name,
+            texture_group_id,
+            Layer {
                 visible: true,
                 is_locked: false,
                 blend_mode: 0,
@@ -60,9 +70,8 @@ impl SpriteExt for Sprite {
                 name: LayerId::new(),
                 tags: vec![],
                 resource_type: ConstGmImageLayer::Const,
-            }],
-            ..Sprite::default()
-        }
+            },
+        )
     }
 
     fn parent(self, parent: ViewPath) -> Sprite {

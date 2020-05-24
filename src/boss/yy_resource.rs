@@ -1,8 +1,9 @@
 use super::yy_typings::{FilesystemPath, ViewPath};
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-pub trait YyResource: serde::Serialize + for<'de> serde::Deserialize<'de> {
+pub trait YyResource: Serialize + for<'de> Deserialize<'de> {
     type AssociatedData: std::fmt::Debug;
 
     /// Get's the resource's name.

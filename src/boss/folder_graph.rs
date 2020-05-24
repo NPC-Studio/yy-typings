@@ -1,7 +1,7 @@
 use super::yy_typings::{FilesystemPath, ViewPath};
 use std::path::Path;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FolderGraph {
     pub name: String,
     pub path_to_parent: Option<ViewPath>,
