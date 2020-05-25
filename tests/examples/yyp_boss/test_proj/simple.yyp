@@ -1,7 +1,6 @@
 {
   "resources": [
     {"id":{"name":"Sprite0","path":"sprites/Sprite0/Sprite0.yy",},"order":0,},
-    
   ],
   "Options": [
     {"name":"Amazon Fire","path":"options/amazonfire/options_amazonfire.yy",},

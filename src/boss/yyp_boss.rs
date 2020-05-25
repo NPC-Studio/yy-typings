@@ -1,9 +1,10 @@
 use super::{
+    folder_graph::*,
     utils::TrailingCommaUtility,
     yy_typings::{sprite::*, Yyp},
     FolderGraph, SpriteImageBuffer, YyResource,
 };
-use anyhow::{format_err, Context, Result};
+use anyhow::{bail, format_err, Context, Result};
 use std::collections::HashMap;
 use std::{
     collections::HashSet,
@@ -53,23 +54,16 @@ impl YypBoss {
                 };
 
                 let parent_path = folder_graph.view_path();
-                let maybe_subfolder = folder_graph
-                    .subfolders
-                    .iter_mut()
-                    .find(|sf| sf.name == section_name);
+                let mut entry = folder_graph.members.entry(section_name.clone());
+                let new_member = entry.or_insert(FolderMember {
+                    child: Child::SubFolder(FolderGraph::new(section_name, parent_path)),
+                    order: new_folder.order,
+                });
 
-                if maybe_subfolder.is_none() {
-                    folder_graph
-                        .subfolders
-                        .push(FolderGraph::new(section_name, parent_path));
-                    folder_graph = folder_graph.subfolders.last_mut().unwrap();
-                } else {
-                    folder_graph = folder_graph
-                        .subfolders
-                        .iter_mut()
-                        .find(|sf| sf.name == section_name)
-                        .unwrap();
-                }
+                folder_graph = match &mut new_member.child {
+                    Child::SubFolder(folder) => folder,
+                    _ => unimplemented!("We're only adding folders here"),
+                };
             }
         }
 
@@ -162,25 +156,48 @@ impl YypBoss {
     }
 
     pub fn add_folder(&mut self, folder_name: String, parent: ViewPath) -> Result<ViewPath> {
+        todo!("Many fixes are needed here!
+        
+        First:
+        1. We can have a file and a folder, in the same subfolder, with the same name. (we 
+            cannot have a file and a file with the same name ,or a folder and a folder with the same name).
+        2. We need a quick way to calculate order, and deal with asking users for Order on insertion.
+        3. That's probably it actually. We'll need to make two hashmaps here and work with that I think.");
+
         let mut folder = &mut self.folder_graph;
 
         if folder.name != folder_name {
             for path in parent.path.iter().skip(1) {
                 let string = path.to_string_lossy();
                 let path_name: &str = string.split(".yy").next().unwrap();
-                println!("Pathname: [{:#?}]", path_name);
 
-                folder = folder
-                    .subfolders
-                    .iter_mut()
-                    .find(|sf| sf.name == path_name)
-                    .ok_or_else(|| format_err!("Couldn't find subfolder {}", path_name))?;
+                match &mut folder
+                    .members
+                    .get_mut(path_name)
+                    .ok_or_else(|| format_err!("Couldn't find the subfolder {}", path_name))?
+                    .child
+                {
+                    Child::SubFolder(sf) => {
+                        folder = sf;
+                    }
+                    Child::File(_) => {
+                        bail!("Path ended with a File, not a Folder.");
+                    }
+                }
             }
         }
 
-        folder
-            .subfolders
-            .push(FolderGraph::new(folder_name.clone(), folder.view_path()));
+        if folder.members.contains_key(&folder_name) {
+            bail!("Path already had a folder by that name. Duplicate folders are not allowed.");
+        }
+
+        folder.members.insert(
+            folder_name,
+            FolderMember {
+                child: Child::SubFolder(FolderGraph::new(folder_name.clone(), folder.view_path())),
+                order: 0,
+            },
+        );
 
         let string = parent.path.to_string_lossy();
         let path_name: &str = string.split(".yy").next().unwrap();

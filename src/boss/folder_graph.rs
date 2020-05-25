@@ -1,12 +1,32 @@
 use super::yy_typings::{FilesystemPath, ViewPath};
+use maplit::hashmap;
+use std::collections::HashMap;
+use std::hash::Hash;
 use std::path::Path;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FolderGraph {
     pub name: String,
     pub path_to_parent: Option<ViewPath>,
-    pub subfolders: Vec<FolderGraph>,
-    pub files: Vec<FilesystemPath>,
+    pub members: HashMap<String, FolderMember>,
+}
+
+impl Hash for FolderGraph {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FolderMember {
+    pub child: Child,
+    pub order: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Child {
+    SubFolder(FolderGraph),
+    File(FilesystemPath),
 }
 
 impl FolderGraph {
@@ -14,8 +34,7 @@ impl FolderGraph {
         FolderGraph {
             name: "folders".to_string(),
             path_to_parent: None,
-            subfolders: vec![],
-            files: vec![],
+            members: hashmap![],
         }
     }
 
@@ -23,8 +42,7 @@ impl FolderGraph {
         FolderGraph {
             name,
             path_to_parent: Some(parent),
-            subfolders: vec![],
-            files: vec![],
+            members: hashmap![],
         }
     }
 

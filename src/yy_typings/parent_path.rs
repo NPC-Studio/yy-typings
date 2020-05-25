@@ -39,7 +39,7 @@ pub struct FilesystemPath {
     pub path: PathBuf,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash)]
 pub struct ViewPath {
     /// The human readable name of the parent. for a `spr_player`, this
     /// might correspond to `Sprites`.
@@ -61,7 +61,7 @@ pub struct TextureGroupPath {
     pub path: PathBuf,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash)]
 pub struct FolderPath {
     /// The human readable name of the parent. for a `spr_player`, this
     /// might correspond to `Sprites`.
