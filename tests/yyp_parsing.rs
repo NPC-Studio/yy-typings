@@ -1,4 +1,5 @@
 use include_dir::{include_dir, Dir, DirEntry};
+use maplit::hashset;
 use pretty_assertions::assert_eq;
 use std::path::Path;
 use yy_boss::{
@@ -35,7 +36,7 @@ fn deep_compare() {
     let test0_yyp: Yyp = serde_json::from_str(&test0_yyp).unwrap();
 
     let test_yyp: Yyp = Yyp {
-        resources: vec![
+        resources: hashset![
             YypResource {
                 id: FilesystemPath {
                     name: "Test4".to_string(),
@@ -65,7 +66,7 @@ fn deep_compare() {
                 order: 0,
             },
         ],
-        options: vec![
+        options: hashset![
             FilesystemPath {
                 name: "Amazon Fire".to_string(),
                 path: Path::new(&format!("options/amazonfire/options_amazonfire.yy")).to_owned(),
@@ -154,7 +155,7 @@ fn deep_compare() {
                 path: Path::new(&format!("rooms/{0}/{0}.yy", "Room2")).to_owned(),
             },
         ],
-        folders: vec![
+        folders: hashset![
             YypFolder {
                 folder_path: Path::new("folders/Sprites.yy").to_owned(),
                 name: "Sprites".to_owned(),

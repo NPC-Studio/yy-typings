@@ -1,6 +1,7 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
 /// GMS2 project file typings
@@ -8,9 +9,9 @@ use std::path::{Path, PathBuf};
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     /// Contains all project resources, ordered by KeyID.
-    pub resources: Vec<YypResource>,
+    pub resources: HashSet<YypResource>,
     #[serde(rename = "Options")]
-    pub options: Vec<FilesystemPath>,
+    pub options: HashSet<FilesystemPath>,
     /// Denotes whether this project uses drag and drop or not
     pub is_dn_d_project: bool,
     /// Allows for experimental JS editing. Unfinished or legacy feature. It's a secret.
@@ -27,7 +28,7 @@ pub struct Yyp {
     /// This represents all the Views in the Project, which will
     /// have resource paths within them.
     #[serde(rename = "Folders")]
-    pub folders: Vec<YypFolder>,
+    pub folders: HashSet<YypFolder>,
     /// The Audio Groups present within the project. Relationship to
     /// the inherited.yy is unclear
     #[serde(rename = "AudioGroups")]
@@ -63,7 +64,7 @@ pub struct YypMetaData {
 }
 
 /// Represents a resource entry in a YYP
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Hash)]
 pub struct YypResource {
     /// This is the path to the Filesystem
     pub id: FilesystemPath,
@@ -86,7 +87,7 @@ pub struct YypConfig {
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the root**.
 /// Therefore, to create a tree, one must walk from the root to the final destination.
-#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault)]
+#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Hash)]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
