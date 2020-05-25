@@ -1,0 +1,191 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 3 tests
+test deep_check ... ok
+test deep_check_builder ... ok
+test trivial_sprite_parsing ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 2 tests
+test add_sprite_to_yyp ... FAILED
+test no_mangle_yyp ... ok
+
+failures:
+
+---- add_sprite_to_yyp stdout ----
+thread 'add_sprite_to_yyp' panicked at 'assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+ Yyp {
+     resources: {
+         YypResource {
+             id: FilesystemPath {
+[31m<[0m[31m                name: "[0m[1;48;5;52;31mNew[0m[31mSprite[0m[31m",[0m
+[31m<[0m[31m                path: "sprites/[0m[1;48;5;52;31mNew[0m[31mSprite[0m[31m/[0m[1;48;5;52;31mNew[0m[31mSprite[0m[31m.yy",[0m
+[32m>[0m[32m                name: "[0m[32mSprite[0m[1;48;5;22;32m0[0m[32m",[0m
+[32m>[0m[32m                path: "sprites/[0m[32mSprite[0m[1;48;5;22;32m0[0m[32m/[0m[32mSprite[0m[1;48;5;22;32m0[0m[32m.yy",[0m
+             },
+             order: 0,
+         },
+         YypResource {
+             id: FilesystemPath {
+[31m<[0m[31m                name: "[0m[31mSprite[0m[1;48;5;52;31m0[0m[31m",[0m
+[31m<[0m[31m                path: "sprites/[0m[31mSprite[0m[1;48;5;52;31m0[0m[31m/[0m[31mSprite[0m[1;48;5;52;31m0[0m[31m.yy",[0m
+[32m>[0m[32m                name: "[0m[1;48;5;22;32mNew[0m[32mSprite[0m[32m",[0m
+[32m>[0m[32m                path: "sprites/[0m[1;48;5;22;32mNew[0m[32mSprite[0m[32m/[0m[1;48;5;22;32mNew[0m[32mSprite[0m[32m.yy",[0m
+             },
+[31m<[0m[31m            order: [0m[1;48;5;52;31m0[0m[31m,[0m
+[32m>[0m[32m            order: [0m[1;48;5;22;32m1[0m[32m,[0m
+         },
+     },
+     options: {
+         FilesystemPath {
+[31m<[0m[31m            name: "[0m[1;48;5;52;31mW[0m[31mi[0m[1;48;5;52;31mndows[0m[31m",[0m
+[31m<[0m[31m            path: "options/[0m[31mwi[0m[1;48;5;52;31mndows[0m[31m/options_[0m[31mwi[0m[1;48;5;52;31mndows[0m[31m.yy",[0m
+[32m>[0m[32m            name: "[0m[1;48;5;22;32mSw[0m[32mi[0m[1;48;5;22;32mtch[0m[32m",[0m
+[32m>[0m[32m            path: "options/[0m[1;48;5;22;32ms[0m[32mwi[0m[1;48;5;22;32mtch[0m[32m/options_[0m[1;48;5;22;32ms[0m[32mwi[0m[1;48;5;22;32mtch[0m[32m.yy",[0m
+         },
+         FilesystemPath {
+[31m<[0m[31m            name: "[0m[1;48;5;52;31mA[0m[31mn[0m[1;48;5;52;31mdroid[0m[31m",[0m
+[31m<[0m[31m            path: "options/[0m[1;48;5;52;31ma[0m[31mn[0m[1;48;5;52;31mdroid[0m[31m/options_[0m[1;48;5;52;31ma[0m[31mn[0m[1;48;5;52;31mdroid[0m[31m.yy",[0m
+[32m>[0m[32m            name: "[0m[1;48;5;22;32mLi[0m[32mn[0m[1;48;5;22;32mux[0m[32m",[0m
+[32m>[0m[32m            path: "options/[0m[1;48;5;22;32mli[0m[32mn[0m[1;48;5;22;32mux[0m[32m/options_[0m[1;48;5;22;32mli[0m[32mn[0m[1;48;5;22;32mux[0m[32m.yy",[0m
+         },
+         FilesystemPath {
+[32m>            name: "Main",
+[0m[32m>            path: "options/main/options_main.yy",
+[0m[32m>        },
+[0m[32m>        FilesystemPath {
+[0m[32m>            name: "Windows UWP",
+[0m[32m>            path: "options/windowsuap/options_windowsuap.yy",
+[0m[32m>        },
+[0m[32m>        FilesystemPath {
+[0m[32m>            name: "Amazon Fire",
+[0m[32m>            path: "options/amazonfire/options_amazonfire.yy",
+[0m[32m>        },
+[0m[32m>        FilesystemPath {
+[0m             name: "PlayStation 4",
+             path: "options/ps4/options_ps4.yy",
+         },
+         FilesystemPath {
+[32m>            name: "Android",
+[0m[32m>            path: "options/android/options_android.yy",
+[0m[32m>        },
+[0m[32m>        FilesystemPath {
+[0m             name: "HTML5",
+             path: "options/html5/options_html5.yy",
+         },
+         FilesystemPath {
+             name: "iOS",
+             path: "options/ios/options_ios.yy",
+         },
+         FilesystemPath {
+[31m<[0m[31m            name: "[0m[1;48;5;52;31mM[0m[31ma[0m[1;48;5;52;31min[0m[31m",[0m
+[31m<[0m[31m            path: "options/ma[0m[1;48;5;52;31min[0m[31m/options_ma[0m[1;48;5;52;31min[0m[31m.yy",[0m
+[32m>[0m[32m            name: "[0m[1;48;5;22;32mm[0m[32ma[0m[1;48;5;22;32mcOS[0m[32m",[0m
+[32m>[0m[32m            path: "options/ma[0m[1;48;5;22;32mc[0m[32m/options_ma[0m[1;48;5;22;32mc[0m[32m.yy",[0m
+         },
+         FilesystemPath {
+[31m<[0m[31m            name: "[0m[1;48;5;52;31mAmazon Fire[0m[31m",[0m
+[31m<[0m[31m            path: "options/[0m[1;48;5;52;31mamaz[0m[31mo[0m[1;48;5;52;31mnfire[0m[31m/options_[0m[1;48;5;52;31mamaz[0m[31mo[0m[1;48;5;52;31mnfire[0m[31m.yy",[0m
+[32m>[0m[32m            name: "[0m[1;48;5;22;32mtvOS[0m[32m",[0m
+[32m>[0m[32m            path: "options/[0m[1;48;5;22;32mtv[0m[32mo[0m[1;48;5;22;32ms[0m[32m/options_[0m[1;48;5;22;32mtv[0m[32mo[0m[1;48;5;22;32ms[0m[32m.yy",[0m
+         },
+         FilesystemPath {
+[31m<[0m[31m            name: "[0m[1;48;5;52;31mmacOS[0m[31m",[0m
+[31m<[0m[31m            path: "options/[0m[1;48;5;52;31mmac[0m[31m/options_[0m[1;48;5;52;31mmac[0m[31m.yy",[0m
+[32m>[0m[32m            name: "[0m[1;48;5;22;32mWindows[0m[32m",[0m
+[32m>[0m[32m            path: "options/[0m[1;48;5;22;32mwindows[0m[32m/options_[0m[1;48;5;22;32mwindows[0m[32m.yy",[0m
+         },
+         FilesystemPath {
+[31m<            name: "Windows UWP",
+[0m[31m<            path: "options/windowsuap/options_windowsuap.yy",
+[0m[31m<        },
+[0m[31m<        FilesystemPath {
+[0m             name: "Xbox One",
+             path: "options/xboxone/options_xboxone.yy",
+         },
+[31m<        FilesystemPath {
+[0m[31m<            name: "Linux",
+[0m[31m<            path: "options/linux/options_linux.yy",
+[0m[31m<        },
+[0m[31m<        FilesystemPath {
+[0m[31m<            name: "Switch",
+[0m[31m<            path: "options/switch/options_switch.yy",
+[0m[31m<        },
+[0m[31m<        FilesystemPath {
+[0m[31m<            name: "tvOS",
+[0m[31m<            path: "options/tvos/options_tvos.yy",
+[0m[31m<        },
+[0m     },
+     is_dn_d_project: false,
+     is_ecma: false,
+     tutorial_path: "",
+     configs: YypConfig {
+         name: "Default",
+         children: [],
+     },
+     room_order: [],
+     folders: {
+         YypFolder {
+             folder_path: "folders/Sprites.yy",
+[31m<            order: 0,
+[0m[31m<            resource_version: "1.0",
+[0m[31m<            name: "Sprites",
+[0m[31m<            tags: [],
+[0m[31m<            resource_type: Const,
+[0m[31m<        },
+[0m[31m<        YypFolder {
+[0m[31m<            folder_path: "folders/Sprites.yy",
+[0m             order: 1,
+             resource_version: "1.0",
+             name: "Sprites",
+             tags: [],
+             resource_type: Const,
+         },
+     },
+     audio_groups: [
+         AudioGroup {
+             targets: 461609314234257646,
+             resource_version: "1.0",
+             name: "audiogroup_default",
+             resource_type: Const,
+         },
+     ],
+     texture_groups: [
+         TextureGroup {
+             is_scaled: true,
+             autocrop: true,
+             border: 2,
+             mips_to_generate: False,
+             targets: 461609314234257646,
+             resource_version: "1.0",
+             name: "Default",
+             resource_type: Const,
+         },
+     ],
+     included_files: [],
+     meta_data: YypMetaData {
+         ide_version: "23.1.1.141",
+     },
+     resource_version: "1.3",
+     name: "simple",
+     tags: [],
+     resource_type: Const,
+ }
+
+', tests\test_yyp_boss.rs:121:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    add_sprite_to_yyp
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
+

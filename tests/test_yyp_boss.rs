@@ -1,3 +1,4 @@
+use console::Style;
 use include_dir::{include_dir, Dir, DirEntry};
 use pretty_assertions::assert_eq;
 use std::path::Path;
@@ -22,7 +23,7 @@ fn no_mangle_yyp() {
     let all_yyps: Dir = include_dir!("tests/examples/yyp_boss/project_database");
     let tcu = TrailingCommaUtility::new();
 
-    for yyps in all_yyps.find("**/*.yyp").unwrap().skip(1) {
+    for yyps in all_yyps.find("**/*.yyp").unwrap() {
         match yyps {
             DirEntry::File(file) => {
                 let path = root_path.join(file.path);
@@ -42,19 +43,19 @@ fn no_mangle_yyp() {
 #[test]
 fn add_sprite_to_yyp() {
     const IMAGE_PATH: &'static str = "tests/examples/yyp_boss/test_spr_add.png";
-    const PROOF_PATH: &'static str = "tests/examples/yyp_boss/proofs/sprite_add/simple.yyp";
+    const PROOF_PATH: &'static str = "tests/examples/yyp_boss/proofs/sprite_add/sprite_add.yyp";
 
     let mut yyp_boss = YypBoss::new(Path::new(PATH_TO_TEST_PROJ)).unwrap();
     let new_view = yyp_boss
         .add_folder("Sprites".to_string(), yyp_boss.root_path())
         .unwrap();
 
-    let single_frame_id = FrameId::with_string("a63f66a2-abbc-43e4-a1fc-0e17dc1a30c0");
+    let single_frame_id = FrameId::with_string("1df0d96b-d607-46d8-ad4b-144ced21f501");
     let sprite = Sprite::with_layer(
-        "test_spr_add",
+        "NewSprite",
         "Default",
         Layer {
-            name: LayerId::with_string("9df2e079-6445-4bc9-b094-8be99b784f16"),
+            name: LayerId::with_string("17463651-1c81-4dea-a381-8f4a7635b32e"),
             ..Layer::default()
         },
     )
@@ -63,7 +64,7 @@ fn add_sprite_to_yyp() {
     .with(|spr| {
         let track: &mut Track = &mut spr.sequence.tracks[0];
         let kf: &mut SpriteKeyframe = &mut track.keyframes.keyframes[0];
-        kf.id = SpriteSequenceId::with_string("eb4e1436-fd08-462b-af20-eea01b4d86f1");
+        kf.id = SpriteSequenceId::with_string("ab8911a2-4626-42b7-b1a2-3b8d23b6fd3b");
     })
     .bbox_mode(|_, _| yy_boss::boss::BboxModeUtility::FullImage);
 
@@ -76,28 +77,52 @@ fn add_sprite_to_yyp() {
     let our_yyp = yyp_boss.yyp();
     let proof_yyp = proof_yyp_boss.yyp();
     if our_yyp != proof_yyp {
+        let red = Style::new().red();
+        let green = Style::new().green();
+
+        let mut panic_string = String::with_capacity(100);
+
         if our_yyp.resources != proof_yyp.resources {
-            panic!(
-                "Yyp was Missing Proof's Resources... Missing Resources: \n\
-                {:#?}",
-                proof_yyp.resources.difference(&our_yyp.resources)
-            );
+            panic_string.push_str("Yyp Resources do not Match!\n");
+            let missing = proof_yyp.resources.difference(&our_yyp.resources);
+            if missing.clone().count() > 0 {
+                panic_string.push_str(&format!(
+                    "Missing: \n\
+                {:#?}\n",
+                    red.apply_to(missing)
+                ))
+            }
+
+            let extra = our_yyp.resources.difference(&proof_yyp.resources);
+            if extra.clone().count() > 0 {
+                panic_string.push_str(&format!(
+                    "Additional: \n\
+                {:#?}\n",
+                    green.apply_to(extra)
+                ))
+            }
+
+            panic_string.push('\n');
         }
 
-        if our_yyp.options != proof_yyp.options {
-            panic!(
-                "Yyp was Missing Proof's Options... Missing Options: \n\
-             {:#?}",
-                proof_yyp.options.difference(&our_yyp.options)
-            );
-        }
+        // if our_yyp.options != proof_yyp.options {
+        //     panic_string.push_str(&format!(
+        //         "Yyp was Missing Proof's Options... Missing Options: \n\
+        //      {:#?}\n\n",
+        //         proof_yyp.options.difference(&our_yyp.options)
+        //     ));
+        // }
 
-        if our_yyp.folders != proof_yyp.folders {
-            panic!(
-                "Yyp was Missing Proof's Folders... Missing Folders: \n\
-            {:#?}",
-                proof_yyp.folders.difference(&our_yyp.folders)
-            );
+        // if our_yyp.folders != proof_yyp.folders {
+        //     panic_string.push_str(&format!(
+        //         "Yyp was Missing Proof's Folders... Missing Folders: \n\
+        //     {:#?}\n\n",
+        //         proof_yyp.folders.difference(&our_yyp.folders)
+        //     ));
+        // }
+
+        if panic_string.is_empty() == false {
+            panic!("\n{}", panic_string);
         }
 
         assert_eq!(our_yyp, proof_yyp);
