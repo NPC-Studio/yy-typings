@@ -1,0 +1,39 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 3 tests
+test deep_check ... ok
+test deep_check_builder ... ok
+test trivial_sprite_parsing ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 2 tests
+test trivial_trailing_commas ... ok
+test trailing_commas_test ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+
+running 2 tests
+test add_sprite_to_yyp ... FAILED
+test no_mangle_yyp ... ok
+
+failures:
+
+---- add_sprite_to_yyp stdout ----
+thread 'add_sprite_to_yyp' panicked at 'assertion failed: `(left == right)`
+  left: `Yyp { resources: [YypResource { id: FilesystemPath { name: "sprSprite", path: "sprites/sprSprite/sprSprite.yy" }, order: 2 }, YypResource { id: FilesystemPath { name: "anchorEase", path: "scripts/anchorEase/anchorEase.yy" }, order: 1 }, YypResource { id: FilesystemPath { name: "anchorSettings", path: "scripts/anchorSettings/anchorSettings.yy" }, order: 3 }, YypResource { id: FilesystemPath { name: "anchorTween", path: "scripts/anchorTween/anchorTween.yy" }, order: 2 }, YypResource { id: FilesystemPath { name: "anchorNode", path: "scripts/anchorNode/anchorNode.yy" }, order: 0 }, YypResource { id: FilesystemPath { name: "sprBox", path: "sprites/sprBox/sprBox.yy" }, order: 3 }, YypResource { id: FilesystemPath { name: "objExample", path: "objects/objExample/objExample.yy" }, order: 0 }, YypResource { id: FilesystemPath { name: "luiMenu", path: "objects/luiMenu/luiMenu.yy" }, order: 1 }, YypResource { id: FilesystemPath { name: "rmExample", path: "rooms/rmExample/rmExample.yy" }, order: 1 }, YypResource { id: FilesystemPath { name: "test_spr_add", path: "sprites/test_spr_add/test_spr_add.yy" }, order: 0 }], options: [FilesystemPath { name: "Amazon Fire", path: "options/amazonfire/options_amazonfire.yy" }, FilesystemPath { name: "Android", path: "options/android/options_android.yy" }, FilesystemPath { name: "HTML5", path: "options/html5/options_html5.yy" }, FilesystemPath { name: "iOS", path: "options/ios/options_ios.yy" }, FilesystemPath { name: "Linux", path: "options/linux/options_linux.yy" }, FilesystemPath { name: "macOS", path: "options/mac/options_mac.yy" }, FilesystemPath { name: "Main", path: "options/main/options_main.yy" }, FilesystemPath { name: "PlayStation 4", path: "options/ps4/options_ps4.yy" }, FilesystemPath { name: "Switch", path: "options/switch/options_switch.yy" }, FilesystemPath { name: "tvOS", path: "options/tvos/options_tvos.yy" }, FilesystemPath { name: "Windows", path: "options/windows/options_windows.yy" }, FilesystemPath { name: "Windows UWP", path: "options/windowsuap/options_windowsuap.yy" }, FilesystemPath { name: "Xbox One", path: "options/xboxone/options_xboxone.yy" }], is_dn_d_project: false, is_ecma: false, tutorial_path: "", configs: YypConfig { name: "Default", children: [] }, room_order: [FilesystemPath { name: "rmExample", path: "rooms/rmExample/rmExample.yy" }], folders: [YypFolder { folder_path: "folders/Library.yy", order: 5, resource_version: "1.0", name: "Library", tags: [], resource_type: Const }, YypFolder { folder_path: "folders/Library/Scripts.yy", order: 2, resource_version: "1.0", name: "Scripts", tags: [], resource_type: Const }, YypFolder { folder_path: "folders/Example.yy", order: 6, resource_version: "1.0", name: "Example", tags: [], resource_type: Const }, YypFolder { folder_path: "folders/Sprites.yy", order: 0, resource_version: "1.0", name: "Sprites", tags: [], resource_type: Const }], audio_groups: [AudioGroup { targets: 461609314234257646, resource_version: "1.0", name: "audiogroup_default", resource_type: Const }], texture_groups: [TextureGroup { is_scaled: true, autocrop: true, border: 2, mips_to_generate: False, targets: 461609314234257646, resource_version: "1.0", name: "Default", resource_type: Const }], included_files: [], meta_data: YypMetaData { ide_version: "23.1.1.141" }, resource_version: "1.3", name: "anchor", tags: [], resource_type: Const }`,
+ right: `Yyp { resources: [YypResource { id: FilesystemPath { name: "sprSprite", path: "sprites/sprSprite/sprSprite.yy" }, order: 2 }, YypResource { id: FilesystemPath { name: "anchorEase", path: "scripts/anchorEase/anchorEase.yy" }, order: 1 }, YypResource { id: FilesystemPath { name: "anchorSettings", path: "scripts/anchorSettings/anchorSettings.yy" }, order: 3 }, YypResource { id: FilesystemPath { name: "anchorTween", path: "scripts/anchorTween/anchorTween.yy" }, order: 2 }, YypResource { id: FilesystemPath { name: "test_spr_add", path: "sprites/test_spr_add/test_spr_add.yy" }, order: 0 }, YypResource { id: FilesystemPath { name: "anchorNode", path: "scripts/anchorNode/anchorNode.yy" }, order: 0 }, YypResource { id: FilesystemPath { name: "sprBox", path: "sprites/sprBox/sprBox.yy" }, order: 3 }, YypResource { id: FilesystemPath { name: "objExample", path: "objects/objExample/objExample.yy" }, order: 0 }, YypResource { id: FilesystemPath { name: "luiMenu", path: "objects/luiMenu/luiMenu.yy" }, order: 1 }, YypResource { id: FilesystemPath { name: "rmExample", path: "rooms/rmExample/rmExample.yy" }, order: 1 }], options: [FilesystemPath { name: "Amazon Fire", path: "options/amazonfire/options_amazonfire.yy" }, FilesystemPath { name: "Android", path: "options/android/options_android.yy" }, FilesystemPath { name: "HTML5", path: "options/html5/options_html5.yy" }, FilesystemPath { name: "iOS", path: "options/ios/options_ios.yy" }, FilesystemPath { name: "Linux", path: "options/linux/options_linux.yy" }, FilesystemPath { name: "macOS", path: "options/mac/options_mac.yy" }, FilesystemPath { name: "Main", path: "options/main/options_main.yy" }, FilesystemPath { name: "PlayStation 4", path: "options/ps4/options_ps4.yy" }, FilesystemPath { name: "Switch", path: "options/switch/options_switch.yy" }, FilesystemPath { name: "tvOS", path: "options/tvos/options_tvos.yy" }, FilesystemPath { name: "Windows", path: "options/windows/options_windows.yy" }, FilesystemPath { name: "Windows UWP", path: "options/windowsuap/options_windowsuap.yy" }, FilesystemPath { name: "Xbox One", path: "options/xboxone/options_xboxone.yy" }], is_dn_d_project: false, is_ecma: false, tutorial_path: "", configs: YypConfig { name: "Default", children: [] }, room_order: [FilesystemPath { name: "rmExample", path: "rooms/rmExample/rmExample.yy" }], folders: [YypFolder { folder_path: "folders/Library.yy", order: 5, resource_version: "1.0", name: "Library", tags: [], resource_type: Const }, YypFolder { folder_path: "folders/Library/Scripts.yy", order: 2, resource_version: "1.0", name: "Scripts", tags: [], resource_type: Const }, YypFolder { folder_path: "folders/Example.yy", order: 6, resource_version: "1.0", name: "Example", tags: [], resource_type: Const }, YypFolder { folder_path: "folders/Sprites.yy", order: 8, resource_version: "1.0", name: "Sprites", tags: [], resource_type: Const }], audio_groups: [AudioGroup { targets: 461609314234257646, resource_version: "1.0", name: "audiogroup_default", resource_type: Const }], texture_groups: [TextureGroup { is_scaled: true, autocrop: true, border: 2, mips_to_generate: False, targets: 461609314234257646, resource_version: "1.0", name: "Default", resource_type: Const }], included_files: [], meta_data: YypMetaData { ide_version: "23.1.1.141" }, resource_version: "1.3", name: "anchor", tags: [], resource_type: Const }`: Yyps are not the Same!', tests/yyp_boss.rs:78:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    add_sprite_to_yyp
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
+

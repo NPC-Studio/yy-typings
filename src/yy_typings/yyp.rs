@@ -86,7 +86,7 @@ pub struct YypConfig {
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the root**.
 /// Therefore, to create a tree, one must walk from the root to the final destination.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
+#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
@@ -94,7 +94,8 @@ pub struct YypFolder {
     /// `"Folders/Fonts.yy"`, for example.
     pub folder_path: PathBuf,
 
-    /// The order within the subfolder. This is a bit unclear still.
+    /// The order within the subfolder. This is a bit unclear still. It appears to serve
+    /// no purpose.
     pub order: usize,
 
     /// The resource version of this Resource. Currently `"1.0"`.
@@ -110,6 +111,15 @@ pub struct YypFolder {
 
     /// The Resource Type of this folder, which is always `"GMFolder"`.
     pub resource_type: ConstGmFolder,
+}
+
+impl PartialEq for YypFolder {
+    fn eq(&self, other: &Self) -> bool {
+        self.folder_path == other.folder_path
+            && self.resource_version == other.resource_version
+            && self.name == other.name
+            && self.tags == other.tags
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
