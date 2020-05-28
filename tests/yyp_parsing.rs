@@ -2,12 +2,9 @@ use include_dir::{include_dir, Dir, DirEntry};
 use maplit::hashset;
 use pretty_assertions::assert_eq;
 use std::path::Path;
-use yy_boss::{
-    utils::TrailingCommaUtility,
-    yy_typings::{
-        texture_group::TextureGroup, AudioGroup, FilesystemPath, Yyp, YypConfig, YypFolder,
-        YypIncludedFile, YypMetaData, YypResource,
-    },
+use yy_typings::{
+    texture_group::TextureGroup, utils::TrailingCommaUtility, AudioGroup, FilesystemPath, Yyp,
+    YypConfig, YypFolder, YypIncludedFile, YypMetaData, YypResource,
 };
 
 #[test]
