@@ -28,7 +28,7 @@ use std::path::PathBuf;
 ///     path: "sprites/spr_player/spr_player.yy",
 /// }
 /// ```
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash)]
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub struct FilesystemPath {
     /// The human readable name of the parent. for a `spr_player`, this
     /// might correspond to `Sprites`.

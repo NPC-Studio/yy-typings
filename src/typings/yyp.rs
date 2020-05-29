@@ -1,7 +1,6 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
 /// GMS2 project file typings
@@ -9,9 +8,9 @@ use std::path::{Path, PathBuf};
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     /// Contains all project resources, ordered by KeyID.
-    pub resources: HashSet<YypResource>,
+    pub resources: Vec<YypResource>,
     #[serde(rename = "Options")]
-    pub options: HashSet<FilesystemPath>,
+    pub options: Vec<FilesystemPath>,
     /// Denotes whether this project uses drag and drop or not
     pub is_dn_d_project: bool,
     /// Allows for experimental JS editing. Unfinished or legacy feature. It's a secret.
@@ -28,7 +27,7 @@ pub struct Yyp {
     /// This represents all the Views in the Project, which will
     /// have resource paths within them.
     #[serde(rename = "Folders")]
-    pub folders: HashSet<YypFolder>,
+    pub folders: Vec<YypFolder>,
     /// The Audio Groups present within the project. Relationship to
     /// the inherited.yy is unclear
     #[serde(rename = "AudioGroups")]
@@ -64,7 +63,7 @@ pub struct YypMetaData {
 }
 
 /// Represents a resource entry in a YYP
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Hash)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Hash, Ord, PartialOrd)]
 pub struct YypResource {
     /// This is the path to the Filesystem
     pub id: FilesystemPath,
@@ -87,7 +86,7 @@ pub struct YypConfig {
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the root**.
 /// Therefore, to create a tree, one must walk from the root to the final destination.
-#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Hash)]
+#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Hash, Ord, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
@@ -144,7 +143,9 @@ pub enum ConstGmProject {
     Const,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault)]
+#[derive(
+    Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault, Ord, PartialOrd,
+)]
 pub enum ConstGmFolder {
     #[serde(rename = "GMFolder")]
     #[default]
