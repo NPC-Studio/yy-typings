@@ -119,6 +119,9 @@ impl PartialEq for YypFolder {
             && self.resource_version == other.resource_version
             && self.name == other.name
             && self.tags == other.tags
+            // This is strange, but largely because Gms2's ordering
+            // is not very good.
+            && self.order <= other.order
     }
 }
 
