@@ -1,8 +1,7 @@
+use super::{TexturePath, TexturePathLocation};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
-
-create_guarded_uuid!(TextureGroupId);
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
@@ -47,4 +46,22 @@ pub enum GenerateMipMaps {
     True = -1,
     #[default]
     False = 0,
+}
+
+impl Into<TexturePath> for TextureGroup {
+    fn into(self) -> TexturePath {
+        TexturePath {
+            name: self.name.clone(),
+            path: TexturePathLocation(format!("texturegroups/{}", self.name)),
+        }
+    }
+}
+
+impl Into<TexturePath> for &TextureGroup {
+    fn into(self) -> TexturePath {
+        TexturePath {
+            name: self.name.clone(),
+            path: TexturePathLocation(format!("texturegroups/{}", self.name)),
+        }
+    }
 }

@@ -1,5 +1,8 @@
 use regex::Regex;
 use std::borrow::Cow;
+
+pub const TRAILING_COMMA_REGEX: &'static str = r"(,)([\s\n]+)?([},\]])";
+
 #[derive(Debug, Clone)]
 pub struct TrailingCommaUtility {
     regex: Regex,
@@ -8,7 +11,7 @@ pub struct TrailingCommaUtility {
 impl TrailingCommaUtility {
     pub fn new() -> TrailingCommaUtility {
         TrailingCommaUtility {
-            regex: Regex::new(r"(,)([\s\n]+)?([},\]])").unwrap(),
+            regex: Regex::new(TRAILING_COMMA_REGEX).unwrap(),
         }
     }
 
@@ -19,7 +22,7 @@ impl TrailingCommaUtility {
     /// This function clears a trailing comma from a JSON. It is relatively inefficent, and
     /// does one allocations per call.
     pub fn clear_trailing_comma_once(input: &str) -> Cow<'_, str> {
-        let re = Regex::new(r"(,)([\s\n]+)?([},\]])").unwrap();
+        let re = Regex::new(TRAILING_COMMA_REGEX).unwrap();
 
         Self::clear_trailing_comma_internal(input, &re)
     }

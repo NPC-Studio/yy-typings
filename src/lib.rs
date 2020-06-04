@@ -34,8 +34,8 @@ macro_rules! create_guarded_uuid {
 }
 
 mod typings {
-    mod parent_path;
-    pub use parent_path::*;
+    mod paths;
+    pub use paths::*;
 
     mod tags;
     pub use tags::Tags;
@@ -68,4 +68,7 @@ pub use typings::*;
 pub mod utils {
     mod trailing_comma_utility;
     pub use trailing_comma_utility::TrailingCommaUtility;
+
+    mod path_validator;
+    pub use path_validator::PathValidator;
 }

@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, Frame, Layer, SpriteSequence, Tags, TextureGroupPath, ViewPath};
+use super::{sprite_constants::*, Frame, Layer, SpriteSequence, Tags, TexturePath, ViewPath};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -47,7 +47,7 @@ pub struct Sprite {
     pub height: NonZeroUsize,
 
     /// This is the Path to the Texture Group Id.
-    pub texture_group_id: TextureGroupPath,
+    pub texture_group_id: TexturePath,
 
     /// This is probably always null, unless you make a swatch,
     /// but why are you doing that! Just don't do that. Easy.

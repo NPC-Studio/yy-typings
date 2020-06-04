@@ -1,4 +1,4 @@
-use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags};
+use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags, ViewPathLocation};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::path::{Path, PathBuf};
@@ -58,7 +58,7 @@ pub struct Yyp {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 pub struct YypMetaData {
     #[serde(rename = "IDEVersion")]
-    #[default("23.1.1.141".to_string())]
+    #[default("23.1.1.149".to_string())]
     pub ide_version: String,
 }
 
@@ -92,10 +92,11 @@ pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
     /// part of the path is always `folders`. For top level folders, will look like
     /// `"Folders/Fonts.yy"`, for example.
-    pub folder_path: PathBuf,
+    pub folder_path: ViewPathLocation,
 
-    /// The order within the subfolder. This is a bit unclear still. It appears to serve
-    /// no purpose.
+    /// The order within the subfolder. If custom ordering is added, then this will be the order as
+    /// the resources appear within the tree structure. Otherwise, it is meaningless, and Gms2 appears
+    /// to not keep in tracked or coherent.
     pub order: usize,
 
     /// The resource version of this Resource. Currently `"1.0"`.
