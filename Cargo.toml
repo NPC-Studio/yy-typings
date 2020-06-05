@@ -1,11 +1,11 @@
 [package]
 name = "yy-typings"
-version = "0.1.1"
+version = "0.1.0"
 authors = ["Jonathan Spira <jjspira@gmail.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
-description = "A collection of typings and a higher-level interface for GameMaker Studio 2 YY and YYP files"
-repository = "https://github.com/sanbox-irl/yy-boss"
+description = "A collection of typings for GameMaker Studio 2 YY and YYP files"
+repository = "https://github.com/NPC-Studio/yy-typings"
 readme = "README.md"
 
 [dependencies]
