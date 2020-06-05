@@ -93,7 +93,7 @@ pub struct TexturePath {
 /// The `path` component will **never** end with .yy, even if it describes
 /// a virtual folder or file. This is to say, given the texture groups `Default`, `Crops`,
 /// and `Enemies`, we would expect to see the following `TexturePath` vec, in Json:
-/// ```js
+/// ```json
 /// [
 ///     { "name": "Default", path: "texturegroups/Default" },
 ///     { "name": "Crops", path: "texturegroups/Crops" },
