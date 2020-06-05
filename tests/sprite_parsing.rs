@@ -45,9 +45,9 @@ fn deep_check() {
         for3d: false,
         width: NonZeroUsize::new(48).unwrap(),
         height: NonZeroUsize::new(48).unwrap(),
-        texture_group_id: TextureGroupPath {
+        texture_group_id: TexturePath {
             name: "Default".to_string(),
-            path: Path::new("texturegroups/Default").to_owned(),
+            path: TexturePathLocation("texturegroups/Default".to_string()),
         },
         swatch_colours: serde_json::Value::Null,
         grid_x: 0,
@@ -197,7 +197,7 @@ fn deep_check() {
         }],
         parent: ViewPath {
             name: "Sprites".to_string(),
-            path: Path::new("folders/Sprites.yy").to_owned(),
+            path: ViewPathLocation("folders/Sprites.yy".to_string()),
         },
         name: "spr_jack".to_string(),
         ..Sprite::default()

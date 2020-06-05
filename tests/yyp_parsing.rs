@@ -1,10 +1,9 @@
 use include_dir::{include_dir, Dir, DirEntry};
-use maplit::hashset;
 use pretty_assertions::assert_eq;
 use std::path::Path;
 use yy_typings::{
     texture_group::TextureGroup, utils::TrailingCommaUtility, AudioGroup, FilesystemPath, Yyp,
-    YypConfig, YypFolder, YypIncludedFile, YypMetaData, YypResource,
+    YypConfig, YypFolder, YypIncludedFile, YypMetaData, YypResource, ViewPathLocation
 };
 
 #[test]
@@ -33,7 +32,7 @@ fn deep_compare() {
     let test0_yyp: Yyp = serde_json::from_str(&test0_yyp).unwrap();
 
     let test_yyp: Yyp = Yyp {
-        resources: hashset![
+        resources: vec![
             YypResource {
                 id: FilesystemPath {
                     name: "Test4".to_string(),
@@ -63,7 +62,7 @@ fn deep_compare() {
                 order: 0,
             },
         ],
-        options: hashset![
+        options: vec![
             FilesystemPath {
                 name: "Amazon Fire".to_string(),
                 path: Path::new(&format!("options/amazonfire/options_amazonfire.yy")).to_owned(),
@@ -145,100 +144,100 @@ fn deep_compare() {
         room_order: vec![
             FilesystemPath {
                 name: "Room1".to_string(),
-                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room1")).to_owned(),
+                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room1").to_string()).to_owned(),
             },
             FilesystemPath {
                 name: "Room2".to_string(),
-                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room2")).to_owned(),
+                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room2").to_string()).to_owned(),
             },
         ],
-        folders: hashset![
+        folders: vec![
             YypFolder {
-                folder_path: Path::new("folders/Sprites.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Sprites.yy".to_string()),
                 name: "Sprites".to_owned(),
                 order: 1,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Tile Sets.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Tile Sets.yy".to_string()),
                 name: "Tile Sets".to_owned(),
                 order: 2,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Sounds.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Sounds.yy".to_string()),
                 name: "Sounds".to_owned(),
                 order: 3,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Paths.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Paths.yy".to_string()),
                 name: "Paths".to_owned(),
                 order: 4,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Scripts.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Scripts.yy".to_string()),
                 name: "Scripts".to_owned(),
                 order: 5,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Shaders.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Shaders.yy".to_string()),
                 name: "Shaders".to_owned(),
                 order: 6,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Fonts.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Fonts.yy".to_string()),
                 name: "Fonts".to_owned(),
                 order: 7,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Timelines.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Timelines.yy".to_string()),
                 name: "Timelines".to_owned(),
                 order: 8,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Objects.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Objects.yy".to_string()),
                 name: "Objects".to_owned(),
                 order: 9,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Rooms.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Rooms.yy".to_string()),
                 name: "Rooms".to_owned(),
                 order: 10,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Sequences.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Sequences.yy".to_string()),
                 name: "Sequences".to_owned(),
                 order: 11,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Animation Curves.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Animation Curves.yy".to_string()),
                 name: "Animation Curves".to_owned(),
                 order: 12,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Notes.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Notes.yy".to_string()),
                 name: "Notes".to_owned(),
                 order: 13,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/Extensions.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/Extensions.yy".to_string()),
                 name: "Extensions".to_owned(),
                 order: 14,
                 ..YypFolder::default()
             },
             YypFolder {
-                folder_path: Path::new("folders/group1.yy").to_owned(),
+                folder_path: ViewPathLocation("folders/group1.yy".to_string()),
                 name: "group1".to_owned(),
                 order: 15,
                 ..YypFolder::default()

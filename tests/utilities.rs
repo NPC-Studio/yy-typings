@@ -1,4 +1,4 @@
-use pretty_assertions::{assert_eq, assert_ne};
+use pretty_assertions::assert_eq;
 use yy_typings::utils::TrailingCommaUtility;
 
 #[test]
