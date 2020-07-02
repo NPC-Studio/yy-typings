@@ -9,6 +9,8 @@ use std::num::NonZeroUsize;
 pub struct Sprite {
     pub bbox_mode: BBoxMode,
     pub collision_kind: CollisionKind,
+    #[serde(skip)]
+    #[deprecated = "removed in Gms2.3.167. Instead, use `PrecisePerFrame`"]
     pub separate_masks: bool,
 
     /// The type of sprite, whether a bitmap or a vector sprite.
@@ -101,7 +103,8 @@ pub enum CollisionKind {
     Rectangle,
     Ellipse,
     Diamond,
-    RotatedRectangle = 5,
+    PrecisePerFrame,
+    RotatedRectangle,
 }
 
 #[derive(
