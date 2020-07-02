@@ -63,7 +63,12 @@ impl ViewPathLocation {
 use std::fmt;
 impl fmt::Display for ViewPathLocation {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+        let output: &str = self
+            .0
+            .trim_start_matches("folders/")
+            .trim_end_matches(".yy");
+
+        write!(f, "{}", output)
     }
 }
 
