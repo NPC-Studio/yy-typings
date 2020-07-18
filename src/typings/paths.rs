@@ -104,7 +104,7 @@ pub struct TexturePath {
     pub name: String,
 
     /// The path to the texture group, where:
-    /// ```norun
+    /// ```no run
     /// assert_eq!(self.path.0, format!("texturegroups/{}", self.name))
     /// ```
     pub path: TexturePathLocation,
