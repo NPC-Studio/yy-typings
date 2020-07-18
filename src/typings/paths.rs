@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// Paths on the File System.
 ///
@@ -19,6 +19,21 @@ pub struct FilesystemPath {
     /// is not directly related to parentage at all, as GMS2 does not use the FileSystem
     /// for parentage.
     pub path: PathBuf,
+}
+
+impl FilesystemPath {
+    /// Constructs a new path out of a `base` and a `name`. This is just a convenience method.
+    pub fn new(base: &str, name: &str) -> FilesystemPath {
+        Self {
+            name: name.to_owned(),
+            path: Path::new(&format!(
+                "{base}/{name}/{name}.yy",
+                base = base,
+                name = name
+            ))
+            .to_owned(),
+        }
+    }
 }
 
 /// Viewpaths in the virtual file system created by the Folders in the Yyp,
