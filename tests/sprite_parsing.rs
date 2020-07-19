@@ -1,7 +1,7 @@
 use include_dir::{include_dir, Dir, DirEntry};
 use pretty_assertions::assert_eq;
 use std::{num::NonZeroUsize, path::Path};
-use yy_typings::{sprite::*, utils::TrailingCommaUtility};
+use yy_typings::{sprite_yy::*, utils::TrailingCommaUtility};
 
 #[test]
 fn trivial_sprite_parsing() {
@@ -29,7 +29,6 @@ fn deep_check() {
     let expected_sprite = Sprite {
         bbox_mode: BBoxMode::Automatic,
         collision_kind: CollisionKind::Rectangle,
-        separate_masks: false,
         resource_sprite_type: 0,
         origin: Origin::Custom,
         pre_multiply_alpha: false,
@@ -170,7 +169,7 @@ fn deep_check() {
                         ..SpriteKeyframes::default()
                     }
                 },
-                ..Default::default()
+                ..Track::default()
             }],
             visible_range: Some(VisibleRange { x: 0.0, y: 0.0 }),
             lock_origin: false,
@@ -184,7 +183,7 @@ fn deep_check() {
                 name: "spr_jack".to_string(),
                 path: Path::new("sprites/spr_jack/spr_jack.yy").to_owned(),
             },
-            ..Default::default()
+            ..SpriteSequence::default()
         },
         layers: vec![Layer {
             visible: true,

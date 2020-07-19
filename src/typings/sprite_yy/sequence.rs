@@ -19,7 +19,7 @@ pub struct SpriteSequence {
     #[default = 1]
     pub playback: usize,
 
-    /// The playback speed of the Sequence.
+    /// The playback speed of the Sequence in terms of the PlaybackSpeed type.
     pub playback_speed: f64,
 
     /// The type of the playback speed.

@@ -1,8 +1,10 @@
 use regex::Regex;
 use std::borrow::Cow;
 
+/// The regex used by the trailing comma utility.
 pub const TRAILING_COMMA_REGEX: &str = r"(,)([\s\n]+)?([},\]])";
 
+/// here?
 #[derive(Debug, Clone)]
 pub struct TrailingCommaUtility {
     regex: Regex,

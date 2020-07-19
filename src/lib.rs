@@ -1,5 +1,4 @@
 #![allow(clippy::bool_comparison)]
-#![deny(missing_docs)]
 
 //! This is a library was created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by NPC Studio. This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public. Using this tool, one should be able to generate their own pipeline without difficulty.
 //!
@@ -34,6 +33,8 @@ macro_rules! create_guarded_uuid {
                 Self(id)
             }
 
+            /// Creates a new Id with the provided String which *must* be a Uuid string.
+            /// This does an unwrap internally, so probably don't use it!
             pub fn with_string(input: &str) -> Self {
                 Self(uuid::Uuid::parse_str(input).unwrap())
             }
