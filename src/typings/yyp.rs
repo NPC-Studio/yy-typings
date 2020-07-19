@@ -1,7 +1,10 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags, ViewPathLocation};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use std::path::{Path, PathBuf};
+use std::{
+    hash::Hash,
+    path::{Path, PathBuf},
+};
 
 /// GMS2 project file typings
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
@@ -86,7 +89,7 @@ pub struct YypConfig {
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the root**.
 /// Therefore, to create a tree, one must walk from the root to the final destination.
-#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Hash, Ord, PartialOrd)]
+#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Ord, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
@@ -114,15 +117,25 @@ pub struct YypFolder {
     pub resource_type: ConstGmFolder,
 }
 
+/// This is an ugly partialeq impl here. I'm just not sure what the best option is right now,
+/// especially when it comes to unit tests.
 impl PartialEq for YypFolder {
     fn eq(&self, other: &Self) -> bool {
         self.folder_path == other.folder_path
             && self.resource_version == other.resource_version
             && self.name == other.name
             && self.tags == other.tags
-            // This is strange, but largely because Gms2's ordering
-            // is not very good.
-            && self.order <= other.order
+        // && self.order <= other.order
+    }
+}
+
+// keep inline with the partial eq
+impl Hash for YypFolder {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.folder_path.hash(state);
+        self.resource_version.hash(state);
+        self.name.hash(state);
+        self.tags.hash(state);
     }
 }
 
