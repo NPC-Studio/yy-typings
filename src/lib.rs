@@ -78,6 +78,10 @@ mod typings {
 
     /// Typings associated with Texture Groups.
     pub mod texture_group;
+
+    mod resource_version;
+    pub use resource_version::ResourceVersion;
+
     mod yyp;
     pub use yyp::*;
 }

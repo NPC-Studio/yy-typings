@@ -2,8 +2,8 @@ use include_dir::{include_dir, Dir, DirEntry};
 use pretty_assertions::assert_eq;
 use std::path::Path;
 use yy_typings::{
-    texture_group::TextureGroup, utils::TrailingCommaUtility, AudioGroup, FilesystemPath, Yyp,
-    YypConfig, YypFolder, YypIncludedFile, YypMetaData, YypResource, ViewPathLocation
+    texture_group::TextureGroup, utils::TrailingCommaUtility, AudioGroup, FilesystemPath,
+    ViewPathLocation, Yyp, YypConfig, YypFolder, YypIncludedFile, YypMetaData, YypResource,
 };
 
 #[test]
@@ -12,13 +12,10 @@ fn trivial_yyp_parse() {
     let tcu = TrailingCommaUtility::new();
 
     for sprite_file in all_yyps.find("**/*.yyp").unwrap() {
-        match sprite_file {
-            DirEntry::File(file) => {
-                let our_str = std::str::from_utf8(file.contents()).unwrap();
-                let our_str = tcu.clear_trailing_comma(our_str);
-                let _: Yyp = serde_json::from_str(&our_str).unwrap();
-            }
-            _ => {}
+        if let DirEntry::File(file) = sprite_file {
+            let our_str = std::str::from_utf8(file.contents()).unwrap();
+            let our_str = tcu.clear_trailing_comma(our_str);
+            let _: Yyp = serde_json::from_str(&our_str).unwrap();
         }
     }
 }
@@ -65,55 +62,55 @@ fn deep_compare() {
         options: vec![
             FilesystemPath {
                 name: "Amazon Fire".to_string(),
-                path: Path::new(&format!("options/amazonfire/options_amazonfire.yy")).to_owned(),
+                path: Path::new("options/amazonfire/options_amazonfire.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Android".to_string(),
-                path: Path::new(&format!("options/android/options_android.yy")).to_owned(),
+                path: Path::new("options/android/options_android.yy").to_owned(),
             },
             FilesystemPath {
                 name: "HTML5".to_string(),
-                path: Path::new(&format!("options/html5/options_html5.yy")).to_owned(),
+                path: Path::new("options/html5/options_html5.yy").to_owned(),
             },
             FilesystemPath {
                 name: "iOS".to_string(),
-                path: Path::new(&format!("options/ios/options_ios.yy")).to_owned(),
+                path: Path::new("options/ios/options_ios.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Linux".to_string(),
-                path: Path::new(&format!("options/linux/options_linux.yy")).to_owned(),
+                path: Path::new("options/linux/options_linux.yy").to_owned(),
             },
             FilesystemPath {
                 name: "macOS".to_string(),
-                path: Path::new(&format!("options/mac/options_mac.yy")).to_owned(),
+                path: Path::new("options/mac/options_mac.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Main".to_string(),
-                path: Path::new(&format!("options/main/options_main.yy")).to_owned(),
+                path: Path::new("options/main/options_main.yy").to_owned(),
             },
             FilesystemPath {
                 name: "PlayStation 4".to_string(),
-                path: Path::new(&format!("options/ps4/options_ps4.yy")).to_owned(),
+                path: Path::new("options/ps4/options_ps4.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Switch".to_string(),
-                path: Path::new(&format!("options/switch/options_switch.yy")).to_owned(),
+                path: Path::new("options/switch/options_switch.yy").to_owned(),
             },
             FilesystemPath {
                 name: "tvOS".to_string(),
-                path: Path::new(&format!("options/tvos/options_tvos.yy")).to_owned(),
+                path: Path::new("options/tvos/options_tvos.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Windows".to_string(),
-                path: Path::new(&format!("options/windows/options_windows.yy")).to_owned(),
+                path: Path::new("options/windows/options_windows.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Windows UWP".to_string(),
-                path: Path::new(&format!("options/windowsuap/options_windowsuap.yy")).to_owned(),
+                path: Path::new("options/windowsuap/options_windowsuap.yy").to_owned(),
             },
             FilesystemPath {
                 name: "Xbox One".to_string(),
-                path: Path::new(&format!("options/xboxone/options_xboxone.yy")).to_owned(),
+                path: Path::new("options/xboxone/options_xboxone.yy").to_owned(),
             },
         ],
         is_dn_d_project: false,
@@ -144,11 +141,11 @@ fn deep_compare() {
         room_order: vec![
             FilesystemPath {
                 name: "Room1".to_string(),
-                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room1").to_string()).to_owned(),
+                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room1")).to_owned(),
             },
             FilesystemPath {
                 name: "Room2".to_string(),
-                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room2").to_string()).to_owned(),
+                path: Path::new(&format!("rooms/{0}/{0}.yy", "Room2")).to_owned(),
             },
         ],
         folders: vec![
