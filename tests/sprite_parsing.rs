@@ -12,7 +12,7 @@ fn trivial_sprite_parsing() {
         if let DirEntry::File(file) = sprite_file {
             let our_str = std::str::from_utf8(file.contents()).unwrap();
             let our_str = tcu.clear_trailing_comma(our_str);
-            let _: Sprite = serde_json::from_str(&our_str).unwrap();
+            serde_json::from_str::<Sprite>(&our_str).unwrap();
         }
     }
 }
