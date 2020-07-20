@@ -1,4 +1,6 @@
-use super::{sprite_constants::*, Frame, Layer, SpriteSequence, Tags, TexturePath, ViewPath};
+use super::{
+    sprite_constants::*, Frame, Layer, ResourceVersion, SpriteSequence, Tags, TexturePath, ViewPath,
+};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -73,8 +75,7 @@ pub struct Sprite {
 
     /// Version string. Right now, this is loosely typed and ignored,
     /// but will be used in the future to aid in parsing.
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
 
     /// The human readable name of the resource, such as `spr_player`.
     pub name: String,

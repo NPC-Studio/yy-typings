@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, FilesystemPath, Tags};
+use super::{sprite_constants::*, FilesystemPath, ResourceVersion, Tags};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -77,8 +77,8 @@ pub struct SpriteSequence {
     pub parent: FilesystemPath,
 
     /// The resource version. Currently `1.3`.
-    #[default("1.3".to_string())]
-    pub resource_version: String,
+    #[default("1.3".parse::<ResourceVersion>().unwrap())]
+    pub resource_version: ResourceVersion,
 
     /// The name of the SpriteSequence, which is always an empty string.
     #[default(String::new())]
@@ -101,7 +101,7 @@ pub struct VisibleRange {
 
 /// These are the "events" which a Sprite is subscribed to. It will always be
 /// its default value. It exists due to sharing resources with Sequences.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteEvents {
     /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not have access to all the resources
@@ -109,27 +109,17 @@ pub struct SpriteEvents {
     #[serde(rename = "Keyframes")]
     pub keyframes: Vec<()>,
 
-    /// The resource version of the SpriteEvent. Currently, it is always "1.0".
-    pub resource_version: String,
+    /// The resource version of the SpriteEvent.
+    pub resource_version: ResourceVersion,
 
     /// The name of the Resource Type. This is a C# generic, so this Serde typing may not
     /// be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteEvent,
 }
 
-impl Default for SpriteEvents {
-    fn default() -> Self {
-        SpriteEvents {
-            keyframes: vec![],
-            resource_version: "1.0".to_string(),
-            resource_type: ConstGmSpriteEvent::Const,
-        }
-    }
-}
-
 /// These are the "moments" which a Sprite is subscribed to. It will always be
 /// its default value. This is due to sharing resources with Sequences.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteMoments {
     /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not have access to all the resources
@@ -138,24 +128,14 @@ pub struct SpriteMoments {
     pub keyframes: Vec<()>,
 
     /// The resource version of the SpriteMoment. Currently, it is always "1.0".
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
 
     /// The name of the Resource Type. This is a C# generic, so this Serde typing may not
     /// be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteMoment,
 }
 
-impl Default for SpriteMoments {
-    fn default() -> Self {
-        SpriteMoments {
-            keyframes: vec![],
-            resource_version: "1.0".to_string(),
-            resource_type: ConstGmSpriteMoment::Const,
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct Track {
     /// The name of the track. The trackname is always "frames".
@@ -170,12 +150,14 @@ pub struct Track {
     /// Appears to be always zero
     pub track_colour: usize,
     /// Appears to always be true.
+    #[default = true]
     pub inherits_track_colour: bool,
     /// Appears to always be zero.
     pub builtin_name: usize,
     /// Appears to always be zero.
     pub traits: usize,
     /// Appears to always be 1.
+    #[default = 1]
     pub interpolation: usize,
     /// Always empty vec.
     pub tracks: Vec<()>,
@@ -186,34 +168,11 @@ pub struct Track {
     /// Always `false`.
     pub is_creation_track: bool,
     /// The resource version. Currently "1.0".
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     /// The tags, which cannot be assigned in IDE.
     pub tags: Tags,
     /// The resource type constant.
     pub resource_type: ConstGmSpriteFramesTrack,
-}
-
-impl Default for Track {
-    fn default() -> Self {
-        Self {
-            name: ConstGmSpriteTrackName::Const,
-            sprite_id: None,
-            /// the only thing to be customized
-            keyframes: SpriteKeyframes::default(),
-            track_colour: 0,
-            inherits_track_colour: true,
-            builtin_name: 0,
-            traits: 0,
-            interpolation: 1,
-            tracks: vec![],
-            events: vec![],
-            modifiers: vec![],
-            is_creation_track: false,
-            resource_version: "1.0".to_string(),
-            tags: vec![],
-            resource_type: ConstGmSpriteFramesTrack::Const,
-        }
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
@@ -221,13 +180,11 @@ impl Default for Track {
 pub struct SpriteKeyframes {
     #[serde(rename = "Keyframes")]
     pub keyframes: Vec<SpriteKeyframe>,
-
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframes,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframe {
     /// A SpriteSequenceId, apparently with no relation to any other ID.
@@ -235,6 +192,7 @@ pub struct SpriteKeyframe {
     #[serde(rename = "Key")]
     pub key: f64,
     #[serde(rename = "Length")]
+    #[default = 1.0]
     pub length: f64,
     #[serde(rename = "Stretch")]
     pub stretch: bool,
@@ -244,24 +202,8 @@ pub struct SpriteKeyframe {
     pub is_creation_key: bool,
     #[serde(rename = "Channels")]
     pub channels: Channels,
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframe,
-}
-
-impl Default for SpriteKeyframe {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            key: Default::default(),
-            length: 1.0,
-            stretch: false,
-            disabled: false,
-            is_creation_key: false,
-            channels: Channels::default(),
-            resource_version: "1.0".to_string(),
-            resource_type: ConstGmSpriteKeyframe::Const,
-        }
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
@@ -275,8 +217,7 @@ pub struct Channels {
 pub struct SpriteZeroChannel {
     #[serde(rename = "Id")]
     pub id: FilesystemPath,
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteZeroChannel,
 }
 

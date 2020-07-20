@@ -1,4 +1,4 @@
-use super::{TexturePath, TexturePathLocation};
+use crate::{ResourceVersion, TexturePath, TexturePathLocation};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -15,8 +15,7 @@ pub struct TextureGroup {
     pub mips_to_generate: GenerateMipMaps,
     #[default(461609314234257646)]
     pub targets: usize,
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     #[default("Default".to_string())]
     pub name: String,
     pub resource_type: ConstGmTextureGroup,

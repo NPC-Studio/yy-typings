@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, FilesystemPath, Tags};
+use super::{sprite_constants::*, FilesystemPath, ResourceVersion, Tags};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -24,8 +24,7 @@ pub struct Frame {
     pub parent: FilesystemPath,
 
     /// The version of this particular resource.
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     /// This is the name of the Frame, which will always be a UUID.
     pub name: FrameId,
     /// These are the tags affixed to this frame, which is not possible.
@@ -50,8 +49,7 @@ pub struct Image {
     pub layer_id: Option<FilesystemPath>,
 
     /// The version of the resource.
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
 
     /// This appears to only ever be two values:
     ///
@@ -90,8 +88,7 @@ pub struct Layer {
     pub display_name: String,
 
     /// Currently "1.0"
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
 
     /// The legacy name of the LayerId.
     pub name: LayerId,

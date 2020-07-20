@@ -1,3 +1,4 @@
+use crate::ResourceVersion;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -6,8 +7,7 @@ use smart_default::SmartDefault;
 pub struct AudioGroup {
     #[default(461609314234257646)]
     pub targets: usize,
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     #[default("audiogroup_default".to_string())]
     pub name: String,
     pub resource_type: ConstGmAudioGroup,

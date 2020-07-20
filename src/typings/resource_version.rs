@@ -1,10 +1,45 @@
 use serde::{Deserialize, Deserializer, Serialize};
 use std::{fmt, str::FromStr};
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Copy, Clone, Default)]
+/// A struct, which implements Serialize and Deserialize, for Gms2
+/// version strings of the form "1.0" or "4.2". Basically, a bad SemVer.
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Copy, Clone)]
 pub struct ResourceVersion {
+    /// The major version of the Resource. Defaults to 1
     pub major: usize,
+    /// The minor version of the Resource. Defaults to 0
     pub minor: usize,
+}
+
+impl Default for ResourceVersion {
+    fn default() -> Self {
+        ResourceVersion::new(1, 0)
+    }
+}
+
+impl ResourceVersion {
+    /// Creates a new default ResourceVersion with the major and minor version given.
+    /// The default implementation runs this with 1 and 0.
+    /// `ResourceVersion::blank` is a shorthand for `ResourceVersion::new(0, 0)`.
+    ///
+    /// ```rs
+    /// let default = ResourceVersion::new(1, 0);
+    /// assert_eq!(default, ResourceVersion { major: 1, minor: 0 });
+    /// ```
+    pub fn new(major: usize, minor: usize) -> ResourceVersion {
+        ResourceVersion { major, minor }
+    }
+
+    /// Creates a new blank ResourceVersion with the major and minor version set
+    /// to 0.0. This is not the default.
+    ///
+    /// ```rs
+    /// let blank = ResourceVersion::blank();
+    /// assert_eq!(default, ResourceVersion { major: 0, minor: 0 });
+    /// ```
+    pub fn blank() -> ResourceVersion {
+        ResourceVersion::new(0, 0)
+    }
 }
 
 impl FromStr for ResourceVersion {

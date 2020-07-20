@@ -12,12 +12,10 @@ use std::path::{Path, PathBuf};
 /// ```
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub struct FilesystemPath {
-    /// The human readable name of the parent. for a `spr_player`, this
-    /// might correspond to `Sprites`.
+    /// The name of the resource which the Path points to. For an `spr_sprite`, for example, it will
+    /// be `spr_sprite`.
     pub name: String,
-    /// The direct path from the `.yyp` directory to the resource needed. This
-    /// is not directly related to parentage at all, as GMS2 does not use the FileSystem
-    /// for parentage.
+    /// The direct path from the `.yyp` directory to the resource needed on the file system.
     pub path: PathBuf,
 }
 

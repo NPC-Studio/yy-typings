@@ -1,4 +1,5 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags, ViewPathLocation};
+use crate::ResourceVersion;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::{
@@ -46,8 +47,8 @@ pub struct Yyp {
     #[serde(rename = "MetaData")]
     pub meta_data: YypMetaData,
     /// The version of the YYP. Currently, that is "1.3"
-    #[default("1.3".to_string())]
-    pub resource_version: String,
+    #[default(ResourceVersion::new(1, 3))]
+    pub resource_version: ResourceVersion,
     /// The actual human-readable name of the Project, such as "Forager"
     /// or "Fields of Mistria" or "Test1122 please work".
     pub name: String,
