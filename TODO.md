@@ -1,8 +1,8 @@
 # TODO
 
-## Minor Tasks
+## Major Version
 
-1. Type the blendmode of each layer in GMS2 Sprite Editor
+1. Type up basics of Object and Script files.
 
 ## Future Tasks
 

@@ -1,5 +1,6 @@
 use super::{sprite_constants::*, FilesystemPath, ResourceVersion, Tags};
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
 create_guarded_uuid!(FrameId);
@@ -98,4 +99,25 @@ pub struct Layer {
 
     /// The name of the Resource Type, which is always "GMImageLayer".
     pub resource_type: ConstGmImageLayer,
+}
+
+#[derive(
+    Serialize_repr,
+    Deserialize_repr,
+    PartialEq,
+    Debug,
+    SmartDefault,
+    Copy,
+    Clone,
+    Eq,
+    Ord,
+    PartialOrd,
+)]
+#[repr(u8)]
+pub enum BlendMode {
+    #[default]
+    Normal,
+    Add,
+    Subtract,
+    Multiply,
 }
