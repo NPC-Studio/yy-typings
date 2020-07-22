@@ -139,6 +139,8 @@ impl<'de> Deserialize<'de> for ResourceVersion {
             {
                 v.parse().map_err(E::custom)
             }
+
+
         }
 
         deserializer.deserialize_str(ResourceVersionVisitor)

@@ -85,6 +85,9 @@ mod typings {
 
         mod object_constants;
         pub use object_constants::*;
+
+        mod event_type;
+        pub use event_type::*;
     }
 
     /// Typings associated with Texture Groups.
