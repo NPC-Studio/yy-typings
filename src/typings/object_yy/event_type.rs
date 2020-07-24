@@ -2,6 +2,9 @@ use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 use smart_default::SmartDefault;
 use std::fmt;
 
+/// Describes the current event type. Users can make most events freely, though
+/// special care should be taken that `Alarm`'s .0 field is less than `ALARM_MAX`,
+/// and the same for the `OtherEvent`'s usize wrappers.
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
 pub enum EventType {
     #[default]
@@ -14,7 +17,15 @@ pub enum EventType {
     Alarm(usize),
 
     Draw(DrawEvent),
+    Collision,
+    Other(OtherEvent),
+    Async(AsyncEvent),
     Unknown,
+}
+
+impl EventType {
+    /// The maximum number of alarms which are available in the Gms2 IDE.
+    pub const ALARM_MAX: usize = 11;
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
@@ -33,6 +44,53 @@ pub enum DrawEvent {
     PreDraw,
     PostDraw,
     WindowResize,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+pub enum OtherEvent {
+    #[default]
+    OutsideRoom,
+    IntersectBoundary,
+    OutsideView(usize),
+    IntersectView(usize),
+    GameStart,
+    GameEnd,
+    RoomStart,
+    RoomEnd,
+    AnimationEnd,
+    AnimationUpdate,
+    AnimationEvent,
+    PathEnded,
+    UserEvent(usize),
+    BroadcastMessage,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+pub enum AsyncEvent {
+    #[default]
+    AudioPlayback,
+    AudioRecording,
+    Cloud, // like FF7
+    Dialog,
+    Http,
+    InAppPurchase,
+    ImageLoaded,
+    Networking,
+    PushNotification,
+    SaveLoad,
+    Social,
+    Steam,
+    System,
+}
+
+impl OtherEvent {
+    pub const OUTSIDE_VIEW_BASE: usize = 40;
+    pub const OUTSIDE_VIEW_MAX: usize = 7;
+
+    pub const INTERSECT_VIEW_BASE: usize = 50;
+
+    pub const USER_EVENT_BASE: usize = 10;
+    pub const USER_EVENT_MAX: usize = 15;
 }
 
 impl From<EventType> for EventIntermediary {
@@ -110,6 +168,47 @@ impl From<EventType> for EventIntermediary {
                     event_num: 65,
                 },
             },
+            EventType::Collision => EventIntermediary {
+                event_type: 4,
+                event_num: 0,
+            },
+            EventType::Other(other_event) => EventIntermediary {
+                event_type: 7,
+                event_num: match other_event {
+                    OtherEvent::OutsideRoom => 0,
+                    OtherEvent::IntersectBoundary => 1,
+                    OtherEvent::OutsideView(val) => OtherEvent::OUTSIDE_VIEW_BASE + val,
+                    OtherEvent::IntersectView(val) => OtherEvent::INTERSECT_VIEW_BASE + val,
+                    OtherEvent::GameStart => 2,
+                    OtherEvent::GameEnd => 3,
+                    OtherEvent::RoomStart => 4,
+                    OtherEvent::RoomEnd => 5,
+                    OtherEvent::AnimationEnd => 7,
+                    OtherEvent::AnimationUpdate => 58,
+                    OtherEvent::AnimationEvent => 59,
+                    OtherEvent::PathEnded => 8,
+                    OtherEvent::UserEvent(ev_num) => OtherEvent::USER_EVENT_BASE + ev_num,
+                    OtherEvent::BroadcastMessage => 76,
+                },
+            },
+            EventType::Async(async_event) => EventIntermediary {
+                event_type: 7,
+                event_num: match async_event {
+                    AsyncEvent::AudioPlayback => 74,
+                    AsyncEvent::AudioRecording => 73,
+                    AsyncEvent::Cloud => 67,
+                    AsyncEvent::Dialog => 63,
+                    AsyncEvent::Http => 62,
+                    AsyncEvent::InAppPurchase => 66,
+                    AsyncEvent::ImageLoaded => 60,
+                    AsyncEvent::Networking => 68,
+                    AsyncEvent::PushNotification => 71,
+                    AsyncEvent::SaveLoad => 72,
+                    AsyncEvent::Social => 70,
+                    AsyncEvent::Steam => 69, // nice
+                    AsyncEvent::System => 75,
+                },
+            },
             EventType::Unknown => EventIntermediary {
                 event_num: 0,
                 event_type: 0,
@@ -120,6 +219,11 @@ impl From<EventType> for EventIntermediary {
 
 impl From<EventIntermediary> for EventType {
     fn from(o: EventIntermediary) -> Self {
+        const USER_EVENT_MAX_ABS: usize = OtherEvent::USER_EVENT_BASE + OtherEvent::USER_EVENT_MAX;
+        const OUTSIDE_VIEW_MAX: usize =
+            OtherEvent::OUTSIDE_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
+        const OUTSIDE_INTERSECT_MAX: usize =
+            OtherEvent::INTERSECT_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
         match o.event_type {
             // lifetime events
             0 if o.event_num == 0 => EventType::Create,
@@ -134,7 +238,7 @@ impl From<EventIntermediary> for EventType {
                 _ => EventType::Unknown,
             },
 
-            2 if o.event_num < 12 => EventType::Alarm(o.event_num),
+            2 if o.event_num <= EventType::ALARM_MAX => EventType::Alarm(o.event_num),
 
             8 => match o.event_num {
                 0 => EventType::Draw(DrawEvent::Draw(Stage::Main)),
@@ -149,13 +253,65 @@ impl From<EventIntermediary> for EventType {
                 _ => EventType::Unknown,
             },
 
+            4 if o.event_num == 0 => EventType::Collision,
+
+            7 => match o.event_num {
+                // OTHER EVENTS
+                0 => EventType::Other(OtherEvent::OutsideRoom),
+                1 => EventType::Other(OtherEvent::IntersectBoundary),
+                val @ OtherEvent::OUTSIDE_VIEW_BASE..=OUTSIDE_VIEW_MAX => {
+                    EventType::Other(OtherEvent::OutsideView(val - OtherEvent::OUTSIDE_VIEW_BASE))
+                }
+                val @ OtherEvent::INTERSECT_VIEW_BASE..=OUTSIDE_INTERSECT_MAX => EventType::Other(
+                    OtherEvent::IntersectView(val - OtherEvent::INTERSECT_VIEW_BASE),
+                ),
+                2 => EventType::Other(OtherEvent::GameStart),
+                3 => EventType::Other(OtherEvent::GameEnd),
+                4 => EventType::Other(OtherEvent::RoomStart),
+                5 => EventType::Other(OtherEvent::RoomEnd),
+
+                7 => EventType::Other(OtherEvent::AnimationEnd),
+                58 => EventType::Other(OtherEvent::AnimationUpdate),
+                59 => EventType::Other(OtherEvent::AnimationEvent),
+                8 => EventType::Other(OtherEvent::PathEnded),
+                val @ OtherEvent::USER_EVENT_BASE..=USER_EVENT_MAX_ABS => {
+                    EventType::Other(OtherEvent::UserEvent(val - OtherEvent::USER_EVENT_BASE))
+                }
+                76 => EventType::Other(OtherEvent::BroadcastMessage),
+
+                // ASYNC EVENTS
+                74 => EventType::Async(AsyncEvent::AudioPlayback),
+                73 => EventType::Async(AsyncEvent::AudioRecording),
+                67 => EventType::Async(AsyncEvent::Cloud),
+                63 => EventType::Async(AsyncEvent::Dialog),
+                62 => EventType::Async(AsyncEvent::Http),
+                66 => EventType::Async(AsyncEvent::InAppPurchase),
+                60 => EventType::Async(AsyncEvent::ImageLoaded),
+                68 => EventType::Async(AsyncEvent::Networking),
+                71 => EventType::Async(AsyncEvent::PushNotification),
+                72 => EventType::Async(AsyncEvent::SaveLoad),
+                70 => EventType::Async(AsyncEvent::Social),
+                69 => EventType::Async(AsyncEvent::Steam),
+                75 => EventType::Async(AsyncEvent::System),
+
+                _ => EventType::Unknown,
+            },
             _ => EventType::Unknown,
         }
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Serialize, Deserialize)]
-struct EventIntermediary {
+/// A simpler, less idiomatic and less understandable, but more direct, representation of
+/// Gms2 event types and numbers. We use this internally in the serde of the higher level
+/// `EventType` enum, which is also given.
+///
+/// This enum is made public largely so non-Rust applications downstream can have an easier
+/// interface to work with. Rust applications are encouraged to stick with the more idiomatic
+/// and user-friendly `EventType`.
+#[derive(
+    Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Serialize, Deserialize, Copy, Clone,
+)]
+pub struct EventIntermediary {
     event_type: usize,
     event_num: usize,
 }
@@ -232,7 +388,6 @@ impl<'de> Deserialize<'de> for EventType {
         deserializer.deserialize_struct("EventType", &FIELD_NAMES, DeserializerVisitor)
     }
 }
-
 const FIELD_NAMES: [&str; 2] = ["event_num", "event_type"];
 
 #[cfg(test)]
@@ -313,10 +468,62 @@ mod tests {
         harness(EventType::Draw(DrawEvent::PostDraw));
         harness(EventType::Draw(DrawEvent::WindowResize));
 
+        harness(EventType::Collision);
+
+        harness(EventType::Other(OtherEvent::OutsideRoom));
+        harness(EventType::Other(OtherEvent::IntersectBoundary));
+        for i in 0..=OtherEvent::OUTSIDE_VIEW_MAX {
+            harness(EventType::Other(OtherEvent::OutsideView(i)));
+            harness(EventType::Other(OtherEvent::IntersectView(i)));
+        }
+        harness(EventType::Other(OtherEvent::GameStart));
+        harness(EventType::Other(OtherEvent::GameEnd));
+        harness(EventType::Other(OtherEvent::RoomStart));
+        harness(EventType::Other(OtherEvent::RoomEnd));
+        harness(EventType::Other(OtherEvent::AnimationEnd));
+        harness(EventType::Other(OtherEvent::AnimationUpdate));
+        harness(EventType::Other(OtherEvent::AnimationEvent));
+        harness(EventType::Other(OtherEvent::PathEnded));
+        for i in 0..=OtherEvent::USER_EVENT_MAX {
+            harness(EventType::Other(OtherEvent::UserEvent(i)));
+        }
+        harness(EventType::Other(OtherEvent::BroadcastMessage));
+
+        harness(EventType::Async(AsyncEvent::AudioRecording));
+        harness(EventType::Async(AsyncEvent::AudioRecording));
+        harness(EventType::Async(AsyncEvent::Cloud));
+        harness(EventType::Async(AsyncEvent::Dialog));
+        harness(EventType::Async(AsyncEvent::Http));
+        harness(EventType::Async(AsyncEvent::InAppPurchase));
+        harness(EventType::Async(AsyncEvent::ImageLoaded));
+        harness(EventType::Async(AsyncEvent::Networking));
+        harness(EventType::Async(AsyncEvent::PushNotification));
+        harness(EventType::Async(AsyncEvent::SaveLoad));
+        harness(EventType::Async(AsyncEvent::Social));
+        harness(EventType::Async(AsyncEvent::Steam));
+        harness(EventType::Async(AsyncEvent::System));
+
         fn harness(val: EventType) {
             let output = EventType::from(EventIntermediary::from(val));
 
             assert_eq!(val, output);
+        }
+    }
+
+    #[test]
+    fn symmetry_from_event_intermediary() {
+        for event_type in 0..100 {
+            for event_num in 0..100 {
+                let ei = EventIntermediary {
+                    event_type,
+                    event_num,
+                };
+
+                let et = EventType::from(ei);
+                if et != EventType::Unknown {
+                    assert_eq!(EventIntermediary::from(et), ei,);
+                }
+            }
         }
     }
 }
