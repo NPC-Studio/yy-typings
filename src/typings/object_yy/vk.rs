@@ -199,3 +199,8 @@ pub enum VirtualKeyCode {
     Paste,
     Cut,
 }
+
+
+pub enum VirtualMouseCode {
+    
+}
