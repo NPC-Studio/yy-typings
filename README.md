@@ -2,9 +2,9 @@
 
 This is a library was created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by NPC Studio. [Jack Spira](https://twitter.com/sanbox_irl) wrote the first version of this tool and maintains it. This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public. Using this tool, one should be able to generate their own pipeline without difficulty.
 
-***This crate only supports Gms2, and only supports Gms2 2.3 and above***. If users do want to use a version with Gms2 version 2.2, there is a historical release on the main branch which was made before 2.3's release, though it is not nearly as fully featured as the current branch.
+***This crate only supports Gms2, and only supports Gms2 2.3 and above***.
 
-This repository has a pair: [the Yy-Boss](), which provides active Yyp handling over stdin/stdout, abstracting over Gms2's native types to allow users to dynamically create resources (and analyze existing resources) without handling the Gms2 Yy files directly.
+This repository has a pair: [the Yy-Boss](https://github.com/NPC-Studio/yy-boss), which provides active Yyp handling as a library and as a binary over stdin/stdout, abstracting over Gms2's native types to allow users to dynamically create resources (and analyze existing resources) without handling the Gms2 Yy files directly.
 
 This crate is composed of typings for the `.yyp` and various `.yy` files. The following typings have been created (and are actively supported):
 
@@ -17,13 +17,13 @@ This crate is composed of typings for the `.yyp` and various `.yy` files. The fo
 - [ ] Shaders
 - [ ] Fonts
 - [ ] Timelines
-- [ ] Objects
+- [x] Objects
 - [ ] Rooms
 - [ ] Notes
 - [ ] Included Files
 - [ ] Extensions
 - [x] Options*
-- [ ] Configurations
+- [x] Configurations
 
 ***Options are not directly user accessible, but are provided through other structures like TextureGroups. The Options file itself is very non-spec, and it difficult to get a cohesive picture of.**
 
