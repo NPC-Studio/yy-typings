@@ -100,6 +100,9 @@ mod typings {
     /// Typings for Scripts.
     pub mod script;
 
+    /// Typings for Shaders.
+    pub mod shader;
+
     mod resource_version;
     pub use resource_version::ResourceVersion;
 
