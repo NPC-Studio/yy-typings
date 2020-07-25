@@ -1,10 +1,13 @@
 use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 use smart_default::SmartDefault;
-use std::fmt;
+use std::{convert::TryFrom, fmt};
 
 /// Describes the current event type. Users can make most events freely, though
 /// special care should be taken that `Alarm`'s .0 field is less than `ALARM_MAX`,
 /// and the same for the `OtherEvent`'s usize wrappers.
+///
+/// As of `0.1.3`, these typings do not include most of the input interrupts, like
+/// KeyDown(x). They will eventually, when I develop the mental stamina to type them.
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
 pub enum EventType {
     #[default]
@@ -20,12 +23,58 @@ pub enum EventType {
     Collision,
     Other(OtherEvent),
     Async(AsyncEvent),
-    Unknown,
 }
 
 impl EventType {
     /// The maximum number of alarms which are available in the Gms2 IDE.
     pub const ALARM_MAX: usize = 11;
+
+    /// Gets the filename for a given event with its requisite base. We return in this format
+    /// to reduce allocating a string per call, as this filename will likely become allocated
+    /// on some path in the future.
+    ///
+    /// ```rs
+    /// let (base_name, numeric_id) = EventType::Create;
+    /// assert_eq!(base_name, "Create_");
+    /// assert_eq!(numeric_id, 0);
+    /// ```
+    ///
+    /// If `event_type != EventType::Unknown`, then this function will *always* return a `Some`.
+    /// `None` is reserved only for `EventType::Unknown`.
+    pub fn filename(&self) -> Option<(&'static str, usize)> {
+        let name = match self {
+            EventType::Create => "Create_",
+            EventType::Destroy => "Destroy_",
+            EventType::Cleanup => "CleanUp_",
+            EventType::Step(_) => "Step_",
+            EventType::Alarm(_) => "Alarm_",
+            EventType::Draw(_) => "Draw_",
+            EventType::Collision => "Collision_",
+            EventType::Other(_) => "Other_",
+            EventType::Async(_) => "Other_",
+        };
+
+        let number = EventIntermediary::from(*self).event_num;
+
+        Some((name, number))
+    }
+
+    /// Parses a given filename and number into an `EventType`, if valid.
+    pub fn parse_filename(value: &str, event_num: usize) -> Option<EventType> {
+        let event_type = match value {
+            "Create_" => 0,
+            "Destroy_" => 1,
+            "CleanUp_" => 12,
+            "Step_" => 3,
+            "Alarm_" => 2,
+            "Draw_" => 8,
+            "Collision_" => 4,
+            "Other_" => 7,
+            _ => return None,
+        };
+
+        EventType::try_from(EventIntermediary { event_type, event_num}).ok()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
@@ -91,6 +140,39 @@ impl OtherEvent {
 
     pub const USER_EVENT_BASE: usize = 10;
     pub const USER_EVENT_MAX: usize = 15;
+}
+
+/// A simpler, less idiomatic and less understandable, but more direct, representation of
+/// Gms2 event types and numbers. We use this internally in the serde of the higher level
+/// `EventType` enum, which is also given.
+///
+/// This struct is made public largely so non-Rust applications downstream can have an easier
+/// interface to work with. Rust applications are encouraged to stick with the more idiomatic
+/// and user-friendly `EventType`, which is far more type safe while being equally performant.
+#[derive(
+    Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Serialize, Deserialize, Copy, Clone,
+)]
+pub struct EventIntermediary {
+    event_type: usize,
+    event_num: usize,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Copy, Clone, Serialize, Deserialize)]
+pub enum EventTypeConvertErrors {
+    CannotFindEventNumber(usize),
+    CannotFindEventType,
+}
+
+impl std::error::Error for EventTypeConvertErrors {}
+impl fmt::Display for EventTypeConvertErrors {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            EventTypeConvertErrors::CannotFindEventNumber(event_type) => {
+                write!(f, "invalid event_number for event type {}", event_type)
+            }
+            EventTypeConvertErrors::CannotFindEventType => write!(f, "invalid event_type"),
+        }
+    }
 }
 
 impl From<EventType> for EventIntermediary {
@@ -209,22 +291,19 @@ impl From<EventType> for EventIntermediary {
                     AsyncEvent::System => 75,
                 },
             },
-            EventType::Unknown => EventIntermediary {
-                event_num: 0,
-                event_type: 0,
-            },
         }
     }
 }
 
-impl From<EventIntermediary> for EventType {
-    fn from(o: EventIntermediary) -> Self {
+impl TryFrom<EventIntermediary> for EventType {
+    type Error = EventTypeConvertErrors;
+    fn try_from(o: EventIntermediary) -> Result<Self, Self::Error> {
         const USER_EVENT_MAX_ABS: usize = OtherEvent::USER_EVENT_BASE + OtherEvent::USER_EVENT_MAX;
         const OUTSIDE_VIEW_MAX: usize =
             OtherEvent::OUTSIDE_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
         const OUTSIDE_INTERSECT_MAX: usize =
             OtherEvent::INTERSECT_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
-        match o.event_type {
+        let output = match o.event_type {
             // lifetime events
             0 if o.event_num == 0 => EventType::Create,
             1 if o.event_num == 0 => EventType::Destroy,
@@ -235,7 +314,7 @@ impl From<EventIntermediary> for EventType {
                 0 => EventType::Step(Stage::Main),
                 1 => EventType::Step(Stage::Begin),
                 2 => EventType::Step(Stage::End),
-                _ => EventType::Unknown,
+                _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(3)),
             },
 
             2 if o.event_num <= EventType::ALARM_MAX => EventType::Alarm(o.event_num),
@@ -250,7 +329,7 @@ impl From<EventIntermediary> for EventType {
                 76 => EventType::Draw(DrawEvent::PreDraw),
                 77 => EventType::Draw(DrawEvent::PostDraw),
                 65 => EventType::Draw(DrawEvent::WindowResize),
-                _ => EventType::Unknown,
+                _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(8)),
             },
 
             4 if o.event_num == 0 => EventType::Collision,
@@ -294,26 +373,13 @@ impl From<EventIntermediary> for EventType {
                 69 => EventType::Async(AsyncEvent::Steam),
                 75 => EventType::Async(AsyncEvent::System),
 
-                _ => EventType::Unknown,
+                _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(7)),
             },
-            _ => EventType::Unknown,
-        }
-    }
-}
+            _ => return Err(EventTypeConvertErrors::CannotFindEventType),
+        };
 
-/// A simpler, less idiomatic and less understandable, but more direct, representation of
-/// Gms2 event types and numbers. We use this internally in the serde of the higher level
-/// `EventType` enum, which is also given.
-///
-/// This enum is made public largely so non-Rust applications downstream can have an easier
-/// interface to work with. Rust applications are encouraged to stick with the more idiomatic
-/// and user-friendly `EventType`.
-#[derive(
-    Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Serialize, Deserialize, Copy, Clone,
-)]
-pub struct EventIntermediary {
-    event_type: usize,
-    event_num: usize,
+        Ok(output)
+    }
 }
 
 impl Serialize for EventType {
@@ -337,54 +403,54 @@ enum Field {
     Type,
 }
 
+use serde::de::{Error, MapAccess, Visitor};
+struct DeserializerVisitor;
+
+impl<'de> Visitor<'de> for DeserializerVisitor {
+    type Value = EventType;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str(r#"a value of "event_num""#)
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: MapAccess<'de>,
+    {
+        let mut event_number = None;
+        let mut event_type = None;
+
+        while let Some(key) = map.next_key()? {
+            match key {
+                Field::Number => {
+                    if event_number.is_some() {
+                        return Err(Error::duplicate_field("event_number"));
+                    }
+                    event_number = Some(map.next_value()?);
+                }
+                Field::Type => {
+                    if event_type.is_some() {
+                        return Err(Error::duplicate_field("event_type"));
+                    }
+                    event_type = Some(map.next_value()?);
+                }
+            }
+        }
+
+        let event_intermediary = EventIntermediary {
+            event_type: event_type.ok_or_else(|| Error::missing_field("event_type"))?,
+            event_num: event_number.ok_or_else(|| Error::missing_field("event_number"))?,
+        };
+
+        EventType::try_from(event_intermediary).map_err(Error::custom)
+    }
+}
+
 impl<'de> Deserialize<'de> for EventType {
     fn deserialize<D>(deserializer: D) -> Result<EventType, D::Error>
     where
         D: Deserializer<'de>,
     {
-        use serde::de::{Error, MapAccess, Visitor};
-        struct DeserializerVisitor;
-
-        impl<'de> Visitor<'de> for DeserializerVisitor {
-            type Value = EventType;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str(r#"a value of "event_num""#)
-            }
-
-            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-            where
-                A: MapAccess<'de>,
-            {
-                let mut event_number = None;
-                let mut event_type = None;
-
-                while let Some(key) = map.next_key()? {
-                    match key {
-                        Field::Number => {
-                            if event_number.is_some() {
-                                return Err(Error::duplicate_field("event_number"));
-                            }
-                            event_number = Some(map.next_value()?);
-                        }
-                        Field::Type => {
-                            if event_type.is_some() {
-                                return Err(Error::duplicate_field("event_type"));
-                            }
-                            event_type = Some(map.next_value()?);
-                        }
-                    }
-                }
-
-                let event_intermediary = EventIntermediary {
-                    event_type: event_type.ok_or_else(|| Error::missing_field("event_type"))?,
-                    event_num: event_number.ok_or_else(|| Error::missing_field("event_number"))?,
-                };
-
-                Ok(EventType::from(event_intermediary))
-            }
-        }
-
         deserializer.deserialize_struct("EventType", &FIELD_NAMES, DeserializerVisitor)
     }
 }
@@ -439,9 +505,8 @@ mod tests {
         assert_eq!(event_type, EventType::Create);
 
         let event_type_str = r#"{"event_num":100,"event_type":1000}"#;
-        let event_type: EventType = serde_json::from_str(event_type_str).unwrap();
-
-        assert_eq!(event_type, EventType::Unknown);
+        let event_type: Result<EventType, _> = serde_json::from_str(event_type_str);
+        assert!(event_type.is_err());
     }
 
     #[test]
@@ -504,7 +569,7 @@ mod tests {
         harness(EventType::Async(AsyncEvent::System));
 
         fn harness(val: EventType) {
-            let output = EventType::from(EventIntermediary::from(val));
+            let output = EventType::try_from(EventIntermediary::from(val)).unwrap();
 
             assert_eq!(val, output);
         }
@@ -519,9 +584,8 @@ mod tests {
                     event_num,
                 };
 
-                let et = EventType::from(ei);
-                if et != EventType::Unknown {
-                    assert_eq!(EventIntermediary::from(et), ei,);
+                if let Ok(et) = EventType::try_from(ei) {
+                    assert_eq!(EventIntermediary::from(et), ei);
                 }
             }
         }
