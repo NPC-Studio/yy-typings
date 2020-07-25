@@ -13,8 +13,8 @@ This crate is composed of typings for the `.yyp` and various `.yy` files. The fo
 - [ ] Tilesets
 - [ ] Sounds
 - [ ] Paths
-- [ ] Scripts
-- [ ] Shaders
+- [x] Scripts
+- [x] Shaders
 - [ ] Fonts
 - [ ] Timelines
 - [x] Objects
