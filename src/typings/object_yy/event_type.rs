@@ -1,4 +1,4 @@
-use super::{MouseButtonCode, VirtualKeyCode};
+use super::{Gesture, MouseButtonCode, VirtualKeyCode};
 use num_traits::FromPrimitive;
 use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 use smart_default::SmartDefault;
@@ -32,6 +32,8 @@ pub enum EventType {
     KeyPress(VirtualKeyCode),
     KeyRelease(VirtualKeyCode),
 
+    Gesture(GestureEvent),
+
     Other(OtherEvent),
     Async(AsyncEvent),
 }
@@ -62,6 +64,7 @@ impl EventType {
             EventType::KeyDown(_) => "Keyboard_",
             EventType::KeyPress(_) => "KeyPress_",
             EventType::KeyRelease(_) => "KeyRelease_",
+            EventType::Gesture(_) => "Gesture_",
             EventType::Other(_) => "Other_",
             EventType::Async(_) => "Other_",
         };
@@ -88,6 +91,7 @@ impl EventType {
             "Keyboard_" => 5,
             "KeyPress_" => 9,
             "KeyRelease_" => 10,
+            "Gesture_" => 13,
             "Other_" => 7,
             _ => return Err(EventTypeConvertErrors::CannotFindEventType),
         };
@@ -151,9 +155,8 @@ impl MouseEvent {
 
         let output = match value {
             0..=2 => MouseEvent::Down(MouseButton {
-                mouse_button_code: num_traits::FromPrimitive::from_usize(value - Self::DOWN_OFFSET)
-                    .unwrap(),
-                local_input,
+                mb_code: num_traits::FromPrimitive::from_usize(value - Self::DOWN_OFFSET).unwrap(),
+                local: local_input,
             }),
             3 => {
                 if local_input {
@@ -163,19 +166,17 @@ impl MouseEvent {
                 }
             }
             4..=6 => MouseEvent::Pressed(MouseButton {
-                mouse_button_code: num_traits::FromPrimitive::from_usize(
-                    value - Self::PRESSED_OFFSET,
-                )
-                .unwrap(),
-                local_input,
+                mb_code: num_traits::FromPrimitive::from_usize(value - Self::PRESSED_OFFSET)
+                    .unwrap(),
+                local: local_input,
             }),
             _ => {
                 if let Some(mouse_button_code) =
                     FromPrimitive::from_usize(value - Self::RELEASED_OFFSET)
                 {
                     MouseEvent::Released(MouseButton {
-                        mouse_button_code,
-                        local_input,
+                        mb_code: mouse_button_code,
+                        local: local_input,
                     })
                 } else {
                     return None;
@@ -190,13 +191,13 @@ impl MouseEvent {
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
 pub struct MouseButton {
     /// The mouse button code used for this input.
-    pub mouse_button_code: MouseButtonCode,
+    pub mb_code: MouseButtonCode,
 
     /// Whether the input is a "global" input, or a "local" input. In the Gms2 IDE,
     /// these are separated into different categories. "Local" events only file when
     /// the object itself is clicked on, while "global" can be fire whenever the input
     /// is held at all.
-    pub local_input: bool,
+    pub local: bool,
 }
 
 impl MouseButton {
@@ -208,12 +209,35 @@ impl MouseButton {
     /// in serialization and deserialization. We make this public as this library attempts
     /// to be 100% public.
     pub fn event_offset(&self) -> usize {
-        self.mouse_button_code as usize
-            + if self.local_input {
-                0
-            } else {
-                Self::GLOBAL_OFFSET
-            }
+        self.mb_code as usize + if self.local { 0 } else { Self::GLOBAL_OFFSET }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+pub struct GestureEvent {
+    /// The type of gesture used.
+    pub gesture: Gesture,
+    /// Whether the input is a "global" input, or a "local" input. In the Gms2 IDE,
+    /// these are separated into different categories. "Local" events only file when
+    /// the object itself is clicked on, while "global" can be fire whenever the input
+    /// is held at all.
+    pub local: bool,
+}
+
+impl GestureEvent {
+    /// The offset for the `event_num` if this gesture is a global. We use this number
+    /// internally for serialization/deserialization.
+    pub const GLOBAL_OFFSET: usize = 64;
+
+    /// Converts an `event_num`, if possible, into a Gesture.
+    pub fn convert_to_input(mut value: usize) -> Option<GestureEvent> {
+        let mut local = true;
+        if value & Self::GLOBAL_OFFSET == Self::GLOBAL_OFFSET {
+            value &= !Self::GLOBAL_OFFSET;
+            local = false;
+        }
+
+        FromPrimitive::from_usize(value).map(|gesture| GestureEvent { gesture, local })
     }
 }
 
@@ -401,6 +425,15 @@ impl From<EventType> for EventIntermediary {
                 event_type: 10,
                 event_num: vk as usize,
             },
+            EventType::Gesture(gv) => EventIntermediary {
+                event_type: 13,
+                event_num: gv.gesture as usize
+                    + if gv.local {
+                        0
+                    } else {
+                        GestureEvent::GLOBAL_OFFSET
+                    },
+            },
             EventType::Other(other_event) => EventIntermediary {
                 event_type: 7,
                 event_num: match other_event {
@@ -527,7 +560,7 @@ impl TryFrom<EventIntermediary> for EventType {
             }
 
             5 => {
-                if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
+                if let Some(vk) = FromPrimitive::from_usize(o.event_num) {
                     EventType::KeyDown(vk)
                 } else {
                     return Err(EventTypeConvertErrors::CannotFindEventNumber(5));
@@ -535,7 +568,7 @@ impl TryFrom<EventIntermediary> for EventType {
             }
 
             9 => {
-                if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
+                if let Some(vk) = FromPrimitive::from_usize(o.event_num) {
                     EventType::KeyPress(vk)
                 } else {
                     return Err(EventTypeConvertErrors::CannotFindEventNumber(9));
@@ -543,10 +576,18 @@ impl TryFrom<EventIntermediary> for EventType {
             }
 
             10 => {
-                if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
+                if let Some(vk) = FromPrimitive::from_usize(o.event_num) {
                     EventType::KeyRelease(vk)
                 } else {
                     return Err(EventTypeConvertErrors::CannotFindEventNumber(10));
+                }
+            }
+
+            13 => {
+                if let Some(event) = GestureEvent::convert_to_input(o.event_num) {
+                    EventType::Gesture(event)
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(13));
                 }
             }
 
@@ -751,33 +792,33 @@ mod tests {
 
         harness(EventType::Collision);
 
-        for i in 0..3 {
+        for i in 0..MouseButtonCode::COUNT {
             let mouse_button_code = FromPrimitive::from_usize(i).unwrap();
             harness(EventType::Mouse(MouseEvent::Down(MouseButton {
-                mouse_button_code,
-                local_input: true,
+                mb_code: mouse_button_code,
+                local: true,
             })));
             harness(EventType::Mouse(MouseEvent::Pressed(MouseButton {
-                mouse_button_code,
-                local_input: true,
+                mb_code: mouse_button_code,
+                local: true,
             })));
             harness(EventType::Mouse(MouseEvent::Released(MouseButton {
-                mouse_button_code,
-                local_input: true,
+                mb_code: mouse_button_code,
+                local: true,
             })));
 
             let mouse_button_code = FromPrimitive::from_usize(i).unwrap();
             harness(EventType::Mouse(MouseEvent::Down(MouseButton {
-                mouse_button_code,
-                local_input: false,
+                mb_code: mouse_button_code,
+                local: false,
             })));
             harness(EventType::Mouse(MouseEvent::Pressed(MouseButton {
-                mouse_button_code,
-                local_input: false,
+                mb_code: mouse_button_code,
+                local: false,
             })));
             harness(EventType::Mouse(MouseEvent::Released(MouseButton {
-                mouse_button_code,
-                local_input: false,
+                mb_code: mouse_button_code,
+                local: false,
             })));
         }
 
@@ -791,6 +832,18 @@ mod tests {
                 harness(EventType::KeyPress(vk));
                 harness(EventType::KeyRelease(vk));
             }
+        }
+
+        for i in 0..Gesture::COUNT {
+            let gesture = FromPrimitive::from_usize(i).unwrap();
+            harness(EventType::Gesture(GestureEvent {
+                gesture,
+                local: true,
+            }));
+            harness(EventType::Gesture(GestureEvent {
+                gesture,
+                local: false,
+            }));
         }
 
         harness(EventType::Other(OtherEvent::OutsideRoom));
@@ -870,6 +923,7 @@ mod tests {
             "Keyboard_",
             "KeyPress_",
             "KeyRelease_",
+            "Gesture_",
         ];
 
         for name in event_names.iter() {

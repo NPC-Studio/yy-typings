@@ -130,6 +130,49 @@ pub enum MouseButtonCode {
     Middle,
 }
 
+impl MouseButtonCode {
+    #[cfg(test)]
+    pub(crate) const COUNT: usize = 3;
+}
+
+/// Symbolic names for the Gestures used in Gms2
+#[derive(
+    Debug,
+    Hash,
+    Ord,
+    PartialOrd,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    SmartDefault,
+    Deserialize_repr,
+    Serialize_repr,
+    FromPrimitive,
+)]
+#[repr(u8)]
+pub enum Gesture {
+    #[default]
+    Tap,
+    DoubleTap,
+    DragStart,
+    Dragging,
+    DragEnd,
+    Flick,
+    PinchStart,
+    PinchIn,
+    PinchOut,
+    PinchEnd,
+    RotateStart,
+    Rotating,
+    RotateEnd,
+}
+
+impl Gesture {
+    #[cfg(test)]
+    pub(crate) const COUNT: usize = 12;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
