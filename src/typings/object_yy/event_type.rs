@@ -4,10 +4,13 @@ use std::{convert::TryFrom, fmt};
 
 /// Describes the current event type. Users can make most events freely, though
 /// special care should be taken that `Alarm`'s .0 field is less than `ALARM_MAX`,
-/// and the same for the `OtherEvent`'s usize wrappers.
-///
-/// As of `0.1.3`, these typings do not include most of the input interrupts, like
-/// KeyDown(x). They will eventually, when I develop the mental stamina to type them.
+/// and the same for the `OtherEvent`'s usize wrappers. To make sure some event
+/// has been validly created, `is_valid` has been provided.
+/// 
+/// **Note: only serde_json serialization and deserialization is supported for EventType.**
+/// Yaml, and other text / WYSIWYG data formats should be fine, but Bincode and other binary
+/// sequences are unlikely to succesfully serialize this. This is due to our use of serde's
+/// `flatten`, which runs afoul of this issue: https://github.com/servo/bincode/issues/245
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
 pub enum EventType {
     #[default]
@@ -42,10 +45,7 @@ impl EventType {
     /// assert_eq!(base_name, "Create_");
     /// assert_eq!(numeric_id, 0);
     /// ```
-    ///
-    /// If `event_type != EventType::Unknown`, then this function will *always* return a `Some`.
-    /// `None` is reserved only for `EventType::Unknown`.
-    pub fn filename(&self) -> Option<(&'static str, usize)> {
+    pub fn filename(&self) -> (&'static str, usize) {
         let name = match self {
             EventType::Create => "Create_",
             EventType::Destroy => "Destroy_",
@@ -63,11 +63,14 @@ impl EventType {
 
         let number = EventIntermediary::from(*self).event_num;
 
-        Some((name, number))
+        (name, number)
     }
 
     /// Parses a given filename and number into an `EventType`, if valid.
-    pub fn parse_filename(value: &str, event_num: usize) -> Option<EventType> {
+    pub fn parse_filename(
+        value: &str,
+        event_num: usize,
+    ) -> Result<EventType, EventTypeConvertErrors> {
         let event_type = match value {
             "Create_" => 0,
             "Destroy_" => 1,
@@ -79,14 +82,18 @@ impl EventType {
             "Other_" => 7,
             "Keyboard_" => 5,
             "KeyPress_" => 9,
-            _ => return None,
+            "KeyRelease_" => 10,
+            _ => return Err(EventTypeConvertErrors::CannotFindEventType),
         };
 
         EventType::try_from(EventIntermediary {
             event_type,
             event_num,
         })
-        .ok()
+    }
+
+    pub fn is_valid(value: EventType) -> bool {
+        EventType::try_from(EventIntermediary::from(value)).is_ok()
     }
 }
 
@@ -330,9 +337,27 @@ impl TryFrom<EventIntermediary> for EventType {
             OtherEvent::INTERSECT_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
         let output = match o.event_type {
             // lifetime events
-            0 if o.event_num == 0 => EventType::Create,
-            1 if o.event_num == 0 => EventType::Destroy,
-            12 if o.event_num == 0 => EventType::Cleanup,
+            0 => {
+                if o.event_num == 0 {
+                    EventType::Create
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(0));
+                }
+            }
+            1 => {
+                if o.event_num == 0 {
+                    EventType::Destroy
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(1));
+                }
+            }
+            12 => {
+                if o.event_num == 0 {
+                    EventType::Cleanup
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(12));
+                }
+            }
 
             // step
             3 => match o.event_num {
@@ -342,7 +367,13 @@ impl TryFrom<EventIntermediary> for EventType {
                 _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(3)),
             },
 
-            2 if o.event_num <= EventType::ALARM_MAX => EventType::Alarm(o.event_num),
+            2 => {
+                if o.event_num <= EventType::ALARM_MAX {
+                    EventType::Alarm(o.event_num)
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(2));
+                }
+            }
 
             8 => match o.event_num {
                 0 => EventType::Draw(DrawEvent::Draw(Stage::Main)),
@@ -357,7 +388,13 @@ impl TryFrom<EventIntermediary> for EventType {
                 _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(8)),
             },
 
-            4 if o.event_num == 0 => EventType::Collision,
+            4 => {
+                if o.event_num == 0 {
+                    EventType::Collision
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(4));
+                }
+            }
 
             5 => {
                 if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
@@ -431,19 +468,6 @@ impl TryFrom<EventIntermediary> for EventType {
     }
 }
 
-impl Serialize for EventType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let val: EventIntermediary = (*self).into();
-        let mut inter = serializer.serialize_struct("EventIntermediary", 2)?;
-        inter.serialize_field("eventNum", &val.event_num)?;
-        inter.serialize_field("eventType", &val.event_type)?;
-        inter.end()
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 enum Field {
     #[serde(rename = "eventNum")]
@@ -493,6 +517,19 @@ impl<'de> Visitor<'de> for DeserializerVisitor {
         };
 
         EventType::try_from(event_intermediary).map_err(Error::custom)
+    }
+}
+
+impl Serialize for EventType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let val: EventIntermediary = (*self).into();
+        let mut inter = serializer.serialize_struct("EventIntermediary", 2)?;
+        inter.serialize_field("eventNum", &val.event_num)?;
+        inter.serialize_field("eventType", &val.event_type)?;
+        inter.end()
     }
 }
 
@@ -585,6 +622,14 @@ mod tests {
 
         harness(EventType::Collision);
 
+        for i in 0..200 {
+            if let Some(vk) = num_traits::FromPrimitive::from_usize(i) {
+                harness(EventType::KeyDown(vk));
+                harness(EventType::KeyPress(vk));
+                harness(EventType::KeyRelease(vk));
+            }
+        }
+
         harness(EventType::Other(OtherEvent::OutsideRoom));
         harness(EventType::Other(OtherEvent::IntersectBoundary));
         for i in 0..=OtherEvent::OUTSIDE_VIEW_MAX {
@@ -636,6 +681,45 @@ mod tests {
 
                 if let Ok(et) = EventType::try_from(ei) {
                     assert_eq!(EventIntermediary::from(et), ei);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn filepath_symmetry() {
+        let event_names = [
+            "Create_",
+            "Destroy_",
+            "CleanUp_",
+            "Step_",
+            "Alarm_",
+            "Draw_",
+            "Collision_",
+            "Other_",
+            "Other_",
+            "Keyboard_",
+            "KeyPress_",
+            "KeyRelease_",
+        ];
+
+        for name in event_names.iter() {
+            for i in 0..200 {
+                match EventType::parse_filename(name, i) {
+                    Ok(event) => {
+                        let (output_fname, event_number) = event.filename();
+                        assert_eq!(output_fname, *name);
+                        assert_eq!(event_number, i);
+                    }
+                    Err(e) => {
+                        assert!(
+                            matches!(e, EventTypeConvertErrors::CannotFindEventNumber(_)),
+                            "input: {}, {} || got {}",
+                            name,
+                            i,
+                            e
+                        );
+                    }
                 }
             }
         }

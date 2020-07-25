@@ -1,9 +1,6 @@
 # TODO
 
-## Major Version
+JACK -- you're here
 
-1. Type up basics of Object and Script files.
-
-## Future Tasks
-
-1. Support alternative collision masks
+1. FINALLY also mouse stuff
+2. roadmap!

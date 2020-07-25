@@ -105,3 +105,20 @@ pub enum VirtualKeyCode {
     F11,
     F12,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn sanity_checks() {
+        assert_eq!(VirtualKeyCode::Space as usize, 32);
+        assert_eq!(VirtualKeyCode::Seven as usize, 55);
+        assert_eq!(VirtualKeyCode::Right as usize, 39);
+        assert_eq!(VirtualKeyCode::NumpadAdd as usize, 107);
+        assert_eq!(VirtualKeyCode::Delete as usize, 46);
+        assert_eq!(VirtualKeyCode::Backspace as usize, 8);
+        assert_eq!(VirtualKeyCode::P as usize, 80);
+    }
+}
