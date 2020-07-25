@@ -1,33 +1,55 @@
+use num_derive::FromPrimitive;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-/// Symbolic name for a keyboard key.
+/// Symbolic names for the keycodes used by Gms2. These are a cutdown version of the Microsoft
+/// Virtual keycodes from `winuser.h`, and with Vk_Any and Vk_None (custom Gms2) added.
 #[derive(
-    Debug, Hash, Ord, PartialOrd, PartialEq, Eq, Clone, Copy, Deserialize_repr, Serialize_repr,
+    Debug,
+    Hash,
+    Ord,
+    PartialOrd,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    Deserialize_repr,
+    Serialize_repr,
+    FromPrimitive,
 )]
 #[repr(u32)]
 pub enum VirtualKeyCode {
-    /// The '1' key over the letters.
-    Key1,
-    /// The '2' key over the letters.
-    Key2,
-    /// The '3' key over the letters.
-    Key3,
-    /// The '4' key over the letters.
-    Key4,
-    /// The '5' key over the letters.
-    Key5,
-    /// The '6' key over the letters.
-    Key6,
-    /// The '7' key over the letters.
-    Key7,
-    /// The '8' key over the letters.
-    Key8,
-    /// The '9' key over the letters.
-    Key9,
-    /// The '0' key over the 'O' and 'P' keys.
-    Key0,
-
-    A,
+    NoKey = 0,
+    AnyKey = 1,
+    Backspace = 0x08,
+    Tab,
+    Return = 0x0D,
+    Shift = 0x10,
+    Control,
+    Alt,
+    Pause,
+    Escape = 0x1B,
+    Space = 0x20,
+    PageUp,
+    PageDown,
+    End,
+    Home,
+    Left,
+    Up,
+    Right,
+    Down,
+    Insert = 0x2D,
+    Delete,
+    Zero = 0x30,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    A = 0x41,
     B,
     C,
     D,
@@ -54,8 +76,21 @@ pub enum VirtualKeyCode {
     Y,
     Z,
 
-    /// The Escape key, next to F1.
-    Escape,
+    Numpad0 = 0x60,
+    Numpad1,
+    Numpad2,
+    Numpad3,
+    Numpad4,
+    Numpad5,
+    Numpad6,
+    Numpad7,
+    Numpad8,
+    Numpad9,
+    NumpadMultiply,
+    NumpadAdd,
+    NumpadSubtract = 0x6D,
+    NumpadDeciminal,
+    NumpadDivide,
 
     F1,
     F2,
@@ -69,138 +104,4 @@ pub enum VirtualKeyCode {
     F10,
     F11,
     F12,
-    F13,
-    F14,
-    F15,
-    F16,
-    F17,
-    F18,
-    F19,
-    F20,
-    F21,
-    F22,
-    F23,
-    F24,
-
-    /// Print Screen/SysRq.
-    Snapshot,
-    /// Scroll Lock.
-    Scroll,
-    /// Pause/Break key, next to Scroll lock.
-    Pause,
-
-    /// `Insert`, next to Backspace.
-    Insert,
-    Home,
-    Delete,
-    End,
-    PageDown,
-    PageUp,
-
-    Left,
-    Up,
-    Right,
-    Down,
-
-    /// The Backspace key, right over Enter.
-    // TODO: rename
-    Back,
-    /// The Enter key.
-    Return,
-    /// The space bar.
-    Space,
-
-    /// The "Compose" key on Linux.
-    Compose,
-
-    Caret,
-
-    Numlock,
-    Numpad0,
-    Numpad1,
-    Numpad2,
-    Numpad3,
-    Numpad4,
-    Numpad5,
-    Numpad6,
-    Numpad7,
-    Numpad8,
-    Numpad9,
-
-    AbntC1,
-    AbntC2,
-    Add,
-    Apostrophe,
-    Apps,
-    At,
-    Ax,
-    Backslash,
-    Calculator,
-    Capital,
-    Colon,
-    Comma,
-    Convert,
-    Decimal,
-    Divide,
-    Equals,
-    Grave,
-    Kana,
-    Kanji,
-    LAlt,
-    LBracket,
-    LControl,
-    LShift,
-    LWin,
-    Mail,
-    MediaSelect,
-    MediaStop,
-    Minus,
-    Multiply,
-    Mute,
-    MyComputer,
-    NavigateForward,  // also called "Prior"
-    NavigateBackward, // also called "Next"
-    NextTrack,
-    NoConvert,
-    NumpadComma,
-    NumpadEnter,
-    NumpadEquals,
-    OEM102,
-    Period,
-    PlayPause,
-    Power,
-    PrevTrack,
-    RAlt,
-    RBracket,
-    RControl,
-    RShift,
-    RWin,
-    Semicolon,
-    Slash,
-    Sleep,
-    Stop,
-    Subtract,
-    Sysrq,
-    Tab,
-    Underline,
-    Unlabeled,
-    VolumeDown,
-    VolumeUp,
-    Wake,
-    WebBack,
-    WebFavorites,
-    WebForward,
-    WebHome,
-    WebRefresh,
-    WebSearch,
-    WebStop,
-    Yen,
-    Copy,
-    Paste,
-    Cut,
-}
-
-
-pub enum VirtualMouseCode {
-    
 }

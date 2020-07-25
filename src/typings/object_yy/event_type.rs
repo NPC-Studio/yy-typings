@@ -16,11 +16,15 @@ pub enum EventType {
     Cleanup,
 
     Step(Stage),
-
     Alarm(usize),
-
     Draw(DrawEvent),
+
     Collision,
+
+    KeyDown(VirtualKeyCode),
+    KeyPress(VirtualKeyCode),
+    KeyRelease(VirtualKeyCode),
+
     Other(OtherEvent),
     Async(AsyncEvent),
 }
@@ -52,6 +56,9 @@ impl EventType {
             EventType::Collision => "Collision_",
             EventType::Other(_) => "Other_",
             EventType::Async(_) => "Other_",
+            EventType::KeyDown(_) => "Keyboard_",
+            EventType::KeyPress(_) => "KeyPress_",
+            EventType::KeyRelease(_) => "KeyRelease_",
         };
 
         let number = EventIntermediary::from(*self).event_num;
@@ -70,10 +77,16 @@ impl EventType {
             "Draw_" => 8,
             "Collision_" => 4,
             "Other_" => 7,
+            "Keyboard_" => 5,
+            "KeyPress_" => 9,
             _ => return None,
         };
 
-        EventType::try_from(EventIntermediary { event_type, event_num}).ok()
+        EventType::try_from(EventIntermediary {
+            event_type,
+            event_num,
+        })
+        .ok()
     }
 }
 
@@ -254,6 +267,18 @@ impl From<EventType> for EventIntermediary {
                 event_type: 4,
                 event_num: 0,
             },
+            EventType::KeyDown(vk) => EventIntermediary {
+                event_type: 5,
+                event_num: vk as usize,
+            },
+            EventType::KeyPress(vk) => EventIntermediary {
+                event_type: 9,
+                event_num: vk as usize,
+            },
+            EventType::KeyRelease(vk) => EventIntermediary {
+                event_type: 10,
+                event_num: vk as usize,
+            },
             EventType::Other(other_event) => EventIntermediary {
                 event_type: 7,
                 event_num: match other_event {
@@ -334,6 +359,30 @@ impl TryFrom<EventIntermediary> for EventType {
 
             4 if o.event_num == 0 => EventType::Collision,
 
+            5 => {
+                if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
+                    EventType::KeyDown(vk)
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(5));
+                }
+            }
+
+            9 => {
+                if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
+                    EventType::KeyPress(vk)
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(9));
+                }
+            }
+
+            10 => {
+                if let Some(vk) = num_traits::FromPrimitive::from_usize(o.event_num) {
+                    EventType::KeyRelease(vk)
+                } else {
+                    return Err(EventTypeConvertErrors::CannotFindEventNumber(10));
+                }
+            }
+
             7 => match o.event_num {
                 // OTHER EVENTS
                 0 => EventType::Other(OtherEvent::OutsideRoom),
@@ -403,6 +452,7 @@ enum Field {
     Type,
 }
 
+use super::VirtualKeyCode;
 use serde::de::{Error, MapAccess, Visitor};
 struct DeserializerVisitor;
 
