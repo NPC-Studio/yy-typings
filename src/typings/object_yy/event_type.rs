@@ -1,3 +1,5 @@
+use super::{MouseButtonCode, VirtualKeyCode};
+use num_traits::FromPrimitive;
 use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 use smart_default::SmartDefault;
 use std::{convert::TryFrom, fmt};
@@ -6,7 +8,7 @@ use std::{convert::TryFrom, fmt};
 /// special care should be taken that `Alarm`'s .0 field is less than `ALARM_MAX`,
 /// and the same for the `OtherEvent`'s usize wrappers. To make sure some event
 /// has been validly created, `is_valid` has been provided.
-/// 
+///
 /// **Note: only serde_json serialization and deserialization is supported for EventType.**
 /// Yaml, and other text / WYSIWYG data formats should be fine, but Bincode and other binary
 /// sequences are unlikely to succesfully serialize this. This is due to our use of serde's
@@ -23,6 +25,8 @@ pub enum EventType {
     Draw(DrawEvent),
 
     Collision,
+
+    Mouse(MouseEvent),
 
     KeyDown(VirtualKeyCode),
     KeyPress(VirtualKeyCode),
@@ -54,11 +58,12 @@ impl EventType {
             EventType::Alarm(_) => "Alarm_",
             EventType::Draw(_) => "Draw_",
             EventType::Collision => "Collision_",
-            EventType::Other(_) => "Other_",
-            EventType::Async(_) => "Other_",
+            EventType::Mouse(_) => "Mouse_",
             EventType::KeyDown(_) => "Keyboard_",
             EventType::KeyPress(_) => "KeyPress_",
             EventType::KeyRelease(_) => "KeyRelease_",
+            EventType::Other(_) => "Other_",
+            EventType::Async(_) => "Other_",
         };
 
         let number = EventIntermediary::from(*self).event_num;
@@ -79,10 +84,11 @@ impl EventType {
             "Alarm_" => 2,
             "Draw_" => 8,
             "Collision_" => 4,
-            "Other_" => 7,
+            "Mouse_" => 6,
             "Keyboard_" => 5,
             "KeyPress_" => 9,
             "KeyRelease_" => 10,
+            "Other_" => 7,
             _ => return Err(EventTypeConvertErrors::CannotFindEventType),
         };
 
@@ -113,6 +119,102 @@ pub enum DrawEvent {
     PreDraw,
     PostDraw,
     WindowResize,
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+pub enum MouseEvent {
+    #[default]
+    Down(MouseButton),
+    Pressed(MouseButton),
+    Released(MouseButton),
+    NoInput,
+    MouseEnter,
+    MouseExit,
+    MouseWheelUp,
+    MouseWheelDown,
+}
+
+impl MouseEvent {
+    pub const DOWN_OFFSET: usize = 0;
+    pub const PRESSED_OFFSET: usize = 4;
+    pub const RELEASED_OFFSET: usize = 7;
+
+    /// Tries to convert an `event_num` to a MouseEvent. This is for internal usage, but is made
+    /// public to attempt to be a 100% pub facing crate.
+    pub fn convert_to_input(mut value: usize) -> Option<MouseEvent> {
+        let mut local_input = true;
+
+        if value >= MouseButton::GLOBAL_OFFSET {
+            local_input = false;
+            value -= MouseButton::GLOBAL_OFFSET;
+        }
+
+        let output = match value {
+            0..=2 => MouseEvent::Down(MouseButton {
+                mouse_button_code: num_traits::FromPrimitive::from_usize(value - Self::DOWN_OFFSET)
+                    .unwrap(),
+                local_input,
+            }),
+            3 => {
+                if local_input {
+                    MouseEvent::NoInput
+                } else {
+                    return None;
+                }
+            }
+            4..=6 => MouseEvent::Pressed(MouseButton {
+                mouse_button_code: num_traits::FromPrimitive::from_usize(
+                    value - Self::PRESSED_OFFSET,
+                )
+                .unwrap(),
+                local_input,
+            }),
+            _ => {
+                if let Some(mouse_button_code) =
+                    FromPrimitive::from_usize(value - Self::RELEASED_OFFSET)
+                {
+                    MouseEvent::Released(MouseButton {
+                        mouse_button_code,
+                        local_input,
+                    })
+                } else {
+                    return None;
+                }
+            }
+        };
+
+        Some(output)
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+pub struct MouseButton {
+    /// The mouse button code used for this input.
+    pub mouse_button_code: MouseButtonCode,
+
+    /// Whether the input is a "global" input, or a "local" input. In the Gms2 IDE,
+    /// these are separated into different categories. "Local" events only file when
+    /// the object itself is clicked on, while "global" can be fire whenever the input
+    /// is held at all.
+    pub local_input: bool,
+}
+
+impl MouseButton {
+    /// The offset for the `event_num` if this mouse button is a global. We use this number
+    /// internally for serialization/deserialization.
+    pub const GLOBAL_OFFSET: usize = 50;
+
+    /// Calculates the `event_num` offset for this `MouseButton`, largely for internal use
+    /// in serialization and deserialization. We make this public as this library attempts
+    /// to be 100% public.
+    pub fn event_offset(&self) -> usize {
+        self.mouse_button_code as usize
+            + if self.local_input {
+                0
+            } else {
+                Self::GLOBAL_OFFSET
+            }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
@@ -274,6 +376,19 @@ impl From<EventType> for EventIntermediary {
                 event_type: 4,
                 event_num: 0,
             },
+            EventType::Mouse(mouse_event) => EventIntermediary {
+                event_type: 6,
+                event_num: match mouse_event {
+                    MouseEvent::Down(mb) => MouseEvent::DOWN_OFFSET + mb.event_offset(),
+                    MouseEvent::Pressed(mb) => MouseEvent::PRESSED_OFFSET + mb.event_offset(),
+                    MouseEvent::Released(mb) => MouseEvent::RELEASED_OFFSET + mb.event_offset(),
+                    MouseEvent::NoInput => 3,
+                    MouseEvent::MouseEnter => 10,
+                    MouseEvent::MouseExit => 11,
+                    MouseEvent::MouseWheelUp => 60,
+                    MouseEvent::MouseWheelDown => 61,
+                },
+            },
             EventType::KeyDown(vk) => EventIntermediary {
                 event_type: 5,
                 event_num: vk as usize,
@@ -335,6 +450,7 @@ impl TryFrom<EventIntermediary> for EventType {
             OtherEvent::OUTSIDE_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
         const OUTSIDE_INTERSECT_MAX: usize =
             OtherEvent::INTERSECT_VIEW_BASE + OtherEvent::OUTSIDE_VIEW_MAX;
+
         let output = match o.event_type {
             // lifetime events
             0 => {
@@ -393,6 +509,20 @@ impl TryFrom<EventIntermediary> for EventType {
                     EventType::Collision
                 } else {
                     return Err(EventTypeConvertErrors::CannotFindEventNumber(4));
+                }
+            }
+
+            6 => {
+                if let Some(mouse_event) = MouseEvent::convert_to_input(o.event_num) {
+                    EventType::Mouse(mouse_event)
+                } else {
+                    match o.event_num {
+                        10 => EventType::Mouse(MouseEvent::MouseEnter),
+                        11 => EventType::Mouse(MouseEvent::MouseExit),
+                        60 => EventType::Mouse(MouseEvent::MouseWheelUp),
+                        61 => EventType::Mouse(MouseEvent::MouseWheelDown),
+                        _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(6)),
+                    }
                 }
             }
 
@@ -476,7 +606,6 @@ enum Field {
     Type,
 }
 
-use super::VirtualKeyCode;
 use serde::de::{Error, MapAccess, Visitor};
 struct DeserializerVisitor;
 
@@ -622,6 +751,40 @@ mod tests {
 
         harness(EventType::Collision);
 
+        for i in 0..3 {
+            let mouse_button_code = FromPrimitive::from_usize(i).unwrap();
+            harness(EventType::Mouse(MouseEvent::Down(MouseButton {
+                mouse_button_code,
+                local_input: true,
+            })));
+            harness(EventType::Mouse(MouseEvent::Pressed(MouseButton {
+                mouse_button_code,
+                local_input: true,
+            })));
+            harness(EventType::Mouse(MouseEvent::Released(MouseButton {
+                mouse_button_code,
+                local_input: true,
+            })));
+
+            let mouse_button_code = FromPrimitive::from_usize(i).unwrap();
+            harness(EventType::Mouse(MouseEvent::Down(MouseButton {
+                mouse_button_code,
+                local_input: false,
+            })));
+            harness(EventType::Mouse(MouseEvent::Pressed(MouseButton {
+                mouse_button_code,
+                local_input: false,
+            })));
+            harness(EventType::Mouse(MouseEvent::Released(MouseButton {
+                mouse_button_code,
+                local_input: false,
+            })));
+        }
+
+        harness(EventType::Mouse(MouseEvent::NoInput));
+        harness(EventType::Mouse(MouseEvent::MouseEnter));
+        harness(EventType::Mouse(MouseEvent::MouseExit));
+
         for i in 0..200 {
             if let Some(vk) = num_traits::FromPrimitive::from_usize(i) {
                 harness(EventType::KeyDown(vk));
@@ -680,7 +843,13 @@ mod tests {
                 };
 
                 if let Ok(et) = EventType::try_from(ei) {
-                    assert_eq!(EventIntermediary::from(et), ei);
+                    assert_eq!(
+                        EventIntermediary::from(et),
+                        ei,
+                        "input: {{event_type:{}, event_num:{}}}",
+                        event_type,
+                        event_num
+                    );
                 }
             }
         }

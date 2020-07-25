@@ -1,5 +1,6 @@
 use num_derive::FromPrimitive;
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use smart_default::SmartDefault;
 
 /// Symbolic names for the keycodes used by Gms2. These are a cutdown version of the Microsoft
 /// Virtual keycodes from `winuser.h`, and with Vk_Any and Vk_None (custom Gms2) added.
@@ -104,6 +105,29 @@ pub enum VirtualKeyCode {
     F10,
     F11,
     F12,
+}
+
+/// Symbolic names for the mouse buttons used by Gms2.
+#[derive(
+    Debug,
+    Hash,
+    Ord,
+    PartialOrd,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    SmartDefault,
+    Deserialize_repr,
+    Serialize_repr,
+    FromPrimitive,
+)]
+#[repr(u8)]
+pub enum MouseButtonCode {
+    #[default]
+    Left,
+    Right,
+    Middle,
 }
 
 #[cfg(test)]
