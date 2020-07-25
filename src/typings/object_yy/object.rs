@@ -1,4 +1,4 @@
-use super::{ConstGmEvent, ConstGmObject, ConstGmObjectProperty};
+use super::{ConstGmEvent, ConstGmObject, ConstGmObjectProperty, EventType};
 use crate::{FilesystemPath, ResourceVersion, Tags, ViewPath};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -71,10 +71,12 @@ pub struct Object {
 pub struct ObjectEvent {
     /// Is this event used in DragNDrop, the thing no one uses?
     pub is_dn_d: bool,
-    /// The "number" of the Event, which is sort of the category of the event.
-    pub event_num: usize,
-    /// The "id" of the Event, which is sort of the sub-category of the event.
-    pub event_id: usize,
+
+    /// The type of the event. In the JSON, this is represented with two enums,
+    /// but we use Serde to succesfully parse this into idiomatic Rust enums.
+    #[serde(flatten)]
+    pub event_type: EventType,
+
     /// The Id of the thing to collide with.
     pub collision_object_id: Option<FilesystemPath>,
     /// Filesystem path pointing directly to the parent Object,
@@ -90,8 +92,9 @@ pub struct ObjectEvent {
     /// The version of the `.yy` file.
     pub resource_version: ResourceVersion,
 
-    /// The "name" of the Event, which appears to always be serialized to null.
-    pub name: (), // huh
+    /// The "name" of the Event, which appears to always be null or an empty string
+    #[serde(with = "serde_with::rust::string_empty_as_none")]
+    pub name: Option<String>,
 
     /// The tags for the event, which probably should always be empty.
     pub tags: Tags,
@@ -151,61 +154,74 @@ pub enum ObjectPropertyTypes {
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
-    // use crate::{utils::TrailingCommaUtility, ViewPathLocation};
-    // use pretty_assertions::assert_eq;
+    use crate::{object_yy::*, utils::TrailingCommaUtility, ViewPathLocation};
+    use include_dir::{include_dir, Dir, DirEntry};
+    use pretty_assertions::assert_eq;
 
     #[test]
-    fn basic_parse() {
-        // let object1 =
-        //     include_str!("../../../tests/examples/full_project/objects/Object1/Object1.yy");
+    fn trivial_sprite_parsing() {
+        let all_objects: Dir = include_dir!("data/object_examples");
+        let tcu = TrailingCommaUtility::new();
 
-        // let _: Object =
-        //     serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(object1))
-        //         .unwrap();
+        for object_file in all_objects.find("**/*.yy").unwrap() {
+            if let DirEntry::File(file) = object_file {
+                println!("parsing {}", file.path);
+                let our_str = std::str::from_utf8(file.contents()).unwrap();
+                let our_str = tcu.clear_trailing_comma(our_str);
+                serde_json::from_str::<Object>(&our_str).unwrap();
+            }
+        }
+    }
 
-        //     let object = Object {
-        //         sprite_id: FilesystemPath::new("sprites", "spr_other"),
-        //         solid: false,
-        //         visible: true,
-        //         sprite_mask_id: None,
-        //         persistent: false,
-        //         parent_object_id: None,
-        //         physics_object: false,
-        //         physics_sensor: false,
-        //         physics_shape: 1,
-        //         physics_group: 0,
-        //         physics_density: 0.5,
-        //         physics_restitution: 0.1,
-        //         physics_linear_damping: 0.1,
-        //         physics_angular_damping: 0.1,
-        //         physics_friction: 0.2,
-        //         physics_start_awake: true,
-        //         physics_kinematic: false,
-        //         physics_shape_points: vec![],
-        //         event_list: vec![ObjectEvent {
-        //             is_dn_d: false,
-        //             event_num: 73,
-        //             event_type: 8,
-        //             collision_object_id: None,
-        //             parent: FilesystemPath::new("objects", "obj_stairs"),
-        //             resource_version: ResourceVersion::default(),
-        //             name: (),
-        //             tags: vec![],
-        //             resource_type: ConstGmEvent::Const,
-        //         }],
-        //         properties: vec![],
-        //         overridden_properties: vec![],
-        //         parent: ViewPath {
-        //             name: "meta".to_string(),
-        //             path: ViewPathLocation("folders/Objects/meta.yy".to_owned()),
-        //         },
-        //         resource_version: ResourceVersion::default(),
-        //         name: "obj_stairs".to_string(),
-        //         tags: vec![],
-        //         resource_type: ConstGmObject::Const,
-        //     };
+    #[test]
+    fn deep_equality() {
+        let object1 = include_str!("../../../data/object_examples/obj_animate_then_die.yy");
 
-        //     assert_eq!(parsed_object, object);
+        let parsed_object: Object =
+            serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(object1))
+                .unwrap();
+
+        let object = Object {
+            sprite_id: None,
+            solid: false,
+            visible: true,
+            sprite_mask_id: None,
+            persistent: false,
+            parent_object_id: None,
+            physics_object: false,
+            physics_sensor: false,
+            physics_shape: 1,
+            physics_group: 1,
+            physics_density: 0.5,
+            physics_restitution: 0.1,
+            physics_linear_damping: 0.1,
+            physics_angular_damping: 0.1,
+            physics_friction: 0.2,
+            physics_start_awake: true,
+            physics_kinematic: false,
+            physics_shape_points: vec![],
+            event_list: vec![ObjectEvent {
+                is_dn_d: false,
+                event_type: EventType::Other(OtherEvent::AnimationEnd),
+                collision_object_id: None,
+                parent: FilesystemPath::new("objects", "obj_animate_then_die"),
+                resource_version: ResourceVersion::default(),
+                name: None,
+                tags: vec![],
+                resource_type: ConstGmEvent::Const,
+            }],
+            properties: vec![],
+            overridden_properties: vec![],
+            parent: ViewPath {
+                name: "ui".to_string(),
+                path: ViewPathLocation("folders/Objects/ui.yy".to_owned()),
+            },
+            resource_version: ResourceVersion::default(),
+            name: "obj_animate_then_die".to_string(),
+            tags: vec![],
+            resource_type: ConstGmObject::Const,
+        };
+
+        assert_eq!(parsed_object, object);
     }
 }

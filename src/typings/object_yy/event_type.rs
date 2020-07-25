@@ -389,17 +389,17 @@ impl Serialize for EventType {
     {
         let val: EventIntermediary = (*self).into();
         let mut inter = serializer.serialize_struct("EventIntermediary", 2)?;
-        inter.serialize_field("event_num", &val.event_num)?;
-        inter.serialize_field("event_type", &val.event_type)?;
+        inter.serialize_field("eventNum", &val.event_num)?;
+        inter.serialize_field("eventType", &val.event_type)?;
         inter.end()
     }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 enum Field {
-    #[serde(rename = "event_num")]
+    #[serde(rename = "eventNum")]
     Number,
-    #[serde(rename = "event_type")]
+    #[serde(rename = "eventType")]
     Type,
 }
 
@@ -410,7 +410,7 @@ impl<'de> Visitor<'de> for DeserializerVisitor {
     type Value = EventType;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str(r#"a value of "event_num""#)
+        formatter.write_str(r#"a value of "eventNum""#)
     }
 
     fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
@@ -424,13 +424,13 @@ impl<'de> Visitor<'de> for DeserializerVisitor {
             match key {
                 Field::Number => {
                     if event_number.is_some() {
-                        return Err(Error::duplicate_field("event_number"));
+                        return Err(Error::duplicate_field("eventNum"));
                     }
                     event_number = Some(map.next_value()?);
                 }
                 Field::Type => {
                     if event_type.is_some() {
-                        return Err(Error::duplicate_field("event_type"));
+                        return Err(Error::duplicate_field("eventType"));
                     }
                     event_type = Some(map.next_value()?);
                 }
@@ -438,8 +438,8 @@ impl<'de> Visitor<'de> for DeserializerVisitor {
         }
 
         let event_intermediary = EventIntermediary {
-            event_type: event_type.ok_or_else(|| Error::missing_field("event_type"))?,
-            event_num: event_number.ok_or_else(|| Error::missing_field("event_number"))?,
+            event_type: event_type.ok_or_else(|| Error::missing_field("eventType"))?,
+            event_num: event_number.ok_or_else(|| Error::missing_field("eventNum"))?,
         };
 
         EventType::try_from(event_intermediary).map_err(Error::custom)
@@ -454,7 +454,7 @@ impl<'de> Deserialize<'de> for EventType {
         deserializer.deserialize_struct("EventType", &FIELD_NAMES, DeserializerVisitor)
     }
 }
-const FIELD_NAMES: [&str; 2] = ["event_num", "event_type"];
+const FIELD_NAMES: [&str; 2] = ["eventNum", "eventType"];
 
 #[cfg(test)]
 mod tests {
@@ -480,14 +480,14 @@ mod tests {
 
         assert_eq!(
             as_serde,
-            r#"{"rev_padding":10,"event_num":0,"event_type":0,"padding":10}"#
+            r#"{"rev_padding":10,"eventNum":0,"eventType":0,"padding":10}"#
         )
     }
 
     #[test]
     fn basic_deserialize() {
         let wrapper_str =
-            r#"{"rev_padding":10,"event_num":0,"event_type":0,"ioop": "oop","padding":10}"#;
+            r#"{"rev_padding":10,"eventNum":0,"eventType":0,"ioop": "oop","padding":10}"#;
         let wrapper: Wrapper = serde_json::from_str(wrapper_str).unwrap();
 
         assert_eq!(
@@ -499,12 +499,12 @@ mod tests {
             }
         );
 
-        let event_type_str = r#"{"event_num":0,"event_type":0}"#;
+        let event_type_str = r#"{"eventNum":0,"eventType":0}"#;
         let event_type: EventType = serde_json::from_str(event_type_str).unwrap();
 
         assert_eq!(event_type, EventType::Create);
 
-        let event_type_str = r#"{"event_num":100,"event_type":1000}"#;
+        let event_type_str = r#"{"eventNum":100,"eventType":1000}"#;
         let event_type: Result<EventType, _> = serde_json::from_str(event_type_str);
         assert!(event_type.is_err());
     }

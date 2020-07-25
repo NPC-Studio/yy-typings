@@ -72,8 +72,8 @@ mod tests {
 
         test_harness(
             &mut tcu,
-            include_str!("../../tests/examples/trailing_comma/sprite_trailing.yy"),
-            include_str!("../../tests/examples/trailing_comma/sprite_no_trailing.yy"),
+            include_str!("../../data/trailing_comma/sprite_trailing.yy"),
+            include_str!("../../data/trailing_comma/sprite_no_trailing.yy"),
         );
     }
 

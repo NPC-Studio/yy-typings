@@ -76,7 +76,8 @@ mod typings {
         pub use frames_layers::*;
     }
 
-    /// Typings associated with Object `.yy` files, including typing for Events.
+    /// Typings associated with Object `.yy` files, including typing for Events
+    /// and Vk Keycodes.
     pub mod object_yy {
         pub use super::*;
 
@@ -88,6 +89,9 @@ mod typings {
 
         mod event_type;
         pub use event_type::*;
+
+        mod vk;
+        pub use vk::*;
     }
 
     /// Typings associated with Texture Groups.
