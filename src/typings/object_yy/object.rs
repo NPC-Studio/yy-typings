@@ -16,12 +16,12 @@ pub struct Object {
     /// If the object is visible.
     pub visible: bool,
     /// The Id used for the Collision Mask, if not the SpriteId.
-    pub sprite_mask_id: Option<FilesystemPath>, // @todo
+    pub sprite_mask_id: Option<FilesystemPath>,
     /// If the object is "persistent", meaning if Gms2 will keep the object
     /// between room change events.
     pub persistent: bool,
     /// The id of the parent object for the Inhertance in Gms2.
-    pub parent_object_id: Option<FilesystemPath>, // @todo
+    pub parent_object_id: Option<FilesystemPath>,
 
     // Physics
     /// Is this a physics object?
@@ -160,7 +160,7 @@ mod tests {
 
     #[test]
     fn trivial_sprite_parsing() {
-        let all_objects: Dir = include_dir!("data/object_examples");
+        let all_objects: Dir = include_dir!("data/objects");
         let tcu = TrailingCommaUtility::new();
 
         for object_file in all_objects.find("**/*.yy").unwrap() {
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn deep_equality() {
-        let object1 = include_str!("../../../data/object_examples/obj_animate_then_die.yy");
+        let object1 = include_str!("../../../data/objects/obj_animate_then_die.yy");
 
         let parsed_object: Object =
             serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(object1))

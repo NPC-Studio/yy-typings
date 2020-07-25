@@ -164,7 +164,7 @@ mod tests {
 
     #[test]
     fn trivial_sprite_parsing() {
-        let all_sprites: Dir = include_dir!("data/sprite_examples");
+        let all_sprites: Dir = include_dir!("data/sprites");
         let tcu = TrailingCommaUtility::new();
 
         for sprite_file in all_sprites.find("**/*.yy").unwrap() {
@@ -178,7 +178,7 @@ mod tests {
 
     #[test]
     fn deep_check() {
-        let sprite = include_str!("../../../data/sprite_examples/test0.yy");
+        let sprite = include_str!("../../../data/sprites/test0.yy");
         let sprite: Sprite =
             serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(sprite)).unwrap();
 
