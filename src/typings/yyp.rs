@@ -104,8 +104,7 @@ pub struct YypFolder {
     pub order: usize,
 
     /// The resource version of this Resource. Currently `"1.0"`.
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     /// The human-readable name of this Folder. The last part of the `folder_path` and this name
     /// should agree. Human readable names include examples such as "Sprites", "Light Data", or
     /// "Really Good Tiles".
@@ -148,8 +147,7 @@ pub struct YypIncludedFile {
     pub copy_to_mask: isize,
     #[default(Path::new("datafiles").to_owned())]
     pub file_path: PathBuf,
-    #[default("1.0".to_string())]
-    pub resource_version: String,
+    pub resource_version: ResourceVersion,
     pub name: String,
     pub resource_type: ConstGmIncludedFile,
 }
