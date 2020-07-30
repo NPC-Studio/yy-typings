@@ -17,6 +17,12 @@ impl Default for ResourceVersion {
     }
 }
 
+impl fmt::Display for ResourceVersion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}.{}", self.major, self.minor)
+    }
+}
+
 impl ResourceVersion {
     /// Creates a new default ResourceVersion with the major and minor version given.
     /// The default implementation runs this with 1 and 0.
@@ -139,8 +145,6 @@ impl<'de> Deserialize<'de> for ResourceVersion {
             {
                 v.parse().map_err(E::custom)
             }
-
-
         }
 
         deserializer.deserialize_str(ResourceVersionVisitor)
