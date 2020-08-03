@@ -221,7 +221,7 @@ pub struct SpriteZeroChannel {
     pub resource_type: ConstGmSpriteZeroChannel,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, SmartDefault, Copy, Clone, Eq)]
 #[repr(u8)]
 pub enum PlaybackSpeed {
     #[default]
