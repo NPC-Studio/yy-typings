@@ -36,7 +36,7 @@ impl FilesystemPath {
 
 /// Viewpaths in the virtual file system created by the Folders in the Yyp,
 /// deliminated by `/`, and with a ViewPathLocation which ends in `.yy`.
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash)]
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, PartialOrd, Ord)]
 pub struct ViewPath {
     /// The human readable name of the parent. for a `spr_player`, this
     /// might correspond to `Sprites`.

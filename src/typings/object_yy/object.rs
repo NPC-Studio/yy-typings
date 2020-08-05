@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct Object {
     // Ids:
@@ -66,7 +66,7 @@ pub struct Object {
     pub resource_type: ConstGmObject,
 }
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone, Ord, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectEvent {
     /// Is this event used in DragNDrop, the thing no one uses?
@@ -105,7 +105,7 @@ pub struct ObjectEvent {
 
 /// Object "properties" are set in the Gms2 window and allow the user to override those properties either
 /// in child objects of a parent, or in the Room (or both!). This allows for simple customization in the room editor.
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectProperty {
     /// The type of property which is preset. Some, or all, of the rest of the information
@@ -124,9 +124,8 @@ pub struct ObjectProperty {
     pub list_items: Vec<String>,
     /// If set to true when `var_type` is set to `List`, allows the User to select multiple options.
     pub multiselect: bool,
-    /// Not sure what this is supposed to be. In the meantime, we've typed it so that
-    /// it won't prevent a succesful type if it ends up not being a blank vec.
-    pub filters: serde_json::Value,
+    /// Not sure what this is supposed to be. In the meantime, we've typed it as a blank array.
+    pub filters: [(); 0],
     /// The ResourceVersion, default value.
     pub resource_version: ResourceVersion,
     /// The name of the property, such as "room_to_transition_to".
@@ -138,7 +137,18 @@ pub struct ObjectProperty {
 }
 
 /// The types of object "Properties" as set in the Gms2 Widget pane by users.
-#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Clone)]
+#[derive(
+    Debug,
+    Serialize_repr,
+    Deserialize_repr,
+    SmartDefault,
+    PartialEq,
+    Clone,
+    Copy,
+    Eq,
+    Ord,
+    PartialOrd,
+)]
 #[repr(u8)]
 pub enum ObjectPropertyTypes {
     #[default]
