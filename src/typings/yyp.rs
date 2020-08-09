@@ -90,7 +90,9 @@ pub struct YypConfig {
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the root**.
 /// Therefore, to create a tree, one must walk from the root to the final destination.
-#[derive(Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Ord, PartialOrd)]
+#[derive(
+    Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Ord, PartialOrd, PartialEq, Hash,
+)]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
@@ -115,28 +117,6 @@ pub struct YypFolder {
 
     /// The Resource Type of this folder, which is always `"GMFolder"`.
     pub resource_type: ConstGmFolder,
-}
-
-/// This is an ugly partialeq impl here. I'm just not sure what the best option is right now,
-/// especially when it comes to unit tests.
-impl PartialEq for YypFolder {
-    fn eq(&self, other: &Self) -> bool {
-        self.folder_path == other.folder_path
-            && self.resource_version == other.resource_version
-            && self.name == other.name
-            && self.tags == other.tags
-        // && self.order <= other.order
-    }
-}
-
-// keep inline with the partial eq
-impl Hash for YypFolder {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.folder_path.hash(state);
-        self.resource_version.hash(state);
-        self.name.hash(state);
-        self.tags.hash(state);
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
