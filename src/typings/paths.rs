@@ -9,7 +9,6 @@ use std::path::{Path, PathBuf};
 /// `path` will **always** point to a file, and the file it points to will always
 /// have a `.yy` extension. The `name` field and the `file_name` of the `path` will always
 /// be equal to each other.
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub struct FilesystemPath {
     /// The name of the resource which the Path points to. For an `spr_sprite`, for example, it will
