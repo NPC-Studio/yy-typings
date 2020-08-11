@@ -13,17 +13,23 @@ use std::{
 pub struct Yyp {
     /// Contains all project resources, ordered by KeyID.
     pub resources: Vec<YypResource>,
+    
     #[serde(rename = "Options")]
     pub options: Vec<FilesystemPath>,
+
     /// Denotes whether this project uses drag and drop or not
     pub is_dn_d_project: bool,
+
     /// Allows for experimental JS editing. Unfinished or legacy feature. It's a secret.
     pub is_ecma: bool,
+
     /// Unknown property, usually an empty string.
     pub tutorial_path: String,
+
     /// Lists all known configs. Note that this top level
     /// config will **always** have the `name` `"Default"`.
     pub configs: YypConfig,
+
     /// This is the order rooms are loaded in. The first room
     /// is the default room which GMS2 will load on GameStart.
     #[serde(rename = "RoomOrder")]
@@ -32,29 +38,37 @@ pub struct Yyp {
     /// have resource paths within them.
     #[serde(rename = "Folders")]
     pub folders: Vec<YypFolder>,
+
     /// The Audio Groups present within the project. Relationship to
     /// the inherited.yy is unclear
     #[serde(rename = "AudioGroups")]
     pub audio_groups: Vec<AudioGroup>,
+
     /// The Texture groups present within the project. Relationship to
     /// the inherited.yy is unclear
     #[serde(rename = "TextureGroups")]
     pub texture_groups: Vec<TextureGroup>,
+
     /// The included files within the projects.
     #[serde(rename = "IncludedFiles")]
     pub included_files: Vec<YypIncludedFile>,
+
     /// The MetaData for the project.
     #[serde(rename = "MetaData")]
     pub meta_data: YypMetaData,
+
     /// The version of the YYP. Currently, that is "1.3"
     #[default(ResourceVersion::new(1, 3))]
     pub resource_version: ResourceVersion,
+
     /// The actual human-readable name of the Project, such as "Forager"
     /// or "Fields of Mistria" or "Test1122 please work".
     pub name: String,
+
     /// Somehow, the Tags field, which exists purely due to OOP, I assume.
     /// It should always be empty and does nothing.
     pub tags: Tags,
+
     /// The ResourceType of the YYP, which is "GMProject"
     pub resource_type: ConstGmProject,
 }
