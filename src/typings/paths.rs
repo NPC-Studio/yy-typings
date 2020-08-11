@@ -34,7 +34,17 @@ impl FilesystemPath {
 }
 
 /// Viewpaths in the virtual file system created by the Folders in the Yyp,
-/// deliminated by `/`, and with a ViewPathLocation which ends in `.yy`.
+/// deliminated by `/`, and with a ViewPathLocation which ends in `.yy`.\ or in `.yyp`.
+///
+/// Please note, the `Default` implementation in this type is **never a valid option**. It is
+/// provided for convenience, but the default Root for any file not in a folder is as follows:
+/// ```
+/// # const PROJECT_NAME: &'static str = "A project Name";
+/// ViewPath {
+///     name: format!("{}", PROJECT_NAME),
+///     path: ViewPathLocation(format!("{}.yyp", PROJECT_NAME))
+/// }
+/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, PartialOrd, Ord)]
 pub struct ViewPath {
     /// The human readable name of the parent. for a `spr_player`, this
@@ -60,6 +70,13 @@ pub struct ViewPath {
 ///     { "name": "spr_player", "path": "folders/Sprites/spr_player.yy" }
 /// ]
 /// ```
+///
+/// **NB** the default provided here, a Blank String, is never correct in a Gms2 Project. Instead,
+/// to describe a file at the root of the project (ie, a file not inside a folder), please use:
+/// ```
+/// # const PROJECT_NAME: &'static str = "A project Name";
+/// ViewPathLocation(format!("{}.yyp", PROJECT_NAME));
+/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub struct ViewPathLocation(pub String);
 
@@ -68,8 +85,12 @@ impl ViewPathLocation {
         &self.0
     }
 
-    pub fn root() -> ViewPathLocation {
+    pub fn root_folder() -> ViewPathLocation {
         Self("folders".to_string())
+    }
+
+    pub fn root_file(project_name: &str) -> ViewPathLocation {
+        Self(format!("{}.yyp", project_name))
     }
 }
 use std::fmt;
