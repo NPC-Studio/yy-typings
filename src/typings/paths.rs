@@ -39,11 +39,12 @@ impl FilesystemPath {
 /// Please note, the `Default` implementation in this type is **never a valid option**. It is
 /// provided for convenience, but the default Root for any file not in a folder is as follows:
 /// ```
+/// # use yy_typings::{ViewPathLocation, ViewPath};
 /// # const PROJECT_NAME: &'static str = "A project Name";
-/// ViewPath {
-///     name: format!("{}", PROJECT_NAME),
+/// let root_path = ViewPath {
+///     name: PROJECT_NAME.to_string(),
 ///     path: ViewPathLocation(format!("{}.yyp", PROJECT_NAME))
-/// }
+/// };
 /// ```
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, PartialOrd, Ord)]
 pub struct ViewPath {
@@ -74,6 +75,7 @@ pub struct ViewPath {
 /// **NB** the default provided here, a Blank String, is never correct in a Gms2 Project. Instead,
 /// to describe a file at the root of the project (ie, a file not inside a folder), please use:
 /// ```
+/// # use yy_typings::ViewPathLocation;
 /// # const PROJECT_NAME: &'static str = "A project Name";
 /// ViewPathLocation(format!("{}.yyp", PROJECT_NAME));
 /// ```
