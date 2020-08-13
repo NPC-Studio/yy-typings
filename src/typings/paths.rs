@@ -19,17 +19,25 @@ pub struct FilesystemPath {
 }
 
 impl FilesystemPath {
-    /// Constructs a new path out of a `base` and a `name`. This is just a convenience method.
+    /// Constructs a new path out of a `base` and a `name`.
     pub fn new(base: &str, name: &str) -> FilesystemPath {
         Self {
             name: name.to_owned(),
-            path: Path::new(&format!(
-                "{base}/{name}/{name}.yy",
-                base = base,
-                name = name
-            ))
-            .to_owned(),
+            path: FilesystemPath::new_path(base, name),
         }
+    }
+
+    /// Constructs a new subpath out of a `base` and a `name`.
+    ///
+    /// This creates a path of the same form as a FilesystemPath would have, which will be a relative
+    /// path from the Yyp directory to the File.
+    pub fn new_path(base: &str, name: &str) -> PathBuf {
+        Path::new(&format!(
+            "{base}/{name}/{name}.yy",
+            base = base,
+            name = name
+        ))
+        .to_owned()
     }
 }
 
