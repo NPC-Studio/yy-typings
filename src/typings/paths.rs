@@ -91,6 +91,10 @@ pub struct ViewPath {
 pub struct ViewPathLocation(pub String);
 
 impl ViewPathLocation {
+    pub fn new(s: impl Into<String>) -> Self {
+        Self(s.into())
+    }
+
     pub fn inner(&self) -> &str {
         &self.0
     }
