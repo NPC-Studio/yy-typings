@@ -64,6 +64,15 @@ pub struct ViewPath {
     pub path: ViewPathLocation,
 }
 
+impl ViewPath {
+    pub fn root_folder() -> Self {
+        Self {
+            name: "folders".to_string(),
+            path: ViewPathLocation::root_folder(),
+        }
+    }
+}
+
 /// The `path` component will **always** end with **.yy**, even if it describes
 /// a virtual folder or file. Given the following Gms2 folder virtual system (*not* operating system file system):
 /// ```txt
@@ -122,6 +131,12 @@ impl fmt::Display for ViewPathLocation {
 impl Into<String> for ViewPathLocation {
     fn into(self) -> String {
         self.0
+    }
+}
+
+impl PartialEq<String> for ViewPathLocation {
+    fn eq(&self, other: &String) -> bool {
+        self.0 == *other
     }
 }
 
