@@ -76,7 +76,7 @@ pub struct Yyp {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 pub struct YypMetaData {
     #[serde(rename = "IDEVersion")]
-    #[default("23.1.1.149".to_string())]
+    #[default("2.3.0.529".to_string())]
     pub ide_version: String,
 }
 
