@@ -713,6 +713,157 @@ impl<'de> Deserialize<'de> for EventType {
 }
 const FIELD_NAMES: [&str; 2] = ["eventNum", "eventType"];
 
+impl fmt::Display for EventType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            EventType::Create => write!(f, "Create"),
+            EventType::Destroy => write!(f, "Destroy"),
+            EventType::Cleanup => write!(f, "Cleanup"),
+            EventType::Step(stage) => write!(f, "{}", stage.display_with_before("Step")),
+            EventType::Alarm(number) => write!(f, "Alarm {}", number),
+            EventType::Draw(draw_stage) => write!(f, "{}", draw_stage),
+            EventType::Collision => write!(f, "Collision"),
+            EventType::Mouse(v) => write!(f, "{}", v),
+            EventType::KeyDown(key) => write!(f, "Key Down - {}", key.as_ref()),
+            EventType::KeyPress(key) => write!(f, "Key Press - {}", key.as_ref()),
+            EventType::KeyRelease(key) => write!(f, "Key Up - {}", key.as_ref()),
+            EventType::Gesture(gesture) => write!(f, "{}", gesture),
+            EventType::Other(other) => write!(f, "{}", other),
+            EventType::Async(async_ev) => write!(f, "{}", async_ev),
+        }
+    }
+}
+
+impl Stage {
+    pub fn display_with_before(&self, other: &str) -> String {
+        match self {
+            Stage::Main => other.to_string(),
+            Stage::Begin => format!("Begin {}", other),
+            Stage::End => format!("End {}", other),
+        }
+    }
+
+    pub fn display_with_after(&self, other: &str) -> String {
+        match self {
+            Stage::Main => other.to_string(),
+            Stage::Begin => format!("{} Begin", other),
+            Stage::End => format!("{} End", other),
+        }
+    }
+}
+
+impl fmt::Display for DrawEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DrawEvent::Draw(stage) => write!(f, "{}", stage.display_with_after("Draw")),
+            DrawEvent::DrawGui(stage) => write!(f, "{}", stage.display_with_after("Draw GUI")),
+            DrawEvent::PreDraw => write!(f, "Pre-Draw"),
+            DrawEvent::PostDraw => write!(f, "Post-Draw"),
+            DrawEvent::WindowResize => write!(f, "Window Resize"),
+        }
+    }
+}
+
+impl fmt::Display for MouseEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            MouseEvent::Down(mb) => write!(f, "{} Down", mb),
+            MouseEvent::Pressed(mb) => write!(f, "{} Pressed", mb),
+            MouseEvent::Released(mb) => write!(f, "{} Released", mb),
+            MouseEvent::NoInput => write!(f, "No Mouse Input"),
+            MouseEvent::MouseEnter => write!(f, "Mouse Enter"),
+            MouseEvent::MouseExit => write!(f, "Mouse Leave"),
+            MouseEvent::MouseWheelUp => write!(f, "Mouse Wheel Up"),
+            MouseEvent::MouseWheelDown => write!(f, "Mouse Wheel Down"),
+        }
+    }
+}
+
+impl fmt::Display for MouseButton {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self.mb_code {
+            MouseButtonCode::Left => "Left",
+            MouseButtonCode::Right => "Right",
+            MouseButtonCode::Middle => "Middle",
+        };
+
+        if self.local {
+            write!(f, "{}", word)
+        } else {
+            write!(f, "Global {}", word)
+        }
+    }
+}
+
+impl fmt::Display for GestureEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self.gesture {
+            Gesture::Tap => "Tap",
+            Gesture::DoubleTap => "Double Tap",
+            Gesture::DragStart => "Drag Start",
+            Gesture::Dragging => "Dragging",
+            Gesture::DragEnd => "Drag End",
+            Gesture::Flick => "Flick",
+            Gesture::PinchStart => "Pinch Start",
+            Gesture::PinchIn => "Pinch In",
+            Gesture::PinchOut => "Pinch Out",
+            Gesture::PinchEnd => "Pinch End",
+            Gesture::RotateStart => "Rotate Start",
+            Gesture::Rotating => "Rotating",
+            Gesture::RotateEnd => "Rotate End",
+        };
+
+        if self.local {
+            write!(f, "{}", word)
+        } else {
+            write!(f, "Global {}", word)
+        }
+    }
+}
+
+impl fmt::Display for OtherEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            OtherEvent::OutsideRoom => write!(f, "Outside Room"),
+            OtherEvent::IntersectBoundary => write!(f, "Intersect Boundary"),
+            OtherEvent::OutsideView(view) => write!(f, "Outside View {}", view),
+            OtherEvent::IntersectView(view) => write!(f, "Intersect View {} Boundary", view),
+            OtherEvent::GameStart => write!(f, "Game Start"),
+            OtherEvent::GameEnd => write!(f, "Game End"),
+            OtherEvent::RoomStart => write!(f, "Room Start"),
+            OtherEvent::RoomEnd => write!(f, "Room End"),
+            OtherEvent::AnimationEnd => write!(f, "Animation End"),
+            OtherEvent::AnimationUpdate => write!(f, "Animation Update"),
+            OtherEvent::AnimationEvent => write!(f, "Animation Event"),
+            OtherEvent::PathEnded => write!(f, "Path Ended"),
+            OtherEvent::UserEvent(event) => write!(f, "User Event {}", event),
+            OtherEvent::BroadcastMessage => write!(f, "Broadcast Message"),
+        }
+    }
+}
+
+impl fmt::Display for AsyncEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self {
+            AsyncEvent::AudioPlayback => "Audio Playback",
+            AsyncEvent::AudioRecording => "Audio Recording",
+            AsyncEvent::Cloud => "Cloud",
+            AsyncEvent::Dialog => "Dialog",
+            AsyncEvent::Http => "Http",
+            AsyncEvent::InAppPurchase => "In-App Purchase",
+            AsyncEvent::ImageLoaded => "Image Loaded",
+            AsyncEvent::Networking => "Networking",
+            AsyncEvent::PushNotification => "Push Notification",
+            AsyncEvent::SaveLoad => "Save/Load",
+            AsyncEvent::Social => "Social",
+            AsyncEvent::Steam => "Steam",
+            AsyncEvent::System => "System",
+        };
+
+        write!(f, "Async - {}", word)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
