@@ -53,25 +53,31 @@ impl EventType {
     /// ```
     pub fn filename(&self) -> (&'static str, usize) {
         let name = match self {
-            EventType::Create => "Create_",
-            EventType::Destroy => "Destroy_",
-            EventType::Cleanup => "CleanUp_",
-            EventType::Step(_) => "Step_",
-            EventType::Alarm(_) => "Alarm_",
-            EventType::Draw(_) => "Draw_",
-            EventType::Collision => "Collision_",
-            EventType::Mouse(_) => "Mouse_",
-            EventType::KeyDown(_) => "Keyboard_",
-            EventType::KeyPress(_) => "KeyPress_",
-            EventType::KeyRelease(_) => "KeyRelease_",
-            EventType::Gesture(_) => "Gesture_",
-            EventType::Other(_) => "Other_",
-            EventType::Async(_) => "Other_",
+            EventType::Create => "Create",
+            EventType::Destroy => "Destroy",
+            EventType::Cleanup => "CleanUp",
+            EventType::Step(_) => "Step",
+            EventType::Alarm(_) => "Alarm",
+            EventType::Draw(_) => "Draw",
+            EventType::Collision => "Collision",
+            EventType::Mouse(_) => "Mouse",
+            EventType::KeyDown(_) => "Keyboard",
+            EventType::KeyPress(_) => "KeyPress",
+            EventType::KeyRelease(_) => "KeyRelease",
+            EventType::Gesture(_) => "Gesture",
+            EventType::Other(_) => "Other",
+            EventType::Async(_) => "Other",
         };
 
         let number = EventIntermediary::from(*self).event_num;
 
         (name, number)
+    }
+
+    /// Returns the filename like it will appear in a file.
+    pub fn filename_simple(&self) -> String {
+        let (word, number) = self.filename();
+        format!("{}_{}", word, number)
     }
 
     /// Parses a given filename and number into an `EventType`, if valid.
@@ -80,19 +86,19 @@ impl EventType {
         event_num: usize,
     ) -> Result<EventType, EventTypeConvertErrors> {
         let event_type = match value {
-            "Create_" => 0,
-            "Destroy_" => 1,
-            "CleanUp_" => 12,
-            "Step_" => 3,
-            "Alarm_" => 2,
-            "Draw_" => 8,
-            "Collision_" => 4,
-            "Mouse_" => 6,
-            "Keyboard_" => 5,
-            "KeyPress_" => 9,
-            "KeyRelease_" => 10,
-            "Gesture_" => 13,
-            "Other_" => 7,
+            "Create" => 0,
+            "Destroy" => 1,
+            "CleanUp" => 12,
+            "Step" => 3,
+            "Alarm" => 2,
+            "Draw" => 8,
+            "Collision" => 4,
+            "Mouse" => 6,
+            "Keyboard" => 5,
+            "KeyPress" => 9,
+            "KeyRelease" => 10,
+            "Gesture" => 13,
+            "Other" => 7,
             _ => return Err(EventTypeConvertErrors::CannotFindEventType),
         };
 
@@ -100,6 +106,19 @@ impl EventType {
             event_type,
             event_num,
         })
+    }
+
+    /// A simple way to parse a value. It does a split on the string, which basically means it needs
+    /// to follow the pattern `Create_0` and similar.
+    pub fn parse_filename_simple(value: &str) -> Result<EventType, EventTypeConvertErrors> {
+        let mut iter = value.split('_');
+        let name = iter.next().unwrap();
+        let value: usize = iter.next().unwrap().parse().unwrap_or_default();
+        if iter.next().is_some() {
+            return Err(EventTypeConvertErrors::BadString);
+        }
+
+        EventType::parse_filename(name, value)
     }
 
     pub fn is_valid(value: EventType) -> bool {
@@ -307,6 +326,7 @@ pub struct EventIntermediary {
 pub enum EventTypeConvertErrors {
     CannotFindEventNumber(usize),
     CannotFindEventType,
+    BadString,
 }
 
 impl std::error::Error for EventTypeConvertErrors {}
@@ -317,6 +337,7 @@ impl fmt::Display for EventTypeConvertErrors {
                 write!(f, "invalid event_number for event type {}", event_type)
             }
             EventTypeConvertErrors::CannotFindEventType => write!(f, "invalid event_type"),
+            EventTypeConvertErrors::BadString => write!(f, "string didn't follow pattern x_y"),
         }
     }
 }
@@ -1062,19 +1083,19 @@ mod tests {
     #[test]
     fn filepath_symmetry() {
         let event_names = [
-            "Create_",
-            "Destroy_",
-            "CleanUp_",
-            "Step_",
-            "Alarm_",
-            "Draw_",
-            "Collision_",
-            "Other_",
-            "Other_",
-            "Keyboard_",
-            "KeyPress_",
-            "KeyRelease_",
-            "Gesture_",
+            "Create",
+            "Destroy",
+            "CleanUp",
+            "Step",
+            "Alarm",
+            "Draw",
+            "Collision",
+            "Other",
+            "Other",
+            "Keyboard",
+            "KeyPress",
+            "KeyRelease",
+            "Gesture",
         ];
 
         for name in event_names.iter() {
