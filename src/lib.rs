@@ -120,6 +120,6 @@ pub mod utils {
     mod trailing_comma_utility;
     pub use trailing_comma_utility::TrailingCommaUtility;
 
-    mod path_validator;
-    pub use path_validator::PathValidator;
+    mod resource_name_validator;
+    pub use resource_name_validator::ResourceNameValidator;
 }
