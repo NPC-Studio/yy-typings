@@ -739,7 +739,7 @@ impl fmt::Display for EventType {
         match self {
             EventType::Create => write!(f, "Create"),
             EventType::Destroy => write!(f, "Destroy"),
-            EventType::Cleanup => write!(f, "Cleanup"),
+            EventType::Cleanup => write!(f, "CleanUp"),
             EventType::Step(stage) => write!(f, "{}", stage.display_with_before("Step")),
             EventType::Alarm(number) => write!(f, "Alarm {}", number),
             EventType::Draw(draw_stage) => write!(f, "{}", draw_stage),
