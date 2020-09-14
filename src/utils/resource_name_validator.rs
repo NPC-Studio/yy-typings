@@ -1,6 +1,6 @@
 use regex::Regex;
 
-pub const GMS2_VALID_PATH_REGEX: &str = r"^[A-z_]\w+";
+pub const GMS2_VALID_PATH_REGEX: &str = r"^[A-z_]\w*$";
 
 /// Provides validation services for Gms2 Resource Names by running the Regex
 /// of `r"[A-z_]\w+"` over the input. For those who don't speak Regex, it passes for
