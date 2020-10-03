@@ -26,17 +26,39 @@ pub struct Object {
     // Physics
     /// Is this a physics object?
     pub physics_object: bool,
+
+    /// Enabled if the objects is a physics sensor.
     pub physics_sensor: bool,
-    pub physics_shape: usize, // @todo
-    pub physics_group: usize, // @todo
+
+    /// The shape of the physics, which is needed to understand the shape points.
+    pub physics_shape: PhysicsShape,
+
+    /// What numerical group it belongs to. 0 is a special non-group value.
+    pub physics_group: usize,
+
+    /// The density.
     pub physics_density: f64,
+
+    /// The restitution.
     pub physics_restitution: f64,
+
+    /// The linear damping.
     pub physics_linear_damping: f64,
+
+    /// The angular damping set.
     pub physics_angular_damping: f64,
+
+    /// The friction set.
     pub physics_friction: f64,
+
+    /// Whether this object should start awake or not.
     pub physics_start_awake: bool,
+
+    /// Whether this physics object is kinematic or not.
     pub physics_kinematic: bool,
-    pub physics_shape_points: Vec<()>, // @todo
+
+    /// The shape points of the physics shape.
+    pub physics_shape_points: Vec<PhysicsVec2>,
 
     // Event list and Properties
     pub event_list: Vec<ObjectEvent>,
@@ -162,6 +184,34 @@ pub enum ObjectPropertyTypes {
     Colour,
 }
 
+/// The types of physics object as specified in the Gms2 editor.
+#[derive(
+    Debug,
+    Serialize_repr,
+    Deserialize_repr,
+    SmartDefault,
+    PartialEq,
+    Clone,
+    Copy,
+    Eq,
+    Ord,
+    PartialOrd,
+)]
+#[repr(u8)]
+pub enum PhysicsShape {
+    Circle,
+    #[default]
+    Box,
+    ConvexShape,
+}
+
+/// The types of physics object as specified in the Gms2 editor.
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone, Copy, PartialOrd)]
+pub struct PhysicsVec2 {
+    pub x: f32,
+    pub y: f32,
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{object_yy::*, utils::TrailingCommaUtility, ViewPathLocation};
@@ -200,7 +250,7 @@ mod tests {
             parent_object_id: None,
             physics_object: false,
             physics_sensor: false,
-            physics_shape: 1,
+            physics_shape: PhysicsShape::Box,
             physics_group: 1,
             physics_density: 0.5,
             physics_restitution: 0.1,
