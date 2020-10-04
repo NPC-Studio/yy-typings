@@ -108,6 +108,12 @@ mod typings {
 
     mod yyp;
     pub use yyp::*;
+
+    mod unidentified_resource;
+    pub use unidentified_resource::*;
+
+    mod note;
+    pub use note::Note;
 }
 pub use typings::*;
 

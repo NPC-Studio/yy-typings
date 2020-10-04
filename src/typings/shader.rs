@@ -13,16 +13,17 @@ pub struct Shader {
     /// a user would see in the Navigation Pane in Gms2. This has no relationship
     /// to the actual operating system's filesystem.
     pub parent: ViewPath,
+    
     /// The resource version of this yy file. At default 1.0.
     pub resource_version: ResourceVersion,
 
-    /// The name of the object. This is the human readable name used in the IDE.
+    /// The name of the shader. This is the human readable name used in the IDE.
     pub name: String,
 
-    /// The tags given to the object.
+    /// The tags given to the shader.
     pub tags: Tags,
 
-    /// Const id tag of the object, given by Gms2.
+    /// Const id tag of the shader, given by Gms2.
     pub resource_type: ConstGmShader,
 }
 
