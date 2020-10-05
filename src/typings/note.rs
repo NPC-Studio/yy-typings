@@ -30,7 +30,7 @@ pub struct Note {
 /// The constant of the GMNote. This is a hack.
 #[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub enum ConstGmNote {
-    #[serde(rename = "GMNote")]
+    #[serde(rename = "GMNotes")]
     #[default]
     Const,
 }
