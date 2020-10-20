@@ -1,4 +1,6 @@
-use super::{ConstGmEvent, ConstGmObject, ConstGmObjectProperty, EventType};
+use super::{
+    ConstGmEvent, ConstGmObject, ConstGmObjectOverrideProperty, ConstGmObjectProperty, EventType,
+};
 use crate::{FilesystemPath, ResourceVersion, Tags, ViewPath};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -68,7 +70,7 @@ pub struct Object {
     /// The properties which were made in a parent object AND overriden. If the parent object's properties
     /// have not been overriden, then they will not appear anywhere in this object's `yy` files and must
     /// be found recursively.
-    pub overridden_properties: Vec<ObjectProperty>,
+    pub overridden_properties: Vec<ObjectOverrideProperty>,
 
     // View Data
     /// The parent in the Gms2 virtual file system, ie. the parent which
@@ -156,6 +158,35 @@ pub struct ObjectProperty {
     pub tags: Tags,
     /// The resource type const of the property.
     pub resource_type: ConstGmObjectProperty,
+}
+
+/// Object "properties" are set in the Gms2 window and allow the user to override those properties either
+/// in child objects of a parent, or in the Room (or both!). This allows for simple customization in the room editor.
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
+#[serde(rename_all = "camelCase")]
+pub struct ObjectOverrideProperty {
+    /// This is **not** a real filesystem path, but instead just looks like one. Eventually,
+    /// this will receive better typing. @todo
+    /// The `name` is the name of the prperty, and the `path` is to the ORIGINATOR of the property.
+    pub property_id: FilesystemPath,
+
+    /// The path to the object which this property last overrides.
+    pub object_id: FilesystemPath,
+
+    /// The serialized value of the property type. This corresponds exactly to what the Gms2 box
+    /// will have inside it as a string.
+    pub value: String,
+
+    /// The resource version for this property override
+    pub resource_version: ResourceVersion,
+
+    /// The name of the property, which appears to **always** be an empty string.
+    pub name: String,
+    /// The tags assigned to the property. Probably shouldn't be assigned.
+    pub tags: Tags,
+
+    /// The resource type const of the property.
+    pub resource_type: ConstGmObjectOverrideProperty,
 }
 
 /// The types of object "Properties" as set in the Gms2 Widget pane by users.

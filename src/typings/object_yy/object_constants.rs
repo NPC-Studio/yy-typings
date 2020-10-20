@@ -26,6 +26,13 @@ pub enum ConstGmObjectProperty {
     #[serde(rename = "GMObjectProperty")]
     #[default]
     Const,
+}
+
+#[derive(
+    Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone, Ord, PartialOrd,
+)]
+pub enum ConstGmObjectOverrideProperty {
     #[serde(rename = "GMOverriddenProperty")]
-    Override,
+    #[default]
+    Const,
 }
