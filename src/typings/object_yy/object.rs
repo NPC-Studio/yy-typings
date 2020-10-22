@@ -149,7 +149,7 @@ pub struct ObjectProperty {
     /// If set to true when `var_type` is set to `List`, allows the User to select multiple options.
     pub multiselect: bool,
     /// Not sure what this is supposed to be. In the meantime, we've typed it as a blank array.
-    pub filters: [(); 0],
+    pub filters: Vec<String>,
     /// The ResourceVersion, default value.
     pub resource_version: ResourceVersion,
     /// The name of the property, such as "room_to_transition_to".
