@@ -1,11 +1,15 @@
+use std::collections::HashMap;
+
 use crate::{ResourceVersion, TexturePath, TexturePathLocation};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
+    #[serde(rename = "ConfigValues")]
+    pub config_values: Option<HashMap<String, serde_json::Value>>,
     #[default(true)]
     pub is_scaled: bool,
     #[default(true)]
@@ -13,6 +17,7 @@ pub struct TextureGroup {
     #[default(2)]
     pub border: usize,
     pub mips_to_generate: GenerateMipMaps,
+    pub group_parent: Option<TexturePath>,
     #[default(461609314234257646)]
     pub targets: usize,
     pub resource_version: ResourceVersion,
