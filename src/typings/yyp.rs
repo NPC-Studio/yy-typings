@@ -33,7 +33,7 @@ pub struct Yyp {
     /// This is the order rooms are loaded in. The first room
     /// is the default room which GMS2 will load on GameStart.
     #[serde(rename = "RoomOrderNodes")]
-    pub room_order: Vec<RoomOrderId>,
+    pub room_order_nodes: Vec<RoomOrderId>,
     /// This represents all the Views in the Project, which will
     /// have resource paths within them.
     #[serde(rename = "Folders")]

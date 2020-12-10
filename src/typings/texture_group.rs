@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use crate::{ResourceVersion, TexturePath, TexturePathLocation};
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,8 @@ use smart_default::SmartDefault;
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
     #[serde(rename = "ConfigValues")]
-    pub config_values: Option<HashMap<String, serde_json::Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub config_values: Option<BTreeMap<String, serde_json::Value>>,
     #[default(true)]
     pub is_scaled: bool,
     #[default(true)]
