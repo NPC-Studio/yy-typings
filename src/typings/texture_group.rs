@@ -19,8 +19,9 @@ pub struct TextureGroup {
     pub border: usize,
     pub mips_to_generate: GenerateMipMaps,
     pub group_parent: Option<TexturePath>,
-    #[default(461609314234257646)]
-    pub targets: usize,
+    #[default(-1)]
+    pub targets: isize,
+    #[default(ResourceVersion::new(1, 3))]
     pub resource_version: ResourceVersion,
     #[default("Default".to_string())]
     pub name: String,

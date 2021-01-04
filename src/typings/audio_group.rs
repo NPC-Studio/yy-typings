@@ -5,8 +5,9 @@ use smart_default::SmartDefault;
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioGroup {
-    #[default(461609314234257646)]
-    pub targets: usize,
+    #[default(-1)]
+    pub targets: isize,
+    #[default(ResourceVersion::new(1, 3))]
     pub resource_version: ResourceVersion,
     #[default("audiogroup_default".to_string())]
     pub name: String,
