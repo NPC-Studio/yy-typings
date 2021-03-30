@@ -54,20 +54,20 @@ pub enum GenerateMipMaps {
     False = 0,
 }
 
-impl Into<TexturePath> for TextureGroup {
-    fn into(self) -> TexturePath {
+impl From<TextureGroup> for TexturePath {
+    fn from(o: TextureGroup) -> Self {
         TexturePath {
-            name: self.name.clone(),
-            path: TexturePathLocation(format!("texturegroups/{}", self.name)),
+            name: o.name.clone(),
+            path: TexturePathLocation(format!("texturegroups/{}", o.name)),
         }
     }
 }
 
-impl Into<TexturePath> for &TextureGroup {
-    fn into(self) -> TexturePath {
+impl From<&TextureGroup> for TexturePath {
+    fn from(o: &TextureGroup) -> TexturePath {
         TexturePath {
-            name: self.name.clone(),
-            path: TexturePathLocation(format!("texturegroups/{}", self.name)),
+            name: o.name.clone(),
+            path: TexturePathLocation(format!("texturegroups/{}", o.name)),
         }
     }
 }

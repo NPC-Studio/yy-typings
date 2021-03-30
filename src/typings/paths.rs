@@ -128,9 +128,9 @@ impl fmt::Display for ViewPathLocation {
     }
 }
 
-impl Into<String> for ViewPathLocation {
-    fn into(self) -> String {
-        self.0
+impl From<ViewPathLocation> for String {
+    fn from(o: ViewPathLocation) -> Self {
+        o.0
     }
 }
 
@@ -188,8 +188,8 @@ impl fmt::Display for TexturePathLocation {
     }
 }
 
-impl Into<String> for TexturePathLocation {
-    fn into(self) -> String {
-        self.0
+impl From<TexturePathLocation> for String {
+    fn from(o: TexturePathLocation) -> Self {
+        o.0
     }
 }
