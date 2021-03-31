@@ -118,7 +118,7 @@ pub struct ObjectEvent {
     /// }
     /// ```
     #[deprecated = "removed in gms2.3.2.556"]
-    #[serde(skip_serializing)]
+    #[serde(skip_serializing, default)]
     pub parent: FilesystemPath,
 
     /// The version of the `.yy` file.
