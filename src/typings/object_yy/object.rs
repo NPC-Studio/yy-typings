@@ -32,7 +32,8 @@ pub struct Object {
     /// Enabled if the objects is a physics sensor.
     pub physics_sensor: bool,
 
-    /// The shape of the physics, which is needed to understand the shape points.
+    /// The shape of the physics, which is needed to understand the shape
+    /// points.
     pub physics_shape: PhysicsShape,
 
     /// What numerical group it belongs to. 0 is a special non-group value.
@@ -67,15 +68,16 @@ pub struct Object {
 
     /// The properties which were made in this object directly.
     pub properties: Vec<ObjectProperty>,
-    /// The properties which were made in a parent object AND overriden. If the parent object's properties
-    /// have not been overriden, then they will not appear anywhere in this object's `yy` files and must
+    /// The properties which were made in a parent object AND overriden. If the
+    /// parent object's properties have not been overriden, then they will
+    /// not appear anywhere in this object's `yy` files and must
     /// be found recursively.
     pub overridden_properties: Vec<ObjectOverrideProperty>,
 
     // View Data
     /// The parent in the Gms2 virtual file system, ie. the parent which
-    /// a user would see in the Navigation Pane in Gms2. This has no relationship
-    /// to the actual operating system's filesystem.
+    /// a user would see in the Navigation Pane in Gms2. This has no
+    /// relationship to the actual operating system's filesystem.
     pub parent: ViewPath,
     /// The resource version of this yy file. At default 1.0.
     pub resource_version: ResourceVersion,
@@ -103,6 +105,10 @@ pub struct ObjectEvent {
 
     /// The Id of the thing to collide with.
     pub collision_object_id: Option<FilesystemPath>,
+
+    /// This is now **not present in new projects.** It will be removed
+    /// on the next GM update.
+    ///
     /// Filesystem path pointing directly to the parent Object,
     /// such as:
     /// ```json
@@ -111,12 +117,15 @@ pub struct ObjectEvent {
     ///     "path": "objects/obj_stairs/obj_stairs.yy"
     /// }
     /// ```
+    #[deprecated = "removed in gms2.3.2.556"]
+    #[serde(skip_serializing)]
     pub parent: FilesystemPath,
 
     /// The version of the `.yy` file.
     pub resource_version: ResourceVersion,
 
-    /// The "name" of the Event, which appears to always be null or an empty string
+    /// The "name" of the Event, which appears to always be null or an empty
+    /// string
     #[serde(with = "serde_with::rust::string_empty_as_none")]
     pub name: Option<String>,
 
@@ -127,28 +136,35 @@ pub struct ObjectEvent {
     pub resource_type: ConstGmEvent,
 }
 
-/// Object "properties" are set in the Gms2 window and allow the user to override those properties either
-/// in child objects of a parent, or in the Room (or both!). This allows for simple customization in the room editor.
+/// Object "properties" are set in the Gms2 window and allow the user to
+/// override those properties either in child objects of a parent, or in the
+/// Room (or both!). This allows for simple customization in the room editor.
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectProperty {
-    /// The type of property which is preset. Some, or all, of the rest of the information
-    /// in this struct will be used based on the property type.
+    /// The type of property which is preset. Some, or all, of the rest of the
+    /// information in this struct will be used based on the property type.
     pub var_type: ObjectPropertyTypes,
-    /// The serialized value of the property type. This corresponds exactly to what the Gms2 box
-    /// will have inside it as a string.
+    /// The serialized value of the property type. This corresponds exactly to
+    /// what the Gms2 box will have inside it as a string.
     pub value: String,
-    /// If the range Ui option is enabled for this type. This is ignored unless `var_type` is `Real` or `Integer`.
+    /// If the range Ui option is enabled for this type. This is ignored unless
+    /// `var_type` is `Real` or `Integer`.
     pub range_enabled: bool,
-    /// The minimum range. Minimin should be less than max, but does not error if so.
+    /// The minimum range. Minimin should be less than max, but does not error
+    /// if so.
     pub range_min: f64,
-    /// The maximum range. Minimin should be less than max, but does not error if so.
+    /// The maximum range. Minimin should be less than max, but does not error
+    /// if so.
     pub range_max: f64,
-    /// The items which can be selected when `var_type` is set to `List`. Ignored in any other `var_type`.
+    /// The items which can be selected when `var_type` is set to `List`.
+    /// Ignored in any other `var_type`.
     pub list_items: Vec<String>,
-    /// If set to true when `var_type` is set to `List`, allows the User to select multiple options.
+    /// If set to true when `var_type` is set to `List`, allows the User to
+    /// select multiple options.
     pub multiselect: bool,
-    /// Not sure what this is supposed to be. In the meantime, we've typed it as a blank array.
+    /// Not sure what this is supposed to be. In the meantime, we've typed it as
+    /// a blank array.
     pub filters: Vec<String>,
     /// The ResourceVersion, default value.
     pub resource_version: ResourceVersion,
@@ -160,27 +176,30 @@ pub struct ObjectProperty {
     pub resource_type: ConstGmObjectProperty,
 }
 
-/// Object "properties" are set in the Gms2 window and allow the user to override those properties either
-/// in child objects of a parent, or in the Room (or both!). This allows for simple customization in the room editor.
+/// Object "properties" are set in the Gms2 window and allow the user to
+/// override those properties either in child objects of a parent, or in the
+/// Room (or both!). This allows for simple customization in the room editor.
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectOverrideProperty {
-    /// This is **not** a real filesystem path, but instead just looks like one. Eventually,
-    /// this will receive better typing. @todo
-    /// The `name` is the name of the prperty, and the `path` is to the ORIGINATOR of the property.
+    /// This is **not** a real filesystem path, but instead just looks like one.
+    /// Eventually, this will receive better typing. @todo
+    /// The `name` is the name of the prperty, and the `path` is to the
+    /// ORIGINATOR of the property.
     pub property_id: FilesystemPath,
 
     /// The path to the object which this property last overrides.
     pub object_id: FilesystemPath,
 
-    /// The serialized value of the property type. This corresponds exactly to what the Gms2 box
-    /// will have inside it as a string.
+    /// The serialized value of the property type. This corresponds exactly to
+    /// what the Gms2 box will have inside it as a string.
     pub value: String,
 
     /// The resource version for this property override
     pub resource_version: ResourceVersion,
 
-    /// The name of the property, which appears to **always** be an empty string.
+    /// The name of the property, which appears to **always** be an empty
+    /// string.
     pub name: String,
     /// The tags assigned to the property. Probably shouldn't be assigned.
     pub tags: Tags,

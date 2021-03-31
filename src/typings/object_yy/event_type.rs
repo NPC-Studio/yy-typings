@@ -5,14 +5,14 @@ use smart_default::SmartDefault;
 use std::{convert::TryFrom, fmt};
 
 /// Describes the current event type. Users can make most events freely, though
-/// special care should be taken that `Alarm`'s .0 field is less than `ALARM_MAX`,
-/// and the same for the `OtherEvent`'s usize wrappers. To make sure some event
-/// has been validly created, `is_valid` has been provided.
+/// special care should be taken that `Alarm`'s .0 field is less than
+/// `ALARM_MAX`, and the same for the `OtherEvent`'s usize wrappers. To make
+/// sure some event has been validly created, `is_valid` has been provided.
 ///
-/// **Note: only serde_json serialization and deserialization is supported for EventType.**
-/// Yaml, and other text / WYSIWYG data formats should be fine, but Bincode and other binary
-/// sequences are unlikely to succesfully serialize this. This is due to our use of serde's
-/// `flatten`, which runs afoul of this issue: https://github.com/servo/bincode/issues/245
+/// **Note: only serde_json serialization and deserialization is supported for
+/// EventType.** Yaml, and other text / WYSIWYG data formats should be fine, but
+/// Bincode and other binary sequences are unlikely to succesfully serialize
+/// this. This is due to our use of serde's `flatten`, which runs afoul of this issue: https://github.com/servo/bincode/issues/245
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
 pub enum EventType {
     #[default]
@@ -42,9 +42,9 @@ impl EventType {
     /// The maximum number of alarms which are available in the Gms2 IDE.
     pub const ALARM_MAX: usize = 11;
 
-    /// Gets the filename for a given event with its requisite base. We return in this format
-    /// to reduce allocating a string per call, as this filename will likely become allocated
-    /// on some path in the future.
+    /// Gets the filename for a given event with its requisite base. We return
+    /// in this format to reduce allocating a string per call, as this
+    /// filename will likely become allocated on some path in the future.
     ///
     /// ```rs
     /// let (base_name, numeric_id) = EventType::Create;
@@ -108,8 +108,9 @@ impl EventType {
         })
     }
 
-    /// A simple way to parse a value. It does a split on the string, which basically means it needs
-    /// to follow the pattern `Create_0` and similar.
+    /// A simple way to parse a value. It does a split on the string, which
+    /// basically means it needs to follow the pattern `Create_0` and
+    /// similar.
     pub fn parse_filename_simple(value: &str) -> Result<EventType, EventTypeConvertErrors> {
         let mut iter = value.split('_');
         let name = iter.next().unwrap();
@@ -162,8 +163,8 @@ impl MouseEvent {
     pub const PRESSED_OFFSET: usize = 4;
     pub const RELEASED_OFFSET: usize = 7;
 
-    /// Tries to convert an `event_num` to a MouseEvent. This is for internal usage, but is made
-    /// public to attempt to be a 100% pub facing crate.
+    /// Tries to convert an `event_num` to a MouseEvent. This is for internal
+    /// usage, but is made public to attempt to be a 100% pub facing crate.
     pub fn convert_to_input(mut value: usize) -> Option<MouseEvent> {
         let mut local_input = true;
 
@@ -212,21 +213,21 @@ pub struct MouseButton {
     /// The mouse button code used for this input.
     pub mb_code: MouseButtonCode,
 
-    /// Whether the input is a "global" input, or a "local" input. In the Gms2 IDE,
-    /// these are separated into different categories. "Local" events only file when
-    /// the object itself is clicked on, while "global" can be fire whenever the input
-    /// is held at all.
+    /// Whether the input is a "global" input, or a "local" input. In the Gms2
+    /// IDE, these are separated into different categories. "Local" events
+    /// only file when the object itself is clicked on, while "global" can
+    /// be fire whenever the input is held at all.
     pub local: bool,
 }
 
 impl MouseButton {
-    /// The offset for the `event_num` if this mouse button is a global. We use this number
-    /// internally for serialization/deserialization.
+    /// The offset for the `event_num` if this mouse button is a global. We use
+    /// this number internally for serialization/deserialization.
     pub const GLOBAL_OFFSET: usize = 50;
 
-    /// Calculates the `event_num` offset for this `MouseButton`, largely for internal use
-    /// in serialization and deserialization. We make this public as this library attempts
-    /// to be 100% public.
+    /// Calculates the `event_num` offset for this `MouseButton`, largely for
+    /// internal use in serialization and deserialization. We make this
+    /// public as this library attempts to be 100% public.
     pub fn event_offset(&self) -> usize {
         self.mb_code as usize + if self.local { 0 } else { Self::GLOBAL_OFFSET }
     }
@@ -236,16 +237,16 @@ impl MouseButton {
 pub struct GestureEvent {
     /// The type of gesture used.
     pub gesture: Gesture,
-    /// Whether the input is a "global" input, or a "local" input. In the Gms2 IDE,
-    /// these are separated into different categories. "Local" events only file when
-    /// the object itself is clicked on, while "global" can be fire whenever the input
-    /// is held at all.
+    /// Whether the input is a "global" input, or a "local" input. In the Gms2
+    /// IDE, these are separated into different categories. "Local" events
+    /// only file when the object itself is clicked on, while "global" can
+    /// be fire whenever the input is held at all.
     pub local: bool,
 }
 
 impl GestureEvent {
-    /// The offset for the `event_num` if this gesture is a global. We use this number
-    /// internally for serialization/deserialization.
+    /// The offset for the `event_num` if this gesture is a global. We use this
+    /// number internally for serialization/deserialization.
     pub const GLOBAL_OFFSET: usize = 64;
 
     /// Converts an `event_num`, if possible, into a Gesture.
@@ -307,13 +308,14 @@ impl OtherEvent {
     pub const USER_EVENT_MAX: usize = 15;
 }
 
-/// A simpler, less idiomatic and less understandable, but more direct, representation of
-/// Gms2 event types and numbers. We use this internally in the serde of the higher level
-/// `EventType` enum, which is also given.
+/// A simpler, less idiomatic and less understandable, but more direct,
+/// representation of Gms2 event types and numbers. We use this internally in
+/// the serde of the higher level `EventType` enum, which is also given.
 ///
-/// This struct is made public largely so non-Rust applications downstream can have an easier
-/// interface to work with. Rust applications are encouraged to stick with the more idiomatic
-/// and user-friendly `EventType`, which is far more type safe while being equally performant.
+/// This struct is made public largely so non-Rust applications downstream can
+/// have an easier interface to work with. Rust applications are encouraged to
+/// stick with the more idiomatic and user-friendly `EventType`, which is far
+/// more type safe while being equally performant.
 #[derive(
     Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Serialize, Deserialize, Copy, Clone,
 )]

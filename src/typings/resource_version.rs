@@ -24,9 +24,10 @@ impl fmt::Display for ResourceVersion {
 }
 
 impl ResourceVersion {
-    /// Creates a new default ResourceVersion with the major and minor version given.
-    /// The default implementation runs this with 1 and 0.
-    /// `ResourceVersion::blank` is a shorthand for `ResourceVersion::new(0, 0)`.
+    /// Creates a new default ResourceVersion with the major and minor version
+    /// given. The default implementation runs this with 1 and 0.
+    /// `ResourceVersion::blank` is a shorthand for `ResourceVersion::new(0,
+    /// 0)`.
     ///
     /// ```rs
     /// let default = ResourceVersion::new(1, 0);

@@ -3,6 +3,8 @@
     {"id":{"name":"Shader1","path":"shaders/Shader1/Shader1.yy",},"order":0,},
     {"id":{"name":"Object1","path":"objects/Object1/Object1.yy",},"order":0,},
     {"id":{"name":"test_script","path":"scripts/test_script/test_script.yy",},"order":0,},
+    {"id":{"name":"Sound1","path":"sounds/Sound1/Sound1.yy",},"order":0,},
+    {"id":{"name":"Sound2","path":"sounds/Sound2/Sound2.yy",},"order":1,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
   "Options": [
@@ -19,8 +21,8 @@
     "name": "Default",
     "children": [],
   },
-  "RoomOrder": [
-    {"name":"Room1","path":"rooms/Room1/Room1.yy",},
+  "RoomOrderNodes": [
+    {"roomId":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
   ],
   "Folders": [
     {"folderPath":"folders/Sprites.yy","order":1,"resourceVersion":"1.0","name":"Sprites","tags":[],"resourceType":"GMFolder",},
@@ -39,16 +41,16 @@
     {"folderPath":"folders/Extensions.yy","order":14,"resourceVersion":"1.0","name":"Extensions","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
-    {"targets":461609314234257646,"resourceVersion":"1.0","name":"audiogroup_default","resourceType":"GMAudioGroup",},
+    {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
   ],
   "TextureGroups": [
-    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"targets":461609314234257646,"resourceVersion":"1.0","name":"Default","resourceType":"GMTextureGroup",},
+    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
   ],
   "IncludedFiles": [],
   "MetaData": {
-    "IDEVersion": "23.1.1.174",
+    "IDEVersion": "2.3.1.542",
   },
-  "resourceVersion": "1.3",
+  "resourceVersion": "1.4",
   "name": "full_project",
   "tags": [],
   "resourceType": "GMProject",

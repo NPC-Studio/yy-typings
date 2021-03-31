@@ -84,3 +84,10 @@ pub enum ConstGmSpriteZeroChannel {
     #[default]
     Const,
 }
+
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
+pub enum ConstGmNineSliceData {
+    #[serde(rename = "GMNineSliceData")]
+    #[default]
+    Const,
+}

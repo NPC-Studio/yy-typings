@@ -20,7 +20,8 @@ pub struct Yyp {
     /// Denotes whether this project uses drag and drop or not
     pub is_dn_d_project: bool,
 
-    /// Allows for experimental JS editing. Unfinished or legacy feature. It's a secret.
+    /// Allows for experimental JS editing. Unfinished or legacy feature. It's a
+    /// secret.
     pub is_ecma: bool,
 
     /// Unknown property, usually an empty string.
@@ -74,7 +75,7 @@ pub struct Yyp {
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "2.3.1.542";
+    pub const DEFAULT_VERSION: &'static str = "2.3.2.556";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
@@ -106,31 +107,35 @@ pub struct YypConfig {
     pub children: Vec<YypConfig>,
 }
 
-/// A YYP Folder. These form a graph, but **each path is a full path from the root**.
-/// Therefore, to create a tree, one must walk from the root to the final destination.
+/// A YYP Folder. These form a graph, but **each path is a full path from the
+/// root**. Therefore, to create a tree, one must walk from the root to the
+/// final destination.
 #[derive(
     Debug, Serialize, Deserialize, Eq, Clone, SmartDefault, Ord, PartialOrd, PartialEq, Hash,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     /// The full path from the root to the virtual folder location. The first
-    /// part of the path is always `folders`. For top level folders, will look like
-    /// `"Folders/Fonts.yy"`, for example.
+    /// part of the path is always `folders`. For top level folders, will look
+    /// like `"Folders/Fonts.yy"`, for example.
     pub folder_path: ViewPathLocation,
 
-    /// The order within the subfolder. If custom ordering is added, then this will be the order as
-    /// the resources appear within the tree structure. Otherwise, it is meaningless, and Gms2 appears
-    /// to not keep in tracked or coherent.
+    /// The order within the subfolder. If custom ordering is added, then this
+    /// will be the order as the resources appear within the tree structure.
+    /// Otherwise, it is meaningless, and Gms2 appears to not keep in
+    /// tracked or coherent.
     pub order: usize,
 
     /// The resource version of this Resource. Currently `"1.0"`.
     pub resource_version: ResourceVersion,
-    /// The human-readable name of this Folder. The last part of the `folder_path` and this name
-    /// should agree. Human readable names include examples such as "Sprites", "Light Data", or
-    /// "Really Good Tiles".
+    /// The human-readable name of this Folder. The last part of the
+    /// `folder_path` and this name should agree. Human readable names
+    /// include examples such as "Sprites", "Light Data", or "Really Good
+    /// Tiles".
     pub name: String,
 
-    /// Apparently tags can be placed here, even though they definitely can't. Don't do that.
+    /// Apparently tags can be placed here, even though they definitely can't.
+    /// Don't do that.
     pub tags: Tags,
 
     /// The Resource Type of this folder, which is always `"GMFolder"`.

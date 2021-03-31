@@ -25,7 +25,8 @@ pub struct SpriteSequence {
     /// The type of the playback speed.
     pub playback_speed_type: PlaybackSpeed,
 
-    /// Whether to autorecord the sequence. This will always be true for sprites.
+    /// Whether to autorecord the sequence. This will always be true for
+    /// sprites.
     #[default = true]
     pub auto_record: bool,
 
@@ -33,17 +34,21 @@ pub struct SpriteSequence {
     #[default = 1.0]
     pub volume: f64,
 
-    /// The number of frames of the Sprite. GMS2 records this as an f64 due to its shared
-    /// status between sequences -- this can be converted to a `usize` without issue.
+    /// The number of frames of the Sprite. GMS2 records this as an f64 due to
+    /// its shared status between sequences -- this can be converted to a
+    /// `usize` without issue.
     pub length: f64,
 
-    /// The sprite events, which are always the Default value of SpriteEvents, for the Sprite.
+    /// The sprite events, which are always the Default value of SpriteEvents,
+    /// for the Sprite.
     pub events: SpriteEvents,
 
-    /// The sprite moments, which are always the Default value of SpriteMoments, for the Sprite.
+    /// The sprite moments, which are always the Default value of SpriteMoments,
+    /// for the Sprite.
     pub moments: SpriteMoments,
 
-    /// The "tracks" which the Sprite has. There is only every One track for a Sprite.
+    /// The "tracks" which the Sprite has. There is only every One track for a
+    /// Sprite.
     pub tracks: Vec<Track>,
     /// This denotes which range is visible. I am not clear what it means.
     pub visible_range: Option<VisibleRange>,
@@ -104,16 +109,17 @@ pub struct VisibleRange {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteEvents {
-    /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not have access to all the resources
-    /// of a sequence, they are always subscribed to 0 keyframes.
+    /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not
+    /// have access to all the resources of a sequence, they are always
+    /// subscribed to 0 keyframes.
     #[serde(rename = "Keyframes")]
     pub keyframes: Vec<()>,
 
     /// The resource version of the SpriteEvent.
     pub resource_version: ResourceVersion,
 
-    /// The name of the Resource Type. This is a C# generic, so this Serde typing may not
-    /// be sufficent. Testing will have to be done.
+    /// The name of the Resource Type. This is a C# generic, so this Serde
+    /// typing may not be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteEvent,
 }
 
@@ -122,16 +128,17 @@ pub struct SpriteEvents {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteMoments {
-    /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not have access to all the resources
-    /// of a sequence, they are always subscribed to 0 keyframes.
+    /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not
+    /// have access to all the resources of a sequence, they are always
+    /// subscribed to 0 keyframes.
     #[serde(rename = "Keyframes")]
     pub keyframes: Vec<()>,
 
     /// The resource version of the SpriteMoment. Currently, it is always "1.0".
     pub resource_version: ResourceVersion,
 
-    /// The name of the Resource Type. This is a C# generic, so this Serde typing may not
-    /// be sufficent. Testing will have to be done.
+    /// The name of the Resource Type. This is a C# generic, so this Serde
+    /// typing may not be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteMoment,
 }
 

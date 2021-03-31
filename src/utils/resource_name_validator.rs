@@ -3,8 +3,9 @@ use regex::Regex;
 pub const GMS2_VALID_PATH_REGEX: &str = r"^[A-z_]\w*$";
 
 /// Provides validation services for Gms2 Resource Names by running the Regex
-/// of `r"[A-z_]\w+"` over the input. For those who don't speak Regex, it passes for
-/// any input which contains *only* `A-z`, `_`, or `0-9` and which does not begin with `0-9`.
+/// of `r"[A-z_]\w+"` over the input. For those who don't speak Regex, it passes
+/// for any input which contains *only* `A-z`, `_`, or `0-9` and which does not
+/// begin with `0-9`.
 ///
 /// Passes:
 /// - `spr_player`
@@ -27,9 +28,10 @@ impl Default for ResourceNameValidator {
 }
 
 impl ResourceNameValidator {
-    /// Create a new `PathValidator`, and initialize its regex. Use this stateful
-    /// struct if you are going to be validating multiple paths. If only validating one path,
-    /// feel free to use `PathValidator::validate_path_once`.
+    /// Create a new `PathValidator`, and initialize its regex. Use this
+    /// stateful struct if you are going to be validating multiple paths. If
+    /// only validating one path, feel free to use
+    /// `PathValidator::validate_path_once`.
     pub fn new() -> ResourceNameValidator {
         ResourceNameValidator {
             regex: Regex::new(GMS2_VALID_PATH_REGEX).unwrap(),
@@ -41,8 +43,8 @@ impl ResourceNameValidator {
         Self::validate_path_internal(input, &self.regex)
     }
 
-    /// Checks if path is a valid name for Gms2 Resources. It is relatively inefficent, and
-    /// does one allocations per call.
+    /// Checks if path is a valid name for Gms2 Resources. It is relatively
+    /// inefficent, and does one allocations per call.
     pub fn validate_path_once(input: &str) -> bool {
         let re = Regex::new(GMS2_VALID_PATH_REGEX).unwrap();
 

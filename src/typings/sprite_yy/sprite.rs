@@ -70,6 +70,9 @@ pub struct Sprite {
     /// 1, as there is always *one* layer. Layers are shared between frames.
     pub layers: Vec<Layer>,
 
+    /// Optional nineslice data. Added in Gms2.3.2.556.
+    pub nine_slice: Option<NineSlice>,
+
     /// Defines the parent of the YY folder path.
     pub parent: ViewPath,
 
@@ -153,6 +156,91 @@ pub enum Origin {
     BottomCenter,
     BottomRight,
     Custom,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct NineSlice {
+    /// The left bound.
+    pub left: u64,
+
+    /// The top bound.
+    pub top: u64,
+
+    /// The right bound.
+    pub right: u64,
+
+    /// The bottom bound.
+    pub bottom: u64,
+
+    /// The guide color for each bound, listed in this order:
+    /// 0: Left
+    /// 1: Top
+    /// 2: Right
+    /// 3: Bottom
+    pub guide_colour: [GmEncodedColor; 4],
+
+    /// The highlight color to use for the highlighted segment. Why in the world is this
+    /// user configurable? But it is!
+    pub highlight_colour: GmEncodedColor,
+
+    /// The style of the highlight.
+    pub highlight_style: HighlightStyle,
+
+    /// Whether nine-slicing is enabled. This data structure as a whole
+    /// *may* be set to `null`, or be defined but disabled. This allows the user
+    /// to toggle nine-slicing on and off.
+    pub enabled: bool,
+
+    /// This is an array of 5 tile mode sprites. I am leaving this typed as
+    /// a raw array right now, rather than writing a custom serde impl, due to time
+    /// constraints. In the future, I will make this into a nice struct.
+    /// The following are each index:
+    /// 0: Left
+    /// 1: Top,
+    /// 2: Right
+    /// 3: Bottom
+    /// 4: Center
+    pub tile_mode: [TileMode; 5],
+
+    /// Version string. Right now, this is loosely typed and ignored,
+    /// but will be used in the future to aid in parsing.
+    pub resource_version: ResourceVersion,
+
+    /// This appears to always be `null`? Unknown what it refers to.
+    pub loaded_version: serde_json::Value,
+
+    /// A constant, always "GMNineSliceData"
+    pub resource_type: ConstGmNineSliceData,
+}
+
+/// A color encoded in a u64 in BGR format. It does not contain Alpha.
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
+#[repr(transparent)]
+#[serde(transparent)]
+pub struct GmEncodedColor(u64);
+
+/// The highlight style for nineslice support.
+#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Clone)]
+#[repr(u8)]
+pub enum HighlightStyle {
+    /// This inverts the colors below it.
+    #[default]
+    Inverted,
+    /// This uses additive blending.
+    Overlay,
+}
+
+/// The tilemodes for each nine-slice. Refer to GM's documentation on what each does.
+#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Clone)]
+#[repr(u8)]
+pub enum TileMode {
+    #[default]
+    Stretch,
+    Repeat,
+    Mirror,
+    BlankRepeat,
+    Hide,
 }
 
 #[cfg(test)]

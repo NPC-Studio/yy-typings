@@ -2,15 +2,18 @@
 
 //! This is a library was created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by NPC Studio. This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public. Using this tool, one should be able to generate their own pipeline without difficulty.
 //!
-//! ***This crate only supports Gms2, and only supports Gms2 2.3 and above***. If users do want to use a version with Gms2 version 2.2, there is a historical release on the main branch which was made before 2.3's release, though it is not nearly as fully featured as the current branch.
+//! ***This crate only supports Gms2, and only supports Gms2 2.3 and above***.
+//! If users do want to use a version with Gms2 version 2.2, there is a
+//! historical release on the main branch which was made before 2.3's release,
+//! though it is not nearly as fully featured as the current branch.
 //!
 //! This repository has a pair: [the Yy-Boss](https://crates.io/crates/yy-boss), which provides active Yyp handling over stdin/stdout, abstracting over Gms2's native types to allow users to dynamically create resources (and analyze existing resources) without handling the Gms2 Yy files directly.
-//!
 
 macro_rules! create_guarded_uuid {
     ($this_val:ident) => {
-        /// A newtype wrapper around a `uuid::Uuid`. The inner value can always be accessed
-        /// with `inner` without consuming the wrapper -- its purpose is for developer simplicity.
+        /// A newtype wrapper around a `uuid::Uuid`. The inner value can always be
+        /// accessed with `inner` without consuming the wrapper -- its purpose is for
+        /// developer simplicity.
         #[derive(
             PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, Copy, Clone, Default,
         )]
@@ -59,7 +62,8 @@ mod typings {
 
     /// Typings associated with Sprite `.yy` files, including
     /// many of the types associated with `Sequences`, for now. In future
-    /// iterations of this crate, those shared resources will be in their own module.
+    /// iterations of this crate, those shared resources will be in their own
+    /// module.
     pub mod sprite_yy {
         pub use super::*;
 
@@ -103,6 +107,9 @@ mod typings {
     /// Typings for Shaders.
     pub mod shader;
 
+    /// Typings for Sounds.
+    pub mod sounds;
+
     mod resource_version;
     pub use resource_version::ResourceVersion;
 
@@ -121,7 +128,8 @@ pub use typings::*;
 ///
 /// 1.  `TrailingCommaUtility` will *remove* all trailing commas
 ///     from a given input string. It is a wrapper over a Regex pattern.
-/// 2.  `PathValidator` will validate any paths as valid Gms2 names for a resource.
+/// 2.  `PathValidator` will validate any paths as valid Gms2 names for a
+/// resource.
 pub mod utils {
     mod trailing_comma_utility;
     pub use trailing_comma_utility::TrailingCommaUtility;

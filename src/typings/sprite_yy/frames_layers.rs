@@ -39,13 +39,15 @@ pub struct Frame {
 #[serde(rename_all = "camelCase")]
 pub struct Image {
     /// Although named FrameId, this is actually the path to the the parent
-    /// frame resource. The `name` field will correspond to the `Frame.name` field.
+    /// frame resource. The `name` field will correspond to the `Frame.name`
+    /// field.
     #[serde(rename = "FrameId")]
     pub frame_id: FilesystemPath,
 
-    /// This always corresponds to the LayerId which this SpriteImage corresponds to.
-    /// It will be `None` in the case of the `composite_image` field -- otherwise, it will
-    /// contain a valid path to the parent layer.
+    /// This always corresponds to the LayerId which this SpriteImage
+    /// corresponds to. It will be `None` in the case of the
+    /// `composite_image` field -- otherwise, it will contain a valid path
+    /// to the parent layer.
     #[serde(rename = "LayerId")]
     pub layer_id: Option<FilesystemPath>,
 
