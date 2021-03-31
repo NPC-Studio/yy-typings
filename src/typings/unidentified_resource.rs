@@ -34,6 +34,5 @@ unidentified_resource!(Font);
 unidentified_resource!(Path);
 unidentified_resource!(Room);
 unidentified_resource!(Sequence);
-unidentified_resource!(Sound);
 unidentified_resource!(TileSet);
 unidentified_resource!(Timeline);

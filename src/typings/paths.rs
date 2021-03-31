@@ -90,7 +90,7 @@ impl ViewPath {
 ///     { "name": "spr_player", "path": "folders/Sprites/spr_player.yy" }
 /// ]
 /// ```
-/// 
+///
 /// **NB** the default provided here, a Blank String, is never correct in a Gms2
 /// Project. Instead, to describe a file at the root of the project (ie, a file
 /// not inside a folder), please use: ```
@@ -163,14 +163,15 @@ pub struct TexturePath {
 /// The `path` component will **never** end with .yy, even if it describes
 /// a virtual folder or file. This is to say, given the texture groups
 /// `Default`, `Crops`, and `Enemies`, we would expect to see the following
-/// `TexturePath` vec, in Json: ```json
+/// `TexturePath` vec, in Json:
+/// ```json
 /// [
 ///     { "name": "Default", path: "texturegroups/Default" },
 ///     { "name": "Crops", path: "texturegroups/Crops" },
 ///     { "name": "Enemies", path: "texturegroups/Enemies" }
 /// ]
 /// ```
-/// 
+///
 /// There are two important things to note about `TextureGroup`:
 /// 1. It does not end in `.yy`.
 /// 2. It uses `/` as a separator.
@@ -193,6 +194,62 @@ impl fmt::Display for TexturePathLocation {
 
 impl From<TexturePathLocation> for String {
     fn from(o: TexturePathLocation) -> Self {
+        o.0
+    }
+}
+
+/// A unqiue Id for audiogroups. Although it appears as if it could support
+/// hierarchies and nesting, **audio ids never actually show that in
+/// practice, so this form is likely an artifact of the Yyg internal project
+/// structures.**. The first member of this hierarchy is *always*
+/// `audiogroups`.
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash)]
+pub struct AudioGroupId {
+    /// The human readable name of the parent. For a audiogroup `Default`,
+    /// this name would read `Default`.
+    pub name: String,
+
+    /// The path to the audio group, where:
+    /// ```no run
+    /// assert_eq!(self.path.0, format!("audiogroups/{}", self.name))
+    /// ```
+    pub path: AudioGroupPath,
+}
+
+/// The `path` component will **never** end with .yy, even if it describes
+/// a virtual folder or file. This is to say, given the texture groups
+/// `Default`, `Crops`, and `Enemies`, we would expect to see the following
+/// `TexturePath` vec, in Json:
+/// ```json
+/// [
+///     { "name": "Default", path: "audiogroups/Default" },
+///     { "name": "Crops", path: "audiogroups/Crops" },
+///     { "name": "Enemies", path: "audiogroups/Enemies" }
+/// ]
+/// ```
+///
+/// There are two important things to note about `TextureGroup`:
+/// 1. It does not end in `.yy`.
+/// 2. It uses `/` as a separator.
+/// 3. It always starts with `texturegroups`.
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
+pub struct AudioGroupPath(pub String);
+
+impl AudioGroupPath {
+    /// Access the inner member as a reference.
+    pub fn inner(&self) -> &str {
+        &self.0
+    }
+}
+
+impl fmt::Display for AudioGroupPath {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl From<AudioGroupPath> for String {
+    fn from(o: AudioGroupPath) -> Self {
         o.0
     }
 }

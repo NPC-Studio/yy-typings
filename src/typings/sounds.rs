@@ -1,10 +1,8 @@
-use std::fmt;
-
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-use crate::AudioGroup;
+use crate::AudioGroupId;
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -18,17 +16,33 @@ pub struct Sound {
     /// Whether the sound is "preloaded" or not. I don't know what this
     /// actually does.
     pub preload: bool,
-    pub bitrate: BitRate,
-    pub sample_rate: u64,
 
+    /// The bitrate of the audio. Higher is better I think? Honestly lol,
+    /// knowing what "bitrate" means is for fuckin nerds
+    /// This is in "kbps" apparently, so probably kilobits (bytes?) per second.
+    /// Look, no one knows.
+    pub bit_rate: BitRate,
+
+    /// SAMPLE RATE?? I didn't know BITRATE you think i'm gonna know "SAMPLE RATE"
+    /// it's the rate of the samples go fuck yourself
+    pub sample_rate: SampleRate,
+
+    /// The kind of the sound for mono/stereo.
     #[serde(rename = "type")]
-    pub sound_type: usize,
-    pub bit_depth: usize,
+    pub output: Output,
+
+    /// The quality of the sound.
+    pub bit_depth: BitDepth,
 
     /// This is the Path to the Audio Group Id.
-    pub audio_group_id: AudioGroup,
+    pub audio_group_id: AudioGroupId,
+
+    /// This is a path to the Audio file, which will be the same name as the sound file generally.
+    /// If there is no sound set up for this asset, then this field **will be an empty string.**
     pub sound_file: String,
-    duration: f64,
+
+    /// The duration of the sound in seconds, such as `12.4` for 12 seconds and 400 miliseconds.
+    pub duration: f64,
 
     /// The parent in the Gms2 virtual file system, ie. the parent which
     /// a user would see in the Navigation Pane in Gms2. This has no relationship
@@ -58,18 +72,26 @@ pub enum Compression {
     CompressedStreamed,
 }
 
+#[derive(Debug, Copy, SmartDefault, Deserialize_repr, Serialize_repr, PartialEq, Eq, Clone)]
+#[repr(u8)]
+pub enum BitDepth {
+    #[default]
+    EightBit,
+    SixteenBit,
+}
+
 #[derive(Debug, Copy, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[repr(transparent)]
 #[serde(transparent)]
 pub struct BitRate(u32);
 
 impl BitRate {
-    pub fn new(bitrate: u32) -> Result<Self, InvalidBitRate> {
+    pub fn new(bitrate: u32) -> Option<Self> {
         if Self::is_valid_bitrate(bitrate) {
-            return Err(InvalidBitRate);
+            return None;
         }
 
-        Ok(Self(bitrate))
+        Some(Self(bitrate))
     }
 
     pub fn is_valid_bitrate(bitrate: u32) -> bool {
@@ -105,13 +127,42 @@ impl Default for BitRate {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct InvalidBitRate;
+#[derive(Debug, Copy, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[repr(transparent)]
+#[serde(transparent)]
+pub struct SampleRate(u32);
 
-impl fmt::Display for InvalidBitRate {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.pad("that was not a valid bit rate")
+impl SampleRate {
+    pub fn new(bitrate: u32) -> Option<Self> {
+        if Self::is_valid_sample_rate(bitrate) {
+            return None;
+        }
+
+        Some(Self(bitrate))
     }
+
+    pub fn is_valid_sample_rate(bitrate: u32) -> bool {
+        matches!(bitrate, 5512 | 11025 | 22050 | 32000 | 44100 | 48000)
+    }
+
+    pub fn valid_sample_rates() -> [u32; 6] {
+        [5512, 11025, 22050, 32000, 44100, 48000]
+    }
+}
+
+impl Default for SampleRate {
+    fn default() -> Self {
+        Self(128)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr, SmartDefault)]
+#[repr(u8)]
+pub enum Output {
+    #[default]
+    Mono,
+    Stereo,
+    ThreeDee,
 }
 
 #[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
@@ -119,4 +170,39 @@ pub enum ConstGmSound {
     #[serde(rename = "GMSound")]
     #[default]
     Const,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serialize_deserialize() {
+        let input = r#"
+        {
+            "compression": 2,
+            "volume": 1.0,
+            "preload": false,
+            "bitRate": 128,
+            "sampleRate": 44100,
+            "type": 0,
+            "bitDepth": 1,
+            "audioGroupId": {
+              "name": "audiogroup_default",
+              "path": "audiogroups/audiogroup_default"
+            },
+            "soundFile": "snd_summer_ambiance_day.mp3",
+            "duration": 60.0583344,
+            "parent": {
+              "name": "Sounds",
+              "path": "folders/Sounds.yy"
+            },
+            "resourceVersion": "1.0",
+            "name": "snd_summer_ambiance_day",
+            "tags": [],
+            "resourceType": "GMSound"
+          }"#;
+
+        let deser: Sound = serde_json::from_str(input).unwrap();
+    }
 }
