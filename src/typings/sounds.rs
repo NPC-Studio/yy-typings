@@ -203,6 +203,6 @@ mod tests {
             "resourceType": "GMSound"
           }"#;
 
-        let deser: Sound = serde_json::from_str(input).unwrap();
+        let _: Sound = serde_json::from_str(input).unwrap();
     }
 }
