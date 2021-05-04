@@ -106,21 +106,6 @@ pub struct ObjectEvent {
     /// The Id of the thing to collide with.
     pub collision_object_id: Option<FilesystemPath>,
 
-    /// This is now **not present in new projects.** It will be removed
-    /// on the next GM update.
-    ///
-    /// Filesystem path pointing directly to the parent Object,
-    /// such as:
-    /// ```json
-    /// {
-    ///     "name": "obj_stairs",
-    ///     "path": "objects/obj_stairs/obj_stairs.yy"
-    /// }
-    /// ```
-    #[deprecated = "removed in gms2.3.2.556"]
-    #[serde(skip_serializing, default)]
-    pub parent: FilesystemPath,
-
     /// The version of the `.yy` file.
     pub resource_version: ResourceVersion,
 
@@ -314,7 +299,6 @@ mod tests {
                 is_dn_d: false,
                 event_type: EventType::Other(OtherEvent::AnimationEnd),
                 collision_object_id: None,
-                parent: FilesystemPath::new("objects", "obj_animate_then_die"),
                 resource_version: ResourceVersion::default(),
                 name: None,
                 tags: vec![],
