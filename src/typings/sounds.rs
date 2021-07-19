@@ -94,6 +94,19 @@ impl BitRate {
         Some(Self(bitrate))
     }
 
+    pub fn set_bitrate(&mut self, rate: u32) -> Result<(), InvalidBitRate> {
+        if Self::is_valid_bitrate(rate) {
+            self.0 = rate;
+            Ok(())
+        } else {
+            Err(InvalidBitRate)
+        }
+    }
+
+    pub fn bitrate(&self) -> u32 {
+        self.0
+    }
+
     pub fn is_valid_bitrate(bitrate: u32) -> bool {
         match bitrate {
             0..=64 => {
@@ -127,6 +140,16 @@ impl Default for BitRate {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct InvalidBitRate;
+
+impl std::fmt::Display for InvalidBitRate {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Invalid Bit Rate")
+    }
+}
+impl std::error::Error for InvalidBitRate {}
+
 #[derive(Debug, Copy, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[repr(transparent)]
 #[serde(transparent)]
@@ -145,6 +168,19 @@ impl SampleRate {
         matches!(bitrate, 5512 | 11025 | 22050 | 32000 | 44100 | 48000)
     }
 
+    pub fn set_sample_rate(&mut self, sample_rate: u32) -> Result<(), InvalidSampleRate> {
+        if Self::is_valid_sample_rate(sample_rate) {
+            self.0 = sample_rate;
+            Ok(())
+        } else {
+            Err(InvalidSampleRate)
+        }
+    }
+
+    pub fn sample_rate(&self) -> u32 {
+        self.0
+    }
+
     pub fn valid_sample_rates() -> [u32; 6] {
         [5512, 11025, 22050, 32000, 44100, 48000]
     }
@@ -155,6 +191,16 @@ impl Default for SampleRate {
         Self(128)
     }
 }
+
+#[derive(Debug, Clone, Copy)]
+pub struct InvalidSampleRate;
+
+impl std::fmt::Display for InvalidSampleRate {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Invalid Sample Rate")
+    }
+}
+impl std::error::Error for InvalidSampleRate {}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr, SmartDefault)]
 #[repr(u8)]
