@@ -56,7 +56,7 @@ mod tests {
 
     #[test]
     fn trivial_trailing_commas() {
-        let input = TrailingCommaUtility::clear_trailing_comma_once(&"{member,}");
+        let input = TrailingCommaUtility::clear_trailing_comma_once("{member,}");
         assert_eq!(input, "{member}");
     }
 
@@ -78,6 +78,6 @@ mod tests {
     }
 
     fn test_harness(tcu: &mut TrailingCommaUtility, input: &str, output: &str) {
-        assert_eq!(tcu.clear_trailing_comma(&input), output);
+        assert_eq!(tcu.clear_trailing_comma(input), output);
     }
 }
