@@ -68,8 +68,8 @@ pub struct SpriteSequence {
     pub backdrop_height: u64,
     pub backdrop_x_offset: f64,
     pub backdrop_y_offset: f64,
-    pub xorigin: isize,
-    pub yorigin: isize,
+    pub xorigin: i32,
+    pub yorigin: i32,
 
     /// This can be a `{}`, which basically is
     /// impossible for us to parse. So that's a mess.
