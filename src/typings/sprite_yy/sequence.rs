@@ -20,7 +20,7 @@ pub struct SpriteSequence {
     pub playback: usize,
 
     /// The playback speed of the Sequence in terms of the PlaybackSpeed type.
-    pub playback_speed: f64,
+    pub playback_speed: f32,
 
     /// The type of the playback speed.
     pub playback_speed_type: PlaybackSpeed,
@@ -32,12 +32,12 @@ pub struct SpriteSequence {
 
     /// The volume of the sequence. Always 1.
     #[default = 1.0]
-    pub volume: f64,
+    pub volume: f32,
 
-    /// The number of frames of the Sprite. GMS2 records this as an f64 due to
+    /// The number of frames of the Sprite. GMS2 records this as an f32 due to
     /// its shared status between sequences -- this can be converted to a
     /// `usize` without issue.
-    pub length: f64,
+    pub length: f32,
 
     /// The sprite events, which are always the Default value of SpriteEvents,
     /// for the Sprite.
@@ -63,11 +63,11 @@ pub struct SpriteSequence {
     #[default(String::new())]
     pub backdrop_image_path: String,
     #[default(0.5)]
-    pub backdrop_image_opacity: f64,
+    pub backdrop_image_opacity: f32,
     pub backdrop_width: u64,
     pub backdrop_height: u64,
-    pub backdrop_x_offset: f64,
-    pub backdrop_y_offset: f64,
+    pub backdrop_x_offset: f32,
+    pub backdrop_y_offset: f32,
     pub xorigin: i32,
     pub yorigin: i32,
 
@@ -100,8 +100,8 @@ pub struct SpriteSequence {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct VisibleRange {
-    pub x: f64,
-    pub y: f64,
+    pub x: f32,
+    pub y: f32,
 }
 
 /// These are the "events" which a Sprite is subscribed to. It will always be
@@ -170,8 +170,6 @@ pub struct Track {
     pub tracks: Vec<()>,
     /// Always empty vec.
     pub events: Vec<()>,
-    /// Always empty vec.
-    pub modifiers: Vec<()>,
     /// Always `false`.
     pub is_creation_track: bool,
     /// The resource version. Currently "1.0".
@@ -180,6 +178,8 @@ pub struct Track {
     pub tags: Tags,
     /// The resource type constant.
     pub resource_type: ConstGmSpriteFramesTrack,
+    /// Always empty vec.
+    pub modifiers: Vec<()>,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
@@ -197,10 +197,10 @@ pub struct SpriteKeyframe {
     /// A SpriteSequenceId, apparently with no relation to any other ID.
     pub id: SpriteSequenceId,
     #[serde(rename = "Key")]
-    pub key: f64,
+    pub key: f32,
     #[serde(rename = "Length")]
     #[default = 1.0]
-    pub length: f64,
+    pub length: f32,
     #[serde(rename = "Stretch")]
     pub stretch: bool,
     #[serde(rename = "Disabled")]

@@ -43,14 +43,15 @@ impl FilesystemPath {
 }
 
 /// Viewpaths in the virtual file system created by the Folders in the Yyp,
-/// deliminated by `/`, and with a ViewPathLocation which ends in `.yy`.\ or in
+/// deliminated by `/`, and with a ViewPathLocation which ends in `.yy` or in
 /// `.yyp`.
 ///
 /// Please note, the `Default` implementation in this type is **never a valid
 /// option**. It is provided for convenience, but the default Root for any file
-/// not in a folder is as follows: ```
-/// # use yy_typings::{ViewPathLocation, ViewPath};
-/// # const PROJECT_NAME: &'static str = "A project Name";
+/// not in a folder is as follows:
+/// ```
+/// #use yy_typings::{ViewPathLocation, ViewPath};
+/// #const PROJECT_NAME: &'static str = "A project Name";
 /// let root_path = ViewPath {
 ///     name: PROJECT_NAME.to_string(),
 ///     path: ViewPathLocation(format!("{}.yyp", PROJECT_NAME))
@@ -147,7 +148,7 @@ impl PartialEq<String> for ViewPathLocation {
 /// practice, so this form is likely an artifact of the Yyg internal project
 /// structures.**. The first member of this hierarchy is *always*
 /// `texturegroups`.
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone, Hash)]
 pub struct TexturePath {
     /// The human readable name of the parent. For a texture group `Default`,
     /// this name would read `Default`.
@@ -158,6 +159,15 @@ pub struct TexturePath {
     /// assert_eq!(self.path.0, format!("texturegroups/{}", self.name))
     /// ```
     pub path: TexturePathLocation,
+}
+
+impl Default for TexturePath {
+    fn default() -> Self {
+        Self {
+            name: "Default".to_string(),
+            path: Default::default(),
+        }
+    }
 }
 
 /// The `path` component will **never** end with .yy, even if it describes
@@ -176,7 +186,7 @@ pub struct TexturePath {
 /// 1. It does not end in `.yy`.
 /// 2. It uses `/` as a separator.
 /// 3. It always starts with `texturegroups`.
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub struct TexturePathLocation(pub String);
 
 impl TexturePathLocation {
@@ -195,6 +205,12 @@ impl fmt::Display for TexturePathLocation {
 impl From<TexturePathLocation> for String {
     fn from(o: TexturePathLocation) -> Self {
         o.0
+    }
+}
+
+impl Default for TexturePathLocation {
+    fn default() -> Self {
+        Self("texturegroups/Default".to_string())
     }
 }
 

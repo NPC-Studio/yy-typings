@@ -85,15 +85,18 @@ pub struct Layer {
     pub blend_mode: usize,
 
     /// Between 0-100
+    #[default = 100.0]
     pub opacity: f64,
 
     /// This is the actual name shown in the GMS2 Sprite Editor.
+    #[default("default".to_string())]
     pub display_name: String,
 
     /// Currently "1.0"
     pub resource_version: ResourceVersion,
 
     /// The legacy name of the LayerId.
+    #[default(LayerId::new())]
     pub name: LayerId,
 
     /// The tags assigned to each layer.
