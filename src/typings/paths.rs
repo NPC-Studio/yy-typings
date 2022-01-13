@@ -74,10 +74,6 @@ impl ViewPath {
             path: ViewPathLocation::root_folder(),
         }
     }
-
-    pub fn is_root(&self) -> bool {
-        self.name == "folders"
-    }
 }
 
 /// The `path` component will **always** end with **.yy**, even if it describes
