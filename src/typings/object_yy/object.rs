@@ -1,7 +1,7 @@
 use super::{
     ConstGmEvent, ConstGmObject, ConstGmObjectOverrideProperty, ConstGmObjectProperty, EventType,
 };
-use crate::{FilesystemPath, ResourceVersion, Tags, ViewPath};
+use crate::{FilesystemPath, ResourceData, ResourceVersion, Tags};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -74,19 +74,9 @@ pub struct Object {
     /// be found recursively.
     pub overridden_properties: Vec<ObjectOverrideProperty>,
 
-    // View Data
-    /// The parent in the Gms2 virtual file system, ie. the parent which
-    /// a user would see in the Navigation Pane in Gms2. This has no
-    /// relationship to the actual operating system's filesystem.
-    pub parent: ViewPath,
-    /// The resource version of this yy file. At default 1.0.
-    pub resource_version: ResourceVersion,
-
-    /// The name of the object. This is the human readable name used in the IDE.
-    pub name: String,
-
-    /// The tags given to the object.
-    pub tags: Tags,
+    /// Common resource data.
+    #[serde(flatten)]
+    pub resource_data: ResourceData,
 
     /// Const id tag of the object, given by Gms2.
     pub resource_type: ConstGmObject,
@@ -253,14 +243,15 @@ mod tests {
     use include_dir::{include_dir, Dir, DirEntry};
     use pretty_assertions::assert_eq;
 
+    static ALL_OBJECTS: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/data/objects");
+
     #[test]
     fn trivial_sprite_parsing() {
-        let all_objects: Dir = include_dir!("data/objects");
         let tcu = TrailingCommaUtility::new();
 
-        for object_file in all_objects.find("**/*.yy").unwrap() {
+        for object_file in ALL_OBJECTS.find("**/*.yy").unwrap() {
             if let DirEntry::File(file) = object_file {
-                println!("parsing {}", file.path);
+                println!("parsing {}", file.path().display());
                 let our_str = std::str::from_utf8(file.contents()).unwrap();
                 let our_str = tcu.clear_trailing_comma(our_str);
                 serde_json::from_str::<Object>(&our_str).unwrap();
@@ -306,13 +297,15 @@ mod tests {
             }],
             properties: vec![],
             overridden_properties: vec![],
-            parent: ViewPath {
-                name: "ui".to_string(),
-                path: ViewPathLocation("folders/Objects/ui.yy".to_owned()),
+            resource_data: ResourceData {
+                parent: ViewPath {
+                    name: "ui".to_string(),
+                    path: ViewPathLocation("folders/Objects/ui.yy".to_owned()),
+                },
+                resource_version: ResourceVersion::default(),
+                name: "obj_animate_then_die".to_string(),
+                tags: vec![],
             },
-            resource_version: ResourceVersion::default(),
-            name: "obj_animate_then_die".to_string(),
-            tags: vec![],
             resource_type: ConstGmObject::Const,
         };
 

@@ -1,6 +1,6 @@
-use super::{
-    sprite_constants::*, Frame, Layer, ResourceVersion, SpriteSequence, Tags, TexturePath, ViewPath,
-};
+use crate::ResourceData;
+
+use super::{sprite_constants::*, Frame, Layer, ResourceVersion, SpriteSequence, TexturePath};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -73,17 +73,10 @@ pub struct Sprite {
     /// Optional nineslice data. Added in Gms2.3.2.556.
     pub nine_slice: Option<NineSlice>,
 
-    /// Defines the parent of the YY folder path.
-    pub parent: ViewPath,
+    /// Common resource data.
+    #[serde(flatten)]
+    pub resource_data: ResourceData,
 
-    /// Version string. Right now, this is loosely typed and ignored,
-    /// but will be used in the future to aid in parsing.
-    pub resource_version: ResourceVersion,
-
-    /// The human readable name of the resource, such as `spr_player`.
-    pub name: String,
-    /// These are the tags assigned in the GMS2 Editor to each sprite.
-    pub tags: Tags,
     /// ModelName. Always GMSprite.
     pub resource_type: ConstGmSprite,
 }

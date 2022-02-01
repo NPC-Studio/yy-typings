@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-use crate::AudioGroupId;
+use crate::{AudioGroupId, ResourceData};
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -44,19 +44,9 @@ pub struct Sound {
     /// The duration of the sound in seconds, such as `12.4` for 12 seconds and 400 miliseconds.
     pub duration: f64,
 
-    /// The parent in the Gms2 virtual file system, ie. the parent which
-    /// a user would see in the Navigation Pane in Gms2. This has no relationship
-    /// to the actual operating system's filesystem.
-    pub parent: crate::ViewPath,
-
-    /// The resource version of this yy file. At default 1.0.
-    pub resource_version: crate::ResourceVersion,
-
-    /// The name of the object. This is the human readable name used in the IDE.
-    pub name: String,
-
-    /// The tags given to the object.
-    pub tags: crate::Tags,
+    /// Common resource data.
+    #[serde(flatten)]
+    pub resource_data: ResourceData,
 
     /// The resource type, always the same for sounds.
     pub resource_type: ConstGmSound,

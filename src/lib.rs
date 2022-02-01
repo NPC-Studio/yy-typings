@@ -108,7 +108,11 @@ mod typings {
     pub mod shader;
 
     /// Typings for Sounds.
-    pub mod sounds;
+    pub mod sound;
+
+    /// Typings for Rooms.
+    pub mod room;
+    pub use room::Room;
 
     mod resource_version;
     pub use resource_version::ResourceVersion;
@@ -121,6 +125,9 @@ mod typings {
 
     mod note;
     pub use note::Note;
+
+    mod resource_data;
+    pub use resource_data::ResourceData;
 }
 pub use typings::*;
 
