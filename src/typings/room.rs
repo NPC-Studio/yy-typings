@@ -315,26 +315,32 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn deep_equality() {
-    //     let file_raw = include_str!("../../data/reo.yy");
+    #[test]
+    fn room_string_sheer() {
+        let file_raw = include_str!("../../data/rooms/rm_western_ruins/rm_western_ruins.yy");
 
-    //     let file_parsed: Shader =
-    //         serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
-    //             .unwrap();
+        let file_parsed: Room =
+            serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
+                .unwrap();
 
-    //     let script = Shader {
-    //         shader_type: ShaderType::GlslEs,
-    //         parent: ViewPath {
-    //             name: "shaders".to_string(),
-    //             path: ViewPathLocation("folders/Objects/system/lighting/shaders.yy".to_string()),
-    //         },
-    //         resource_version: ResourceVersion::default(),
-    //         name: "sh_draw_light_to_screen".to_string(),
-    //         tags: vec![],
-    //         resource_type: ConstGmShader::Const,
-    //     };
+        let json = serde_json::to_string(&file_parsed).unwrap();
 
-    //     assert_eq!(file_parsed, script);
-    // }
+        if json != file_raw {
+            println!("{}", json);
+            println!();
+            println!("{}", file_raw);
+
+            panic!("whoops");
+        }
+    }
+
+    #[test]
+    fn room_instance_sheer() {
+        let txt = r#"{"instances":[{"properties":[{"propertyId":{"name":"","path":""},"objectId":{"name":"obj_light_tester","path":"objects/obj_light_tester/obj_light_tester.yy"},"value":"0","resourceVersion":"1.0","name":null,"tags":[],"resourceType":"GMOverriddenProperty"},{"propertyId":{"name":"","path":""},"objectId":{"name":"obj_light_tester","path":"objects/obj_light_tester/obj_light_tester.yy"},"value":"1","resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMOverriddenProperty"}],"isDnd":false,"objectId":{"name":"obj_light_tester","path":"objects/obj_light_tester/obj_light_tester.yy"},"inheritCode":false,"hasCreationCode":false,"colour":4294967295,"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"imageIndex":0,"imageSpeed":0.0,"inheritedItemId":null,"frozen":false,"ignore":false,"inheritItemSettings":false,"x":160.0,"y":32.0,"resourceVersion":"1.0","name":"inst_56DEEFC2","tags":[],"resourceType":"GMRInstance"}],"visible":true,"depth":0,"userdefinedDepth":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"gridX":32,"gridY":32,"layers":[],"hierarchyFrozen":false,"resourceVersion":"1.0","name":"Instances","tags":[],"resourceType":"GMRInstanceLayer"}"#;
+
+        let parse: Layer = serde_json::from_str(txt).unwrap();
+        let output = serde_json::to_string(&parse).unwrap();
+
+        assert_eq!(txt, output);
+    }
 }
