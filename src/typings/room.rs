@@ -96,10 +96,10 @@ pub struct Asset {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Tilemap {
-    pub tileset_id: ViewPath,
-    pub x: i32,
-    pub y: i32,
-    pub tiles: TilemapTileData,
+    // pub tileset_id: ViewPath,
+// pub x: i32,
+// pub y: i32,
+// pub tiles: TilemapTileData,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]

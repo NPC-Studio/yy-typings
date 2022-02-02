@@ -175,6 +175,7 @@ pub struct ObjectOverrideProperty {
 
     /// The name of the property, which appears to **always** be an empty
     /// string.
+    #[serde(deserialize_with = "nullable_string")]
     pub name: String,
     /// The tags assigned to the property. Probably shouldn't be assigned.
     pub tags: Tags,
@@ -235,6 +236,13 @@ pub enum PhysicsShape {
 pub struct PhysicsVec2 {
     pub x: f32,
     pub y: f32,
+}
+
+fn nullable_string<'de, D>(d: D) -> Result<String, D::Error>
+where
+    D: serde::de::Deserializer<'de>,
+{
+    Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or_default())
 }
 
 #[cfg(test)]
