@@ -122,6 +122,27 @@ mod tests {
         }
     }
 
+    #[test]
+    fn tileset_string_sheer() {
+        let file_raw = include_str!(
+            "../../data/tilesets/tile_grassautotile_spring/tile_grassautotile_spring.yy"
+        );
+
+        let file_parsed: Tileset =
+            serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
+                .unwrap();
+
+        let json = serde_json::to_string(&file_parsed).unwrap();
+
+        if json != file_raw {
+            println!("{}", json);
+            println!();
+            println!("{}", file_raw);
+
+            panic!("whoops");
+        }
+    }
+
     // #[test]
     // fn deep_equality() {
     //     let file_raw = include_str!("../../data/shaders/sh_draw_light_to_screen.yy");
