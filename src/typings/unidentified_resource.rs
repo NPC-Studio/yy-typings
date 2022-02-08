@@ -33,5 +33,4 @@ unidentified_resource!(Extension);
 unidentified_resource!(Font);
 unidentified_resource!(Path);
 unidentified_resource!(Sequence);
-unidentified_resource!(TileSet);
 unidentified_resource!(Timeline);

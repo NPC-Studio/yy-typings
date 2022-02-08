@@ -1,6 +1,8 @@
 mod paths;
-mod tileset;
 pub use paths::*;
+
+mod tileset;
+pub use tileset::TileSet;
 
 mod tags;
 pub use tags::Tags;

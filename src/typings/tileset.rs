@@ -6,7 +6,7 @@ use super::resource_data::ResourceSubData;
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Tileset {
+pub struct TileSet {
     pub sprite_id: Option<ViewPath>,
 
     pub tile_width: u64,
@@ -117,7 +117,7 @@ mod tests {
                 println!("parsing {}", file.path().display());
                 let our_str = std::str::from_utf8(file.contents()).unwrap();
                 let our_str = tcu.clear_trailing_comma(our_str);
-                serde_json::from_str::<Tileset>(&our_str).unwrap();
+                serde_json::from_str::<TileSet>(&our_str).unwrap();
             }
         }
     }
@@ -128,7 +128,7 @@ mod tests {
             "../../data/tilesets/tile_grassautotile_spring/tile_grassautotile_spring.yy"
         );
 
-        let file_parsed: Tileset =
+        let file_parsed: TileSet =
             serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
                 .unwrap();
 
