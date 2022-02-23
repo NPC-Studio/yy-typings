@@ -24,9 +24,6 @@ pub struct Yyp {
     /// secret.
     pub is_ecma: bool,
 
-    /// Unknown property, usually an empty string.
-    pub tutorial_path: String,
-
     /// Lists all known configs. Note that this top level
     /// config will **always** have the `name` `"Default"`.
     pub configs: YypConfig,
@@ -75,7 +72,7 @@ pub struct Yyp {
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "3.6.595";
+    pub const DEFAULT_VERSION: &'static str = "1.1.610";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
