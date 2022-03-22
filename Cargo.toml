@@ -1,8 +1,8 @@
 [package]
 name = "yy-typings"
-version = "0.4.10"
+version = "0.4.11"
 authors = ["Jonathan Spira <jjspira@gmail.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "A collection of typings for GameMaker Studio 2 YY and YYP files"
 repository = "https://github.com/NPC-Studio/yy-typings"
