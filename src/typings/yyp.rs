@@ -55,8 +55,8 @@ pub struct Yyp {
     #[serde(rename = "MetaData")]
     pub meta_data: YypMetaData,
 
-    /// The version of the YYP. Currently, that is "1.4"
-    #[default(ResourceVersion::new(1, 4))]
+    /// The version of the YYP. Currently, that is "1.5"
+    #[default(ResourceVersion::new(1, 5))]
     pub resource_version: ResourceVersion,
 
     /// The actual human-readable name of the Project, such as "Forager"
@@ -72,7 +72,7 @@ pub struct Yyp {
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "1.1.610";
+    pub const DEFAULT_VERSION: &'static str = "2.1.618";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
