@@ -18,7 +18,7 @@ pub struct Yyp {
     pub options: Vec<FilesystemPath>,
 
     /// Denotes whether this project uses drag and drop or not
-    pub is_dn_d_project: bool,
+    default_script_type: i32,
 
     /// Allows for experimental JS editing. Unfinished or legacy feature. It's a
     /// secret.
@@ -72,7 +72,7 @@ pub struct Yyp {
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "2.1.618";
+    pub const DEFAULT_VERSION: &'static str = "3.0.624";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]

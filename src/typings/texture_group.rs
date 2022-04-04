@@ -13,6 +13,7 @@ pub struct TextureGroup {
     pub config_values: Option<BTreeMap<String, serde_json::Value>>,
     #[default(true)]
     pub is_scaled: bool,
+    pub compress_format: String,
     #[default(true)]
     pub autocrop: bool,
     #[default(2)]
