@@ -18,7 +18,7 @@ pub struct Yyp {
     pub options: Vec<FilesystemPath>,
 
     /// Denotes whether this project uses drag and drop or not
-    default_script_type: i32,
+    pub default_script_type: i32,
 
     /// Allows for experimental JS editing. Unfinished or legacy feature. It's a
     /// secret.
