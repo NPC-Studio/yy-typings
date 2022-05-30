@@ -17,6 +17,8 @@ pub struct Object {
     pub solid: bool,
     /// If the object is visible.
     pub visible: bool,
+    /// Unclear what it means, always set to `true` in practice.
+    pub managed: bool,
     /// The Id used for the Collision Mask, if not the SpriteId.
     pub sprite_mask_id: Option<FilesystemPath>,
     /// If the object is "persistent", meaning if Gms2 will keep the object
