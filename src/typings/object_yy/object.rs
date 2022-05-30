@@ -278,6 +278,7 @@ mod tests {
             sprite_id: None,
             solid: false,
             visible: true,
+            managed: true,
             sprite_mask_id: None,
             persistent: false,
             parent_object_id: None,
