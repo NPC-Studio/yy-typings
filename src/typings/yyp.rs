@@ -72,7 +72,7 @@ pub struct Yyp {
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "5.0.8";
+    pub const DEFAULT_VERSION: &'static str = "6.0.23";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]

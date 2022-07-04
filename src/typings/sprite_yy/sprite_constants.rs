@@ -38,14 +38,7 @@ pub enum ConstGmSequence {
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub enum ConstGmSpriteEvent {
-    #[serde(rename = "KeyframeStore<MessageEventKeyframe>")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmSpriteMoment {
-    #[serde(rename = "KeyframeStore<MomentsEventKeyframe>")]
+    #[serde(rename = "KeyframeStore`1")]
     #[default]
     Const,
 }
@@ -66,14 +59,14 @@ pub enum ConstGmSpriteFramesTrack {
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub enum ConstGmSpriteKeyframes {
-    #[serde(rename = "KeyframeStore<SpriteFrameKeyframe>")]
+    #[serde(rename = "KeyframeStore`1")]
     #[default]
     Const,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub enum ConstGmSpriteKeyframe {
-    #[serde(rename = "Keyframe<SpriteFrameKeyframe>")]
+    #[serde(rename = "Keyframe`1")]
     #[default]
     Const,
 }

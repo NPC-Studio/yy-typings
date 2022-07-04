@@ -121,6 +121,9 @@ pub struct SpriteEvents {
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteEvent,
+
+    /// This appears to be a special element type within sequences
+    pub element_type: ElementType,
 }
 
 /// These are the "moments" which a Sprite is subscribed to. It will always be
@@ -139,7 +142,10 @@ pub struct SpriteMoments {
 
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
-    pub resource_type: ConstGmSpriteMoment,
+    pub resource_type: ConstGmSpriteEvent,
+
+    /// This appears to be a special element type within sequences
+    pub element_type: ElementType,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
@@ -189,6 +195,15 @@ pub struct SpriteKeyframes {
     pub keyframes: Vec<SpriteKeyframe>,
     pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframes,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone, Eq)]
+#[serde(rename_all = "PascalCase")]
+pub enum ElementType {
+    #[default]
+    MessageEventKeyframe,
+    MomentsEventKeyframe,
+    SpriteFrameKeyframe,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
