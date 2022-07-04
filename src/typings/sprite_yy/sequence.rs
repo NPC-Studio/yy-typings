@@ -81,8 +81,8 @@ pub struct SpriteSequence {
     /// be the same value. It is unknown why there is duplicate data.
     pub parent: FilesystemPath,
 
-    /// The resource version. Currently `1.3`.
-    #[default("1.3".parse::<ResourceVersion>().unwrap())]
+    /// The resource version. Currently `1.4`.
+    #[default("1.4".parse::<ResourceVersion>().unwrap())]
     pub resource_version: ResourceVersion,
 
     /// The name of the SpriteSequence, which is always an empty string.
