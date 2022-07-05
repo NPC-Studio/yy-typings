@@ -106,7 +106,7 @@ pub struct VisibleRange {
 
 /// These are the "events" which a Sprite is subscribed to. It will always be
 /// its default value. It exists due to sharing resources with Sequences.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteEvents {
     /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not
@@ -123,12 +123,13 @@ pub struct SpriteEvents {
     pub resource_type: ConstGmSpriteEvent,
 
     /// This appears to be a special element type within sequences
+    #[default(ElementType::MessageEventKeyframe)]
     pub element_type: ElementType,
 }
 
 /// These are the "moments" which a Sprite is subscribed to. It will always be
 /// its default value. This is due to sharing resources with Sequences.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteMoments {
     /// The keyframes which a SpriteEvent is assigned to. Because Sprites do not
@@ -145,6 +146,7 @@ pub struct SpriteMoments {
     pub resource_type: ConstGmSpriteEvent,
 
     /// This appears to be a special element type within sequences
+    #[default(ElementType::MomentsEventKeyframe)]
     pub element_type: ElementType,
 }
 
@@ -184,6 +186,7 @@ pub struct Track {
     pub tags: Tags,
     /// The resource type constant.
     pub resource_type: ConstGmSpriteFramesTrack,
+
     /// Always empty vec.
     pub modifiers: Vec<()>,
 }
@@ -195,12 +198,14 @@ pub struct SpriteKeyframes {
     pub keyframes: Vec<SpriteKeyframe>,
     pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframes,
+    /// This appears to be a special element type within sequences
+    #[default(ElementType::SpriteFrameKeyframe)]
+    pub element_type: ElementType,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "PascalCase")]
 pub enum ElementType {
-    #[default]
     MessageEventKeyframe,
     MomentsEventKeyframe,
     SpriteFrameKeyframe,
@@ -226,6 +231,9 @@ pub struct SpriteKeyframe {
     pub channels: Channels,
     pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframe,
+    /// This appears to be a special element type within sequences
+    #[default(ElementType::SpriteFrameKeyframe)]
+    pub element_type: ElementType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
