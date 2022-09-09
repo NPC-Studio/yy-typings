@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, FilesystemPath, ResourceVersion, Tags};
+use super::{sprite_constants::*, FilesystemPath, ResourceVersion};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;

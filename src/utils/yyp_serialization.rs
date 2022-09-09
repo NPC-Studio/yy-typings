@@ -2,6 +2,7 @@ pub use crate::{
     texture_group::TextureGroup, AudioGroup, FilesystemPath, ResourceVersion, RoomOrderId, Tags,
     Yyp, YypConfig, YypFolder, YypIncludedFile, YypMetaData, YypResource,
 };
+use std::fmt::Write;
 
 const BIG_NUMBER: usize = 2000;
 const MEMBER_NUMBER: usize = 70;
@@ -22,6 +23,18 @@ impl YypSerialization for Yyp {
 
         let output_ptr = &mut output;
         print_indentation(output_ptr, 1);
+        print_yyp_line(output_ptr, "resourceType", "GmProject".to_string());
+        print_yyp_line(
+            output_ptr,
+            "resourceVersion",
+            self.common_data.resource_version.yyp_serialization(1),
+        );
+        print_yyp_line(
+            output_ptr,
+            "name",
+            self.common_data.name.yyp_serialization(1),
+        );
+
         print_yyp_line(output_ptr, "resources", self.resources.yyp_serialization(1));
         print_yyp_line(output_ptr, "Options", self.options.yyp_serialization(1));
         print_yyp_line(
@@ -54,14 +67,6 @@ impl YypSerialization for Yyp {
             self.included_files.yyp_serialization(1),
         );
         print_yyp_line(output_ptr, "MetaData", self.meta_data.yyp_serialization(1));
-        print_yyp_line(
-            output_ptr,
-            "resourceVersion",
-            self.resource_version.yyp_serialization(1),
-        );
-        print_yyp_line(output_ptr, "name", self.name.yyp_serialization(1));
-        print_yyp_line(output_ptr, "tags", self.tags.yyp_serialization(1));
-        output_ptr.push_str("\"resourceType\": \"GMProject\",");
 
         format!(
             "{{{line}{output}{line}}}",
@@ -72,7 +77,7 @@ impl YypSerialization for Yyp {
 }
 
 fn print_yyp_line(string: &mut String, label: &str, value: String) {
-    string.push_str(&format!("\"{}\": {},{}", label, value, Yyp::LINE_ENDING));
+    write!(string, "\"{}\": {},{}", label, value, Yyp::LINE_ENDING).unwrap();
     print_indentation(string, 1);
 }
 
@@ -100,7 +105,7 @@ impl YypSerialization for YypConfig {
     fn yyp_serialization(&self, mut indentation: usize) -> String {
         fn inner_config_print(string: &mut String, config: &YypConfig, indentation: &mut usize) {
             print_indentation(string, *indentation);
-            string.push_str(&format!(r#"{{"name":"{}","children":["#, config.name));
+            write!(string, r#"{{"name":"{}","children":["#, config.name).unwrap();
 
             if config.children.is_empty() == false {
                 // Get us to the write line...
@@ -131,10 +136,10 @@ impl YypSerialization for YypConfig {
         let mut output = String::with_capacity(MEMBER_NUMBER);
 
         // Outer Config
-        output.push_str(&format!("{{{}", Self::LINE_ENDING));
+        write!(output, "{{{}", Self::LINE_ENDING).unwrap();
         indentation += 1;
         print_indentation(&mut output, indentation);
-        output.push_str(&format!(r#""name": "{}","#, self.name));
+        write!(output, r#""name": "{}","#, self.name).unwrap();
 
         output.push_str(YypConfig::LINE_ENDING);
         print_indentation(&mut output, indentation);
@@ -159,7 +164,7 @@ impl YypSerialization for YypConfig {
             "Child config stack must be balanced"
         );
 
-        output.push_str(&format!("],{}", YypConfig::LINE_ENDING));
+        write!(output, "],{}", YypConfig::LINE_ENDING).unwrap();
         indentation -= 1;
 
         assert_eq!(1, indentation, "Stack must be down to 1 indent.");
@@ -171,15 +176,8 @@ impl YypSerialization for YypConfig {
 }
 
 impl YypSerialization for YypFolder {
-    fn yyp_serialization(&self, indentation: usize) -> String {
-        format!(
-            r#"{{"folderPath":"{}","order":{},"resourceVersion":"{}","name":"{}","tags":{},"resourceType":"GMFolder",}}"#,
-            self.folder_path.inner(),
-            self.order,
-            self.resource_version,
-            self.name,
-            self.tags.yyp_serialization(indentation)
-        )
+    fn yyp_serialization(&self, _: usize) -> String {
+        json_trailing_comma(&self)
     }
 }
 
@@ -231,16 +229,18 @@ impl<T: YypSerialization> YypSerialization for Vec<T> {
         } else {
             let mut output = String::with_capacity(MEMBER_NUMBER);
 
-            output.push_str(&format!("[{}", Self::LINE_ENDING));
+            write!(output, "[{}", Self::LINE_ENDING).unwrap();
             indentation += 1;
 
             for value in self.iter() {
                 print_indentation(&mut output, indentation);
-                output.push_str(&format!(
+                write!(
+                    output,
                     "{},{}",
                     value.yyp_serialization(indentation),
                     Self::LINE_ENDING
-                ));
+                )
+                .unwrap();
             }
             indentation -= 1;
 

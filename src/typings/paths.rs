@@ -50,8 +50,8 @@ impl FilesystemPath {
 /// option**. It is provided for convenience, but the default Root for any file
 /// not in a folder is as follows:
 /// ```
-/// #use yy_typings::{ViewPathLocation, ViewPath};
-/// #const PROJECT_NAME: &'static str = "A project Name";
+/// # use yy_typings::{ViewPathLocation, ViewPath};
+/// # const PROJECT_NAME: &'static str = "A project Name";
 /// let root_path = ViewPath {
 ///     name: PROJECT_NAME.to_string(),
 ///     path: ViewPathLocation(format!("{}.yyp", PROJECT_NAME))
@@ -78,14 +78,16 @@ impl ViewPath {
 
 /// The `path` component will **always** end with **.yy**, even if it describes
 /// a virtual folder or file. Given the following Gms2 folder virtual system
-/// (*not* operating system file system): ```txt
+/// (*not* operating system file system):
+/// 
+/// ```txt
 /// folders/
 ///     Sprites/
 ///         spr_enemy.yy
 ///         spr_player.yy
 /// ```
-/// In this case, we would see the following `ViewPath`s, in Json form:
-/// ```json
+/// In this case, we would see the following [ViewPath]s, in Json form:
+/// ```txt
 /// [
 ///     { "name": "spr_enemy", "path": "folders/Sprites/spr_enemy.yy" },
 ///     { "name": "spr_player", "path": "folders/Sprites/spr_player.yy" }
