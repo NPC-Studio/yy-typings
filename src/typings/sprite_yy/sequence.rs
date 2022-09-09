@@ -11,9 +11,6 @@ pub struct SpriteSequence {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmSequence>,
 
-    /// The path to the parent sprite.
-    pub sprite_id: FilesystemPath,
-
     /// The Units of time of the Sequence. It will always be 1 in a Sprite.
     #[default = 1]
     pub time_units: usize,
@@ -124,7 +121,7 @@ pub struct SpriteMoments {
 
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
-    pub resource_type: ConstGmSpriteEvent,
+    pub resource_type: ConstGmSpriteMoment,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]

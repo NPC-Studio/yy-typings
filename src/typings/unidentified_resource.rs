@@ -1,4 +1,4 @@
-use crate::{ResourceVersion, Tags, ViewPath};
+use crate::{ResourceVersion, ViewPath};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -21,9 +21,6 @@ macro_rules! unidentified_resource {
 
             /// The name of the object. This is the human readable name used in the IDE.
             pub name: String,
-
-            /// The tags given to the object.
-            pub tags: Tags,
         }
     };
 }

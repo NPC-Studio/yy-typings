@@ -67,7 +67,7 @@ pub struct AutoTileSet {
 #[serde(rename_all = "camelCase")]
 pub struct TileAnimationFrame {
     #[serde(flatten)]
-    common_data: CommonData<ConstGmAutoTileSet>,
+    common_data: CommonData<ConstGmTileAnimation>,
 
     pub frames: Vec<usize>,
 }

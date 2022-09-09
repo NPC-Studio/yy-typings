@@ -110,6 +110,8 @@ pub struct ObjectEvent {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectProperty {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmObjectProperty>,
     /// The type of property which is preset. Some, or all, of the rest of the
     /// information in this struct will be used based on the property type.
     pub var_type: ObjectPropertyTypes,
@@ -134,14 +136,6 @@ pub struct ObjectProperty {
     /// Not sure what this is supposed to be. In the meantime, we've typed it as
     /// a blank array.
     pub filters: Vec<String>,
-    /// The ResourceVersion, default value.
-    pub resource_version: ResourceVersion,
-    /// The name of the property, such as "room_to_transition_to".
-    pub name: String,
-    /// The tags assigned to the property. Probably shouldn't be assigned.
-    pub tags: Tags,
-    /// The resource type const of the property.
-    pub resource_type: ConstGmObjectProperty,
 }
 
 /// Object "properties" are set in the Gms2 window and allow the user to
@@ -150,11 +144,14 @@ pub struct ObjectProperty {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectOverrideProperty {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmObjectOverrideProperty>,
+
     /// This is **not** a real filesystem path, but instead just looks like one.
     /// Eventually, this will receive better typing. @todo
     /// The `name` is the name of the prperty, and the `path` is to the
     /// ORIGINATOR of the property.
-    pub property_id: FilesystemPath,
+    pub property_id: Option<FilesystemPath>,
 
     /// The path to the object which this property last overrides.
     pub object_id: FilesystemPath,
@@ -162,23 +159,6 @@ pub struct ObjectOverrideProperty {
     /// The serialized value of the property type. This corresponds exactly to
     /// what the Gms2 box will have inside it as a string.
     pub value: String,
-
-    /// The resource version for this property override
-    pub resource_version: ResourceVersion,
-
-    /// The name of the property, which appears to **always** be an empty
-    /// string.
-    // #[serde(
-    //     serialize_with = "ser_nullable_string",
-    //     deserialize_with = "de_nullable_string"
-    // )]
-    pub name: Option<String>,
-
-    /// The tags assigned to the property. Probably shouldn't be assigned.
-    pub tags: Tags,
-
-    /// The resource type const of the property.
-    pub resource_type: ConstGmObjectOverrideProperty,
 }
 
 /// The types of object "Properties" as set in the Gms2 Widget pane by users.
