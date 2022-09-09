@@ -1,7 +1,7 @@
 use super::{
     ConstGmEvent, ConstGmObject, ConstGmObjectOverrideProperty, ConstGmObjectProperty, EventType,
 };
-use crate::{FilesystemPath, ResourceData, ResourceVersion, Tags};
+use crate::{FilesystemPath, ResourceVersion, Tags};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -9,6 +9,10 @@ use smart_default::SmartDefault;
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct Object {
+    /// The common data for all yy resources.
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmObject>,
+
     // Ids:
     /// The Id of the Sprite being used for this object.
     pub sprite_id: Option<FilesystemPath>,
@@ -76,17 +80,18 @@ pub struct Object {
     /// be found recursively.
     pub overridden_properties: Vec<ObjectOverrideProperty>,
 
-    /// Common resource data.
-    #[serde(flatten)]
-    pub resource_data: ResourceData,
-
-    /// Const id tag of the object, given by Gms2.
-    pub resource_type: ConstGmObject,
+    /// The parent in the Gms2 virtual file system, ie. the parent which
+    /// a user would see in the Navigation Pane in Gms2. This has no
+    /// relationship to the actual operating system's filesystem.
+    pub parent: crate::ViewPath,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone, Ord, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectEvent {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmEvent>,
+
     /// Is this event used in DragNDrop, the thing no one uses?
     pub is_dn_d: bool,
 
@@ -97,20 +102,6 @@ pub struct ObjectEvent {
 
     /// The Id of the thing to collide with.
     pub collision_object_id: Option<FilesystemPath>,
-
-    /// The version of the `.yy` file.
-    pub resource_version: ResourceVersion,
-
-    /// The "name" of the Event, which appears to always be null or an empty
-    /// string
-    #[serde(with = "serde_with::rust::string_empty_as_none")]
-    pub name: Option<String>,
-
-    /// The tags for the event, which probably should always be empty.
-    pub tags: Tags,
-
-    /// The constant resource type for GmEvents.
-    pub resource_type: ConstGmEvent,
 }
 
 /// Object "properties" are set in the Gms2 window and allow the user to
@@ -275,6 +266,11 @@ mod tests {
                 .unwrap();
 
         let object = Object {
+            common_data: CommonData {
+                resource_type: ConstGmObject::Const,
+                resource_version: ResourceVersion::default(),
+                name: "obj_animate_then_die".to_string(),
+            },
             sprite_id: None,
             solid: false,
             visible: true,
@@ -295,26 +291,21 @@ mod tests {
             physics_kinematic: false,
             physics_shape_points: vec![],
             event_list: vec![ObjectEvent {
+                common_data: crate::CommonData {
+                    resource_version: ResourceVersion::default(),
+                    name: String::new(),
+                    resource_type: ConstGmEvent::Const,
+                },
                 is_dn_d: false,
                 event_type: EventType::Other(OtherEvent::AnimationEnd),
                 collision_object_id: None,
-                resource_version: ResourceVersion::default(),
-                name: None,
-                tags: vec![],
-                resource_type: ConstGmEvent::Const,
             }],
             properties: vec![],
             overridden_properties: vec![],
-            resource_data: ResourceData {
-                parent: ViewPath {
-                    name: "ui".to_string(),
-                    path: ViewPathLocation("folders/Objects/ui.yy".to_owned()),
-                },
-                resource_version: ResourceVersion::default(),
-                name: "obj_animate_then_die".to_string(),
-                tags: vec![],
+            parent: ViewPath {
+                name: "ui".to_string(),
+                path: ViewPathLocation("folders/Objects/ui.yy".to_owned()),
             },
-            resource_type: ConstGmObject::Const,
         };
 
         assert_eq!(parsed_object, object);

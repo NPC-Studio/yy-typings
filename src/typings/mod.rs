@@ -60,10 +60,6 @@ pub mod shader;
 /// Typings for Sounds.
 pub mod sound;
 
-/// Typings for Rooms.
-pub mod room;
-pub use room::Room;
-
 mod resource_version;
 pub use resource_version::ResourceVersion;
 
@@ -77,4 +73,4 @@ mod note;
 pub use note::Note;
 
 mod resource_data;
-pub use resource_data::ResourceData;
+pub use resource_data::CommonData;

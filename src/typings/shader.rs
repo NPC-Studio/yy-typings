@@ -1,4 +1,3 @@
-use crate::ResourceData;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -6,15 +5,13 @@ use smart_default::SmartDefault;
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Shader {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmShader>,
+
     #[serde(rename = "type")]
     pub shader_type: ShaderType,
 
-    /// Common resource data.
-    #[serde(flatten)]
-    pub resource_data: ResourceData,
-
-    /// Const id tag of the shader, given by Gms2.
-    pub resource_type: ConstGmShader,
+    pub parent: crate::ViewPath,
 }
 
 impl Shader {
@@ -69,19 +66,16 @@ mod tests {
                 .unwrap();
 
         let script = Shader {
-            shader_type: ShaderType::GlslEs,
-            resource_data: ResourceData {
-                parent: ViewPath {
-                    name: "shaders".to_string(),
-                    path: ViewPathLocation(
-                        "folders/Objects/system/lighting/shaders.yy".to_string(),
-                    ),
-                },
+            common_data: crate::CommonData {
+                resource_type: ConstGmShader::Const,
                 resource_version: ResourceVersion::default(),
                 name: "sh_draw_light_to_screen".to_string(),
-                tags: vec![],
             },
-            resource_type: ConstGmShader::Const,
+            shader_type: ShaderType::GlslEs,
+            parent: ViewPath {
+                name: "shaders".to_string(),
+                path: ViewPathLocation("folders/Objects/system/lighting/shaders.yy".to_string()),
+            },
         };
 
         assert_eq!(file_parsed, script);

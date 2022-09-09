@@ -29,6 +29,7 @@ macro_rules! unidentified_resource {
 }
 
 unidentified_resource!(AnimationCurve);
+unidentified_resource!(Room);
 unidentified_resource!(Extension);
 unidentified_resource!(Font);
 unidentified_resource!(Path);

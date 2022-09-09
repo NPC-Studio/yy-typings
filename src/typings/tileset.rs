@@ -1,12 +1,12 @@
-use crate::{ResourceData, TexturePath, ViewPath};
+use crate::{CommonData, TexturePath, ViewPath};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-
-use super::resource_data::ResourceSubData;
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TileSet {
+    #[serde(flatten)]
+    pub common_data: CommonData<ConstGmTileSet>,
     pub sprite_id: Option<ViewPath>,
 
     pub tile_width: u64,
@@ -34,12 +34,7 @@ pub struct TileSet {
     pub tile_animation: TileAnimation,
     pub macro_page_tiles: MacroPageTiles,
 
-    /// Common resource data.
-    #[serde(flatten)]
-    pub resource_data: ResourceData,
-
-    /// Const id tag of the shader, given by Gms2.
-    pub resource_type: ConstGmTileSet,
+    pub parent: crate::ViewPath,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
@@ -62,21 +57,19 @@ pub struct MacroPageTiles {
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 pub struct AutoTileSet {
+    #[serde(flatten)]
+    common_data: CommonData<ConstGmAutoTileSet>,
     tiles: Vec<usize>,
     closed_edge: bool,
-    #[serde(flatten)]
-    sub_data: ResourceSubData,
-    #[serde(rename = "resourceType")]
-    resource_type: ConstGmAutoTileSet,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TileAnimationFrame {
-    pub frames: Vec<usize>,
     #[serde(flatten)]
-    pub sub_data: ResourceSubData,
-    pub resource_type: ConstGmTileAnimation,
+    common_data: CommonData<ConstGmAutoTileSet>,
+
+    pub frames: Vec<usize>,
 }
 
 #[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]

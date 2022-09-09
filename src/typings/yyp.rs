@@ -1,5 +1,4 @@
-use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, Tags, ViewPathLocation};
-use crate::ResourceVersion;
+use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, ViewPathLocation};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::{
@@ -11,6 +10,9 @@ use std::{
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmProject>,
+
     /// Contains all project resources, ordered by KeyID.
     pub resources: Vec<YypResource>,
 
@@ -54,25 +56,10 @@ pub struct Yyp {
     /// The MetaData for the project.
     #[serde(rename = "MetaData")]
     pub meta_data: YypMetaData,
-
-    /// The version of the YYP. Currently, that is "1.5"
-    #[default(ResourceVersion::new(1, 5))]
-    pub resource_version: ResourceVersion,
-
-    /// The actual human-readable name of the Project, such as "Forager"
-    /// or "Fields of Mistria" or "Test1122 please work".
-    pub name: String,
-
-    /// Somehow, the Tags field, which exists purely due to OOP, I assume.
-    /// It should always be empty and does nothing.
-    pub tags: Tags,
-
-    /// The ResourceType of the YYP, which is "GMProject"
-    pub resource_type: ConstGmProject,
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "6.0.23";
+    pub const DEFAULT_VERSION: &'static str = "8.0.34";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
@@ -112,6 +99,9 @@ pub struct YypConfig {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmFolder>,
+
     /// The full path from the root to the virtual folder location. The first
     /// part of the path is always `folders`. For top level folders, will look
     /// like `"Folders/Fonts.yy"`, for example.
@@ -122,34 +112,18 @@ pub struct YypFolder {
     /// Otherwise, it is meaningless, and Gms2 appears to not keep in
     /// tracked or coherent.
     pub order: usize,
-
-    /// The resource version of this Resource. Currently `"1.0"`.
-    pub resource_version: ResourceVersion,
-    /// The human-readable name of this Folder. The last part of the
-    /// `folder_path` and this name should agree. Human readable names
-    /// include examples such as "Sprites", "Light Data", or "Really Good
-    /// Tiles".
-    pub name: String,
-
-    /// Apparently tags can be placed here, even though they definitely can't.
-    /// Don't do that.
-    pub tags: Tags,
-
-    /// The Resource Type of this folder, which is always `"GMFolder"`.
-    pub resource_type: ConstGmFolder,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct YypIncludedFile {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmIncludedFile>,
     #[serde(rename = "CopyToMask")]
     #[default(-1)]
     pub copy_to_mask: isize,
     #[default(Path::new("datafiles").to_owned())]
     pub file_path: PathBuf,
-    pub resource_version: ResourceVersion,
-    pub name: String,
-    pub resource_type: ConstGmIncludedFile,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]

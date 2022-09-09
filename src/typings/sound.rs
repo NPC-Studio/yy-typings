@@ -2,11 +2,14 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-use crate::{AudioGroupId, ResourceData};
+use crate::AudioGroupId;
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Sound {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmSound>,
+
     /// The type of compression for the file.
     pub compression: Compression,
 
@@ -44,12 +47,7 @@ pub struct Sound {
     /// The duration of the sound in seconds, such as `12.4` for 12 seconds and 400 miliseconds.
     pub duration: f64,
 
-    /// Common resource data.
-    #[serde(flatten)]
-    pub resource_data: ResourceData,
-
-    /// The resource type, always the same for sounds.
-    pub resource_type: ConstGmSound,
+    pub parent: crate::ViewPath,
 }
 
 #[derive(Debug, Copy, SmartDefault, Deserialize_repr, Serialize_repr, PartialEq, Eq, Clone)]

@@ -1,6 +1,4 @@
-use crate::ResourceData;
-
-use super::{sprite_constants::*, Frame, Layer, ResourceVersion, SpriteSequence, TexturePath};
+use super::{sprite_constants::*, FrameId, Layer, ResourceVersion, SpriteSequence, TexturePath};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -9,6 +7,9 @@ use std::num::NonZeroUsize;
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Sprite {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmSprite>,
+
     pub bbox_mode: BBoxMode,
     pub collision_kind: CollisionKind,
     #[serde(skip)]
@@ -60,7 +61,7 @@ pub struct Sprite {
     pub grid_y: usize,
 
     /// Each frame within this Sprite File.
-    pub frames: Vec<Frame>,
+    pub frames: Vec<crate::CommonData<ConstGmSpriteFrame, FrameId>>,
 
     /// The sequence assigned to each sprite.
     pub sequence: SpriteSequence,
@@ -73,12 +74,7 @@ pub struct Sprite {
     /// Optional nineslice data. Added in Gms2.3.2.556.
     pub nine_slice: Option<NineSlice>,
 
-    /// Common resource data.
-    #[serde(flatten)]
-    pub resource_data: ResourceData,
-
-    /// ModelName. Always GMSprite.
-    pub resource_type: ConstGmSprite,
+    pub parent: crate::ViewPath,
 }
 
 #[derive(

@@ -8,35 +8,6 @@ create_guarded_uuid!(LayerId);
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Frame {
-    /// This is the actual image you'll see in the game.
-    /// It's a composite of the images below. It's LayerID will
-    /// always be UUID::default, or 0000...0000, but it's
-    /// FrameID will always == Self.Id.
-    pub composite_image: Image,
-
-    /// These are the images which compose the composite image.
-    /// At the minimum, there will be one Image. It's LayerID will
-    /// correspond to the LayerId of a Sprite above.
-    pub images: Vec<Image>,
-
-    /// This is the path to the sprite parent. It will always have the name
-    /// of the Sprite name, and the path to the sprite `.yy` file.
-    pub parent: FilesystemPath,
-
-    /// The version of this particular resource.
-    pub resource_version: ResourceVersion,
-    /// This is the name of the Frame, which will always be a UUID.
-    pub name: FrameId,
-    /// These are the tags affixed to this frame, which is not possible.
-    #[default(vec![])]
-    pub tags: Tags,
-    /// This is the type of Resource.
-    pub resource_type: ConstGmSpriteFrame,
-}
-
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-#[serde(rename_all = "camelCase")]
 pub struct Image {
     /// Although named FrameId, this is actually the path to the the parent
     /// frame resource. The `name` field will correspond to the `Frame.name`
@@ -72,6 +43,9 @@ pub struct Image {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Layer {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmImageLayer, LayerId>,
+
     /// Defines the visibility of the layer. It will default to true on
     /// import. It is changed in the GMS2 Sprite Editor.
     pub visible: bool,
@@ -91,19 +65,6 @@ pub struct Layer {
     /// This is the actual name shown in the GMS2 Sprite Editor.
     #[default("default".to_string())]
     pub display_name: String,
-
-    /// Currently "1.0"
-    pub resource_version: ResourceVersion,
-
-    /// The legacy name of the LayerId.
-    #[default(LayerId::new())]
-    pub name: LayerId,
-
-    /// The tags assigned to each layer.
-    pub tags: Tags,
-
-    /// The name of the Resource Type, which is always "GMImageLayer".
-    pub resource_type: ConstGmImageLayer,
 }
 
 #[derive(

@@ -8,6 +8,9 @@ create_guarded_uuid!(SpriteSequenceId);
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSequence {
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmSequence>,
+
     /// The path to the parent sprite.
     pub sprite_id: FilesystemPath,
 
@@ -77,24 +80,6 @@ pub struct SpriteSequence {
     pub event_to_function: serde_json::Value,
     #[default(None)]
     pub event_stub_script: Option<()>,
-    /// This is a duplicate of `sprite_id`, and should always
-    /// be the same value. It is unknown why there is duplicate data.
-    pub parent: FilesystemPath,
-
-    /// The resource version. Currently `1.4`.
-    #[default("1.4".parse::<ResourceVersion>().unwrap())]
-    pub resource_version: ResourceVersion,
-
-    /// The name of the SpriteSequence, which is always an empty string.
-    #[default(String::new())]
-    pub name: String,
-
-    /// The tags given to this resource. Empty.
-    #[default(vec![])]
-    pub tags: Tags,
-
-    /// This is the resource type. Always GMSequence.
-    pub resource_type: ConstGmSequence,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -121,10 +106,6 @@ pub struct SpriteEvents {
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteEvent,
-
-    /// This appears to be a special element type within sequences
-    #[default(ElementType::MessageEventKeyframe)]
-    pub element_type: ElementType,
 }
 
 /// These are the "moments" which a Sprite is subscribed to. It will always be
@@ -144,17 +125,13 @@ pub struct SpriteMoments {
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
     pub resource_type: ConstGmSpriteEvent,
-
-    /// This appears to be a special element type within sequences
-    #[default(ElementType::MomentsEventKeyframe)]
-    pub element_type: ElementType,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct Track {
-    /// The name of the track. The trackname is always "frames".
-    pub name: ConstGmSpriteTrackName,
+    #[serde(flatten)]
+    pub common_data: crate::CommonData<ConstGmSpriteFramesTrack, ConstGmSpriteTrackName>,
 
     /// This field appears to always be null. For some reason.
     pub sprite_id: Option<()>,
@@ -180,13 +157,6 @@ pub struct Track {
     pub events: Vec<()>,
     /// Always `false`.
     pub is_creation_track: bool,
-    /// The resource version. Currently "1.0".
-    pub resource_version: ResourceVersion,
-    /// The tags, which cannot be assigned in IDE.
-    pub tags: Tags,
-    /// The resource type constant.
-    pub resource_type: ConstGmSpriteFramesTrack,
-
     /// Always empty vec.
     pub modifiers: Vec<()>,
 }
@@ -198,9 +168,6 @@ pub struct SpriteKeyframes {
     pub keyframes: Vec<SpriteKeyframe>,
     pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframes,
-    /// This appears to be a special element type within sequences
-    #[default(ElementType::SpriteFrameKeyframe)]
-    pub element_type: ElementType,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
@@ -231,9 +198,6 @@ pub struct SpriteKeyframe {
     pub channels: Channels,
     pub resource_version: ResourceVersion,
     pub resource_type: ConstGmSpriteKeyframe,
-    /// This appears to be a special element type within sequences
-    #[default(ElementType::SpriteFrameKeyframe)]
-    pub element_type: ElementType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
