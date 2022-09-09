@@ -33,7 +33,7 @@ impl ResourceVersion {
     /// let default = ResourceVersion::new(1, 0);
     /// assert_eq!(default, ResourceVersion { major: 1, minor: 0 });
     /// ```
-    pub fn new(major: usize, minor: usize) -> ResourceVersion {
+    pub const fn new(major: usize, minor: usize) -> ResourceVersion {
         ResourceVersion { major, minor }
     }
 
@@ -44,8 +44,14 @@ impl ResourceVersion {
     /// let blank = ResourceVersion::blank();
     /// assert_eq!(default, ResourceVersion { major: 0, minor: 0 });
     /// ```
-    pub fn blank() -> ResourceVersion {
+    pub const fn blank() -> ResourceVersion {
         ResourceVersion::new(0, 0)
+    }
+}
+
+impl From<(usize, usize)> for ResourceVersion {
+    fn from(v: (usize, usize)) -> Self {
+        Self::new(v.0, v.1)
     }
 }
 
@@ -154,7 +160,6 @@ impl<'de> Deserialize<'de> for ResourceVersion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn basic_parse() {

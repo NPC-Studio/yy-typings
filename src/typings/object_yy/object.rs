@@ -1,7 +1,7 @@
 use super::{
     ConstGmEvent, ConstGmObject, ConstGmObjectOverrideProperty, ConstGmObjectProperty, EventType,
 };
-use crate::{FilesystemPath, ResourceVersion, Tags};
+use crate::FilesystemPath;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;

@@ -14,9 +14,7 @@ macro_rules! create_guarded_uuid {
         /// A newtype wrapper around a `uuid::Uuid`. The inner value can always be
         /// accessed with `inner` without consuming the wrapper -- its purpose is for
         /// developer simplicity.
-        #[derive(
-            PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, Copy, Clone, Default,
-        )]
+        #[derive(PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, Copy, Clone)]
         pub struct $this_val(uuid::Uuid);
 
         impl std::fmt::Debug for $this_val {
@@ -45,6 +43,12 @@ macro_rules! create_guarded_uuid {
             /// Gives access to the inner ID. Try to not use this one too much!
             pub fn inner(&self) -> uuid::Uuid {
                 self.0
+            }
+        }
+
+        impl Default for $this_val {
+            fn default() -> Self {
+                Self::new()
             }
         }
     };

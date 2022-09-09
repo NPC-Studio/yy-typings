@@ -9,7 +9,7 @@ create_guarded_uuid!(SpriteSequenceId);
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSequence {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmSequence>,
+    pub common_data: crate::CommonData<ConstGmSequence, String, 1, 4>,
 
     /// The Units of time of the Sequence. It will always be 1 in a Sprite.
     #[default = 1]

@@ -61,7 +61,7 @@ pub struct Sprite {
     pub grid_y: usize,
 
     /// Each frame within this Sprite File.
-    pub frames: Vec<crate::CommonData<ConstGmSpriteFrame, FrameId>>,
+    pub frames: Vec<crate::CommonData<ConstGmSpriteFrame, FrameId, 1, 1>>,
 
     /// The sequence assigned to each sprite.
     pub sequence: SpriteSequence,
