@@ -141,7 +141,7 @@ pub struct ObjectProperty {
 /// Object "properties" are set in the Gms2 window and allow the user to
 /// override those properties either in child objects of a parent, or in the
 /// Room (or both!). This allows for simple customization in the room editor.
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectOverrideProperty {
     #[serde(flatten)]

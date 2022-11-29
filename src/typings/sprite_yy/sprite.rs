@@ -147,7 +147,7 @@ pub enum Origin {
     Custom,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct NineSlice {
     /// The left bound.
@@ -204,13 +204,13 @@ pub struct NineSlice {
 }
 
 /// A color encoded in a u64 in BGR format. It does not contain Alpha.
-#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
 #[repr(transparent)]
 #[serde(transparent)]
 pub struct GmEncodedColor(u64);
 
 /// The highlight style for nineslice support.
-#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Eq, Clone)]
 #[repr(u8)]
 pub enum HighlightStyle {
     /// This inverts the colors below it.
@@ -221,7 +221,7 @@ pub enum HighlightStyle {
 }
 
 /// The tilemodes for each nine-slice. Refer to GM's documentation on what each does.
-#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Eq, Clone)]
 #[repr(u8)]
 pub enum TileMode {
     #[default]

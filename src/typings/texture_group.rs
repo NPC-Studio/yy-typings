@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
     #[serde(flatten)]

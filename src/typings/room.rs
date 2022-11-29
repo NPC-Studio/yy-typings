@@ -51,7 +51,7 @@ pub struct Room {
     pub tags: Tags,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct RoomView {
     pub inherit: bool,
     pub visible: bool,
@@ -158,7 +158,7 @@ pub struct BackgroundSprite {
     pub user_defined_anim_fps: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Tilemap {
     pub tileset_id: Option<ViewPath>,
@@ -167,7 +167,7 @@ pub struct Tilemap {
     pub tiles: TilemapTileData,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
 pub struct TilemapTileData {
     #[serde(rename = "TileDataFormat")]
     pub tile_data_format: Option<usize>,

@@ -8,7 +8,7 @@ macro_rules! unidentified_resource {
         /// many of the Gms2 yy-files. Eventually, we'd like to support all of them, but
         /// downstream crates need to have some basic support until then. For now, this
         /// can be used for all top level files, providing the simplest of support.
-        #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+        #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
         #[serde(rename_all = "camelCase")]
         pub struct $this_val {
             /// The parent in the Gms2 virtual file system, ie. the parent which

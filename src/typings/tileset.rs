@@ -37,7 +37,7 @@ pub struct TileSet {
     pub parent: crate::ViewPath,
 }
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub struct TileAnimation {
     #[serde(rename = "FrameData")]
     frame_data: Vec<usize>,
@@ -45,7 +45,7 @@ pub struct TileAnimation {
     serialize_frame_count: usize,
 }
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub struct MacroPageTiles {
     #[serde(rename = "SerialiseWidth")]
     pub serialize_width: usize,
@@ -55,7 +55,7 @@ pub struct MacroPageTiles {
     pub tile_serialize_data: Vec<usize>,
 }
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub struct AutoTileSet {
     #[serde(flatten)]
     common_data: CommonData<ConstGmAutoTileSet>,
@@ -63,7 +63,7 @@ pub struct AutoTileSet {
     closed_edge: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TileAnimationFrame {
     #[serde(flatten)]

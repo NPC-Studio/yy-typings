@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Shader {
     #[serde(flatten)]
@@ -26,7 +26,7 @@ pub enum ConstGmShader {
     Const,
 }
 
-#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Clone, Copy)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Eq, Clone, Copy)]
 #[repr(u8)]
 pub enum ShaderType {
     #[default]

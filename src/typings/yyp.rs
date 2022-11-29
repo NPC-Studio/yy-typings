@@ -7,7 +7,7 @@ use std::{
 };
 
 /// GMS2 project file typings
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     #[serde(flatten)]

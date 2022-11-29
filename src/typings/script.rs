@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Script {
     #[serde(flatten)]
