@@ -82,8 +82,6 @@ pub struct Layer {
     pub depth: i32,
     #[serde(rename = "userdefinedDepth")]
     pub user_defined_depth: bool,
-    pub inherit_layer_depth: bool,
-    pub inherit_layer_settings: bool,
     pub grid_x: i32,
     pub grid_y: i32,
     pub layers: Vec<Layer>,

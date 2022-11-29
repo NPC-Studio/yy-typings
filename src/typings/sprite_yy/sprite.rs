@@ -45,6 +45,8 @@ pub struct Sprite {
     pub v_tile: bool,
     #[serde(rename = "For3D")]
     pub for3d: bool,
+    #[serde(rename = "DynamicTexturePage")]
+    pub dynamic_texture_page: bool,
 
     #[default(NonZeroUsize::new(1).unwrap())]
     pub width: NonZeroUsize,
