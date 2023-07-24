@@ -1,6 +1,6 @@
 [package]
 name = "yy-typings"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["Jonathan Spira <jjspira@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
