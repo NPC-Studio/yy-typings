@@ -35,7 +35,7 @@ impl TrailingCommaUtility {
         Self::clear_trailing_comma_internal(input, &re)
     }
 
-    fn clear_trailing_comma_internal<'a, 'b>(input: &'a str, re: &'b Regex) -> Cow<'a, str> {
+    fn clear_trailing_comma_internal<'a>(input: &'a str, re: &Regex) -> Cow<'a, str> {
         re.replace_all(input, |caps: &regex::Captures| {
             format!(
                 "{}{}",

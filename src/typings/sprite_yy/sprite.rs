@@ -10,73 +10,77 @@ pub struct Sprite {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmSprite>,
 
-    pub bbox_mode: BBoxMode,
-    pub collision_kind: CollisionKind,
-    #[serde(skip)]
-    #[deprecated = "removed in Gms2.3.167. Instead, use `PrecisePerFrame`"]
-    pub separate_masks: bool,
-
-    /// The type of sprite, whether a bitmap or a vector sprite.
-    /// Right now, we don't handle this intelligently.
-    #[serde(rename = "type")]
-    pub resource_sprite_type: usize,
-
-    pub origin: Origin,
-    pub pre_multiply_alpha: bool,
-    pub edge_filtering: bool,
-    pub collision_tolerance: u8,
-    /// The precision for Vector sprites. Its default is `2.525`, a number
-    /// which is very odd in my opinion.
-    #[default(2.525)]
-    pub swf_precision: f64,
-
+    #[serde(rename = "bbox_bottom")]
+    pub bbox_bottom: i32,
     #[serde(rename = "bbox_left")]
     pub bbox_left: i32,
     #[serde(rename = "bbox_right")]
     pub bbox_right: i32,
     #[serde(rename = "bbox_top")]
     pub bbox_top: i32,
-    #[serde(rename = "bbox_bottom")]
-    pub bbox_bottom: i32,
+    pub bbox_mode: BBoxMode,
 
-    #[serde(rename = "HTile")]
-    pub h_tile: bool,
-    #[serde(rename = "VTile")]
-    pub v_tile: bool,
-    #[serde(rename = "For3D")]
-    pub for3d: bool,
+    pub collision_kind: CollisionKind,
+    pub collision_tolerance: u8,
+
     #[serde(rename = "DynamicTexturePage")]
     pub dynamic_texture_page: bool,
 
-    #[default(NonZeroUsize::new(1).unwrap())]
-    pub width: NonZeroUsize,
-    #[default(NonZeroUsize::new(1).unwrap())]
-    pub height: NonZeroUsize,
-
-    /// This is the Path to the Texture Group Id.
-    pub texture_group_id: TexturePath,
-
-    /// This is probably always null, unless you make a swatch,
-    /// but why are you doing that! Just don't do that. Easy.
-    pub swatch_colours: serde_json::Value,
-    pub grid_x: usize,
-    pub grid_y: usize,
+    pub edge_filtering: bool,
+    #[serde(rename = "For3D")]
+    pub for3d: bool,
 
     /// Each frame within this Sprite File.
     pub frames: Vec<crate::CommonData<ConstGmSpriteFrame, FrameId, 1, 1>>,
 
-    /// The sequence assigned to each sprite.
-    pub sequence: SpriteSequence,
+    pub grid_x: usize,
+    pub grid_y: usize,
+
+    #[default(NonZeroUsize::new(1).unwrap())]
+    pub height: NonZeroUsize,
+
+    #[serde(rename = "HTile")]
+    pub h_tile: bool,
 
     /// Each layer within each Frame for this Sprite File. Unless users use
     /// the built-in Sprite Editor, this will likely always have a .len() of
     /// 1, as there is always *one* layer. Layers are shared between frames.
     pub layers: Vec<Layer>,
 
-    /// Optional nineslice data. Added in Gms2.3.2.556.
+    /// Optional nineslice data.
     pub nine_slice: Option<NineSlice>,
 
+    pub origin: Origin,
+
     pub parent: crate::ViewPath,
+
+    pub pre_multiply_alpha: bool,
+
+    /// The sequence assigned to each sprite.
+    pub sequence: SpriteSequence,
+
+    /// This is probably always null, unless you make a swatch,
+    /// but why are you doing that! Just don't do that. Easy.
+    pub swatch_colours: serde_json::Value,
+
+    /// The precision for Vector sprites. Its default is `2.525`, a number
+    /// which is very odd in my opinion.
+    #[default(2.525)]
+    pub swf_precision: f64,
+
+    /// This is the Path to the Texture Group Id.
+    pub texture_group_id: TexturePath,
+
+    /// The type of sprite, whether a bitmap or a vector sprite.
+    /// Right now, we don't handle this intelligently.
+    #[serde(rename = "type")]
+    pub resource_sprite_type: usize,
+
+    #[serde(rename = "VTile")]
+    pub v_tile: bool,
+
+    #[default(NonZeroUsize::new(1).unwrap())]
+    pub width: NonZeroUsize,
 }
 
 #[derive(

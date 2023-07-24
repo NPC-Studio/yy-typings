@@ -2,28 +2,38 @@ use std::collections::BTreeMap;
 
 use crate::{TexturePath, TexturePathLocation};
 use serde::{Deserialize, Serialize};
-use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmTextureGroup>,
+    pub common_data: crate::CommonData<ConstGmTextureGroup, String, 1, 3>,
+
+    #[default(true)]
+    pub autocrop: bool,
+
+    #[default(2)]
+    pub border: usize,
+
+    pub compress_format: String,
 
     #[serde(rename = "ConfigValues")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub config_values: Option<BTreeMap<String, serde_json::Value>>,
 
+    pub directory: String,
+    pub group_parent: Option<TexturePath>,
+
     #[default(true)]
     pub is_scaled: bool,
-    pub compress_format: String,
-    #[default(true)]
-    pub autocrop: bool,
-    #[default(2)]
-    pub border: usize,
-    pub mips_to_generate: GenerateMipMaps,
-    pub group_parent: Option<TexturePath>,
+
+    /// Unclear what this means -- seems to be just "default"
+    pub load_type: String,
+
+    /// 0 for true, -1 for false. The normal numbers ofc.
+    pub mips_to_generate: i8,
+
     #[default(-1)]
     pub targets: isize,
 }
@@ -33,25 +43,6 @@ pub enum ConstGmTextureGroup {
     #[serde(rename = "GMTextureGroup")]
     #[default]
     Const,
-}
-
-#[derive(
-    Debug,
-    Serialize_repr,
-    Deserialize_repr,
-    SmartDefault,
-    PartialEq,
-    PartialOrd,
-    Eq,
-    Ord,
-    Clone,
-    Copy,
-)]
-#[repr(i8)]
-pub enum GenerateMipMaps {
-    True = -1,
-    #[default]
-    False = 0,
 }
 
 impl From<TextureGroup> for TexturePath {

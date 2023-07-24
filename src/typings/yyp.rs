@@ -11,55 +11,57 @@ use std::{
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmProject>,
-
-    /// Contains all project resources, ordered by KeyID.
-    pub resources: Vec<YypResource>,
-
-    #[serde(rename = "Options")]
-    pub options: Vec<FilesystemPath>,
-
-    /// Denotes whether this project uses drag and drop or not
-    pub default_script_type: i32,
-
-    /// Allows for experimental JS editing. Unfinished or legacy feature. It's a
-    /// secret.
-    pub is_ecma: bool,
-
-    /// Lists all known configs. Note that this top level
-    /// config will **always** have the `name` `"Default"`.
-    pub configs: YypConfig,
-
-    /// This is the order rooms are loaded in. The first room
-    /// is the default room which GMS2 will load on GameStart.
-    #[serde(rename = "RoomOrderNodes")]
-    pub room_order_nodes: Vec<RoomOrderId>,
-    /// This represents all the Views in the Project, which will
-    /// have resource paths within them.
-    #[serde(rename = "Folders")]
-    pub folders: Vec<YypFolder>,
+    pub common_data: crate::CommonData<ConstGmProject, String, 1, 7>,
 
     /// The Audio Groups present within the project. Relationship to
     /// the inherited.yy is unclear
     #[serde(rename = "AudioGroups")]
     pub audio_groups: Vec<AudioGroup>,
 
-    /// The Texture groups present within the project. Relationship to
-    /// the inherited.yy is unclear
-    #[serde(rename = "TextureGroups")]
-    pub texture_groups: Vec<TextureGroup>,
+    /// Lists all known configs. Note that this top level
+    /// config will **always** have the `name` `"Default"`.
+    pub configs: YypConfig,
+
+    /// Denotes whether this project uses drag and drop or not
+    pub default_script_type: i32,
+
+    /// This represents all the Views in the Project, which will
+    /// have resource paths within them.
+    #[serde(rename = "Folders")]
+    pub folders: Vec<YypFolder>,
 
     /// The included files within the projects.
     #[serde(rename = "IncludedFiles")]
     pub included_files: Vec<YypIncludedFile>,
 
+    /// Allows for experimental JS editing. Unfinished or legacy feature. It's a
+    /// secret.
+    pub is_ecma: bool,
+
+    /// Not entirely sure what this is -- probably for their upcoming library work.
+    #[serde(rename = "LibraryEmitters")]
+    pub library_emitters: Vec<serde_json::Value>,
+
     /// The MetaData for the project.
     #[serde(rename = "MetaData")]
     pub meta_data: YypMetaData,
+
+    /// Contains all project resources, ordered by KeyID.
+    pub resources: Vec<YypResource>,
+
+    /// This is the order rooms are loaded in. The first room
+    /// is the default room which GMS2 will load on GameStart.
+    #[serde(rename = "RoomOrderNodes")]
+    pub room_order_nodes: Vec<RoomOrderId>,
+
+    /// The Texture groups present within the project. Relationship to
+    /// the inherited.yy is unclear
+    #[serde(rename = "TextureGroups")]
+    pub texture_groups: Vec<TextureGroup>,
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "11.0.54";
+    pub const DEFAULT_VERSION: &'static str = "2023.6.0.92";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
@@ -74,9 +76,6 @@ pub struct YypMetaData {
 pub struct YypResource {
     /// This is the path to the Filesystem
     pub id: FilesystemPath,
-    /// This is the order of the resource, perhaps within a folder?
-    /// Unclear.
-    pub order: usize,
 }
 
 /// A description of a Config. Note that Configs form
@@ -86,9 +85,9 @@ pub struct YypResource {
 /// It may have no children.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
 pub struct YypConfig {
+    pub children: Vec<YypConfig>,
     #[default("Default".to_string())]
     pub name: String,
-    pub children: Vec<YypConfig>,
 }
 
 /// A YYP Folder. These form a graph, but **each path is a full path from the
@@ -106,12 +105,6 @@ pub struct YypFolder {
     /// part of the path is always `folders`. For top level folders, will look
     /// like `"Folders/Fonts.yy"`, for example.
     pub folder_path: ViewPathLocation,
-
-    /// The order within the subfolder. If custom ordering is added, then this
-    /// will be the order as the resources appear within the tree structure.
-    /// Otherwise, it is meaningless, and Gms2 appears to not keep in
-    /// tracked or coherent.
-    pub order: usize,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]

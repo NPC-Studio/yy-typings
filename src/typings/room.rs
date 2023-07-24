@@ -9,46 +9,47 @@ pub struct Room {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmRoom>,
 
-    /// Is this used in DragNDrop? Hopefully not! that would get messy.
-    pub is_dnd: bool,
-
-    /// A volume? I have no idea where this appears in the UI.
-    /// Appears to be a number between 0.0 and 1.0.
-    pub volume: f64,
-
-    /// The path of the parent room.
-    pub parent_room: Option<ViewPath>,
-
-    /// Eight (at least) views. Most users won't have anything
-    /// meaningful here.
-    pub views: Vec<RoomView>,
-
-    /// The layers of data which are in the room.
-    pub layers: Vec<Layer>,
-
-    /// This is only meaningful if `parent_room` is `Some`.
-    pub inherit_layers: bool,
-
     /// The relative subpath of the creation code for this room,
     /// if it exists.
     pub creation_code_file: String,
 
     pub inherit_code: bool,
 
-    pub instance_creation_order: Vec<ViewPath>,
-
     pub inherit_creation_order: bool,
 
-    pub sequence_id: Option<()>,
+    /// This is only meaningful if `parent_room` is `Some`.
+    pub inherit_layers: bool,
 
-    pub room_settings: RoomSettings,
+    pub instance_creation_order: Vec<ViewPath>,
 
-    pub view_settings: ViewSettings,
+    /// Is this used in DragNDrop? Hopefully not! that would get messy.
+    pub is_dnd: bool,
+
+    /// The layers of data which are in the room.
+    pub layers: Vec<Layer>,
+
+    pub parent: crate::ViewPath,
+
+    /// The path of the parent room.
+    pub parent_room: Option<ViewPath>,
 
     pub physics_settings: PhysicsSettings,
 
-    pub parent: crate::ViewPath,
+    pub room_settings: RoomSettings,
+
+    pub sequence_id: Option<()>,
+
     pub tags: Tags,
+
+    /// Eight (at least) views. Most users won't have anything
+    /// meaningful here.
+    pub views: Vec<RoomView>,
+
+    pub view_settings: ViewSettings,
+
+    /// A volume? I have no idea where this appears in the UI.
+    /// Appears to be a number between 0.0 and 1.0.
+    pub volume: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]

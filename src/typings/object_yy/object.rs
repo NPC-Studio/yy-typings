@@ -13,67 +13,12 @@ pub struct Object {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmObject>,
 
-    // Ids:
-    /// The Id of the Sprite being used for this object.
-    pub sprite_id: Option<FilesystemPath>,
-
-    /// If the object is marked as solid for the collision system.
-    pub solid: bool,
-    /// If the object is visible.
-    pub visible: bool,
-    /// Unclear what it means, always set to `true` in practice.
-    pub managed: bool,
-    /// The Id used for the Collision Mask, if not the SpriteId.
-    pub sprite_mask_id: Option<FilesystemPath>,
-    /// If the object is "persistent", meaning if Gms2 will keep the object
-    /// between room change events.
-    pub persistent: bool,
-    /// The id of the parent object for the Inhertance in Gms2.
-    pub parent_object_id: Option<FilesystemPath>,
-
-    // Physics
-    /// Is this a physics object?
-    pub physics_object: bool,
-
-    /// Enabled if the objects is a physics sensor.
-    pub physics_sensor: bool,
-
-    /// The shape of the physics, which is needed to understand the shape
-    /// points.
-    pub physics_shape: PhysicsShape,
-
-    /// What numerical group it belongs to. 0 is a special non-group value.
-    pub physics_group: usize,
-
-    /// The density.
-    pub physics_density: f64,
-
-    /// The restitution.
-    pub physics_restitution: f64,
-
-    /// The linear damping.
-    pub physics_linear_damping: f64,
-
-    /// The angular damping set.
-    pub physics_angular_damping: f64,
-
-    /// The friction set.
-    pub physics_friction: f64,
-
-    /// Whether this object should start awake or not.
-    pub physics_start_awake: bool,
-
-    /// Whether this physics object is kinematic or not.
-    pub physics_kinematic: bool,
-
-    /// The shape points of the physics shape.
-    pub physics_shape_points: Vec<PhysicsVec2>,
-
     // Event list and Properties
     pub event_list: Vec<ObjectEvent>,
 
-    /// The properties which were made in this object directly.
-    pub properties: Vec<ObjectProperty>,
+    /// Unclear what it means, always set to `true` in practice.
+    pub managed: bool,
+
     /// The properties which were made in a parent object AND overriden. If the
     /// parent object's properties have not been overriden, then they will
     /// not appear anywhere in this object's `yy` files and must
@@ -84,6 +29,66 @@ pub struct Object {
     /// a user would see in the Navigation Pane in Gms2. This has no
     /// relationship to the actual operating system's filesystem.
     pub parent: crate::ViewPath,
+
+    /// The id of the parent object for the Inhertance in Gms2.
+    pub parent_object_id: Option<FilesystemPath>,
+
+    /// If the object is "persistent", meaning if Gms2 will keep the object
+    /// between room change events.
+    pub persistent: bool,
+
+    /// The angular damping set.
+    pub physics_angular_damping: f64,
+
+    /// The density.
+    pub physics_density: f64,
+
+    /// The friction set.
+    pub physics_friction: f64,
+
+    /// What numerical group it belongs to. 0 is a special non-group value.
+    pub physics_group: usize,
+
+    /// Whether this physics object is kinematic or not.
+    pub physics_kinematic: bool,
+
+    /// The linear damping.
+    pub physics_linear_damping: f64,
+
+    // Physics
+    /// Is this a physics object?
+    pub physics_object: bool,
+
+    /// The restitution.
+    pub physics_restitution: f64,
+
+    /// Enabled if the objects is a physics sensor.
+    pub physics_sensor: bool,
+
+    /// The shape of the physics, which is needed to understand the shape
+    /// points.
+    pub physics_shape: PhysicsShape,
+
+    /// The shape points of the physics shape.
+    pub physics_shape_points: Vec<PhysicsVec2>,
+
+    /// Whether this object should start awake or not.
+    pub physics_start_awake: bool,
+
+    /// The properties which were made in this object directly.
+    pub properties: Vec<ObjectProperty>,
+
+    /// If the object is marked as solid for the collision system.
+    pub solid: bool,
+
+    /// The Id of the Sprite being used for this object.
+    pub sprite_id: Option<FilesystemPath>,
+
+    /// The Id used for the Collision Mask, if not the SpriteId.
+    pub sprite_mask_id: Option<FilesystemPath>,
+
+    /// If the object is visible.
+    pub visible: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone, Ord, PartialOrd)]
@@ -92,9 +97,6 @@ pub struct ObjectEvent {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmEvent>,
 
-    /// Is this event used in DragNDrop, the thing no one uses?
-    pub is_dn_d: bool,
-
     /// The type of the event. In the JSON, this is represented with two enums,
     /// but we use Serde to succesfully parse this into idiomatic Rust enums.
     #[serde(flatten)]
@@ -102,6 +104,9 @@ pub struct ObjectEvent {
 
     /// The Id of the thing to collide with.
     pub collision_object_id: Option<FilesystemPath>,
+
+    /// Is this event used in DragNDrop, the thing no one uses?
+    pub is_dn_d: bool,
 }
 
 /// Object "properties" are set in the Gms2 window and allow the user to

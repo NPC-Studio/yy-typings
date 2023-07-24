@@ -8,10 +8,10 @@ pub struct Shader {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmShader>,
 
+    pub parent: crate::ViewPath,
+
     #[serde(rename = "type")]
     pub shader_type: ShaderType,
-
-    pub parent: crate::ViewPath,
 }
 
 impl Shader {

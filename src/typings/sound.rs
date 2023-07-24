@@ -10,15 +10,11 @@ pub struct Sound {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmSound>,
 
-    /// The type of compression for the file.
-    pub compression: Compression,
+    /// This is the Path to the Audio Group Id.
+    pub audio_group_id: AudioGroupId,
 
-    /// The volume of the file.
-    pub volume: f64,
-
-    /// Whether the sound is "preloaded" or not. I don't know what this
-    /// actually does.
-    pub preload: bool,
+    /// The quality of the sound.
+    pub bit_depth: BitDepth,
 
     /// The bitrate of the audio. Higher is better I think? Honestly lol,
     /// knowing what "bitrate" means is for fuckin nerds
@@ -26,28 +22,35 @@ pub struct Sound {
     /// Look, no one knows.
     pub bit_rate: BitRate,
 
-    /// SAMPLE RATE?? I didn't know BITRATE you think i'm gonna know "SAMPLE RATE"
-    /// it's the rate of the samples go fuck yourself
-    pub sample_rate: SampleRate,
+    /// The type of compression for the file.
+    pub compression: Compression,
 
-    /// The kind of the sound for mono/stereo.
-    #[serde(rename = "type")]
-    pub output: Output,
-
-    /// The quality of the sound.
-    pub bit_depth: BitDepth,
-
-    /// This is the Path to the Audio Group Id.
-    pub audio_group_id: AudioGroupId,
-
-    /// This is a path to the Audio file, which will be the same name as the sound file generally.
-    /// If there is no sound set up for this asset, then this field **will be an empty string.**
-    pub sound_file: String,
+    /// 0 for everything, meaningless unless Ogg file. 0 = "Automatic", 1 = "Required"
+    pub conversion_mode: u8,
 
     /// The duration of the sound in seconds, such as `12.4` for 12 seconds and 400 miliseconds.
     pub duration: f64,
 
     pub parent: crate::ViewPath,
+
+    /// Whether the sound is "preloaded" or not. I don't know what this
+    /// actually does.
+    pub preload: bool,
+
+    /// SAMPLE RATE?? I didn't know BITRATE you think i'm gonna know "SAMPLE RATE"
+    /// it's the rate of the samples go fuck yourself
+    pub sample_rate: SampleRate,
+
+    /// This is a path to the Audio file, which will be the same name as the sound file generally.
+    /// If there is no sound set up for this asset, then this field **will be an empty string.**
+    pub sound_file: String,
+
+    /// The kind of the sound for mono/stereo.
+    #[serde(rename = "type")]
+    pub output: Output,
+
+    /// The volume of the file.
+    pub volume: f64,
 }
 
 #[derive(Debug, Copy, SmartDefault, Deserialize_repr, Serialize_repr, PartialEq, Eq, Clone)]
@@ -214,27 +217,27 @@ mod tests {
     fn serialize_deserialize() {
         let input = r#"
         {
-            "compression": 2,
-            "volume": 1.0,
-            "preload": false,
-            "bitRate": 128,
-            "sampleRate": 44100,
-            "type": 0,
-            "bitDepth": 1,
+            "resourceType": "GMSound",
+            "resourceVersion": "1.0",
+            "name": "snd_adelines_theme",
             "audioGroupId": {
               "name": "audiogroup_default",
               "path": "audiogroups/audiogroup_default"
             },
-            "soundFile": "snd_summer_ambiance_day.mp3",
-            "duration": 60.0583344,
+            "bitDepth": 1,
+            "bitRate": 128,
+            "compression": 0,
+            "conversionMode": 0,
+            "duration": 118.26087,
             "parent": {
-              "name": "Sounds",
-              "path": "folders/Sounds.yy"
+              "name": "Music",
+              "path": "folders/Sounds/Music.yy"
             },
-            "resourceVersion": "1.0",
-            "name": "snd_summer_ambiance_day",
-            "tags": [],
-            "resourceType": "GMSound"
+            "preload": false,
+            "sampleRate": 44100,
+            "soundFile": "snd_adelines_theme.wav",
+            "type": 0,
+            "volume": 1.0
           }"#;
 
         let _: Sound = serde_json::from_str(input).unwrap();

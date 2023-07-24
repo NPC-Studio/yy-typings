@@ -46,25 +46,25 @@ pub struct Layer {
     #[serde(flatten)]
     pub common_data: crate::CommonData<ConstGmImageLayer, LayerId>,
 
-    /// Defines the visibility of the layer. It will default to true on
-    /// import. It is changed in the GMS2 Sprite Editor.
-    pub visible: bool,
+    /// Defines the blendmode in the GMS2 editor. @todo Must be typed at a later
+    /// date.
+    pub blend_mode: usize,
+
+    /// This is the actual name shown in the GMS2 Sprite Editor.
+    #[default("default".to_string())]
+    pub display_name: String,
 
     /// Defines if the layer is locked to editing. Only has an effect on the
     /// GMS2 Sprite Editor.
     pub is_locked: bool,
 
-    /// Defines the blendmode in the GMS2 editor. @todo Must be typed at a later
-    /// date.
-    pub blend_mode: usize,
-
     /// Between 0-100
     #[default = 100.0]
     pub opacity: f64,
 
-    /// This is the actual name shown in the GMS2 Sprite Editor.
-    #[default("default".to_string())]
-    pub display_name: String,
+    /// Defines the visibility of the layer. It will default to true on
+    /// import. It is changed in the GMS2 Sprite Editor.
+    pub visible: bool,
 }
 
 #[derive(
