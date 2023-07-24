@@ -156,17 +156,20 @@ pub enum Origin {
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct NineSlice {
-    /// The left bound.
-    pub left: u64,
+    /// A constant, always "GMNineSliceData"
+    pub resource_type: ConstGmNineSliceData,
 
-    /// The top bound.
-    pub top: u64,
-
-    /// The right bound.
-    pub right: u64,
+    /// Version string. Right now, this is loosely typed and ignored,
+    /// but will be used in the future to aid in parsing.
+    pub resource_version: ResourceVersion,
 
     /// The bottom bound.
     pub bottom: u64,
+
+    /// Whether nine-slicing is enabled. This data structure as a whole
+    /// *may* be set to `null`, or be defined but disabled. This allows the user
+    /// to toggle nine-slicing on and off.
+    pub enabled: bool,
 
     /// The guide color for each bound, listed in this order:
     /// 0: Left
@@ -182,10 +185,11 @@ pub struct NineSlice {
     /// The style of the highlight.
     pub highlight_style: HighlightStyle,
 
-    /// Whether nine-slicing is enabled. This data structure as a whole
-    /// *may* be set to `null`, or be defined but disabled. This allows the user
-    /// to toggle nine-slicing on and off.
-    pub enabled: bool,
+    /// The left bound.
+    pub left: u64,
+
+    /// The right bound.
+    pub right: u64,
 
     /// This is an array of 5 tile mode sprites. I am leaving this typed as
     /// a raw array right now, rather than writing a custom serde impl, due to time
@@ -198,15 +202,8 @@ pub struct NineSlice {
     /// 4: Center
     pub tile_mode: [TileMode; 5],
 
-    /// Version string. Right now, this is loosely typed and ignored,
-    /// but will be used in the future to aid in parsing.
-    pub resource_version: ResourceVersion,
-
-    /// This appears to always be `null`? Unknown what it refers to.
-    pub loaded_version: serde_json::Value,
-
-    /// A constant, always "GMNineSliceData"
-    pub resource_type: ConstGmNineSliceData,
+    /// The top bound.
+    pub top: u64,
 }
 
 /// A color encoded in a u64 in BGR format. It does not contain Alpha.
