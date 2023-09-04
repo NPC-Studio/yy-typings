@@ -86,19 +86,19 @@ impl EventType {
         event_num: usize,
     ) -> Result<EventType, EventTypeConvertErrors> {
         let event_type = match value {
-            "Create" => 0,
-            "Destroy" => 1,
-            "CleanUp" => 12,
-            "Step" => 3,
-            "Alarm" => 2,
-            "Draw" => 8,
-            "Collision" => 4,
-            "Mouse" => 6,
-            "Keyboard" => 5,
-            "KeyPress" => 9,
-            "KeyRelease" => 10,
-            "Gesture" => 13,
-            "Other" => 7,
+            "create" | "Create" => 0,
+            "destroy" | "Destroy" => 1,
+            "cleanUp" | "CleanUp" => 12,
+            "step" | "Step" => 3,
+            "alarm" | "Alarm" => 2,
+            "draw" | "Draw" => 8,
+            "collision" | "Collision" => 4,
+            "mouse" | "Mouse" => 6,
+            "keyboard" | "Keyboard" => 5,
+            "keypress" | "keyPress" | "KeyPress" => 9,
+            "keyrelease" | "keyRelease" | "KeyRelease" => 10,
+            "gesture" | "Gesture" => 13,
+            "other" | "Other" => 7,
             _ => return Err(EventTypeConvertErrors::CannotFindEventType),
         };
 
@@ -112,12 +112,13 @@ impl EventType {
     /// basically means it needs to follow the pattern `Create_0` and
     /// similar.
     pub fn parse_filename_simple(value: &str) -> Result<EventType, EventTypeConvertErrors> {
-        let mut iter = value.split('_');
-        let name = iter.next().unwrap();
-        let value: usize = iter.next().unwrap().parse().unwrap_or_default();
-        if iter.next().is_some() {
-            return Err(EventTypeConvertErrors::BadString);
-        }
+        let (name, value) = match value.split_once('_') {
+            Some(v) => v,
+            None => (value, "0"),
+        };
+        let value = value
+            .parse()
+            .map_err(|_| EventTypeConvertErrors::BadString)?;
 
         EventType::parse_filename(name, value)
     }
