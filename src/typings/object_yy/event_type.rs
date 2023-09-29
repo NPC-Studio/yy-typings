@@ -85,25 +85,10 @@ impl EventType {
         value: &str,
         event_num: usize,
     ) -> Result<EventType, EventTypeConvertErrors> {
-        let event_type = match value {
-            "create" | "Create" => 0,
-            "destroy" | "Destroy" => 1,
-            "cleanUp" | "CleanUp" => 12,
-            "step" | "Step" => 3,
-            "alarm" | "Alarm" => 2,
-            "draw" | "Draw" => 8,
-            "collision" | "Collision" => 4,
-            "mouse" | "Mouse" => 6,
-            "keyboard" | "Keyboard" => 5,
-            "keypress" | "keyPress" | "KeyPress" => 9,
-            "keyrelease" | "keyRelease" | "KeyRelease" => 10,
-            "gesture" | "Gesture" => 13,
-            "other" | "Other" => 7,
-            _ => return Err(EventTypeConvertErrors::CannotFindEventType),
-        };
+        let event_type: EventNumber = value.parse()?;
 
         EventType::try_from(EventIntermediary {
-            event_type,
+            event_type: event_type as usize,
             event_num,
         })
     }
@@ -111,16 +96,52 @@ impl EventType {
     /// A simple way to parse a value. It does a split on the string, which
     /// basically means it needs to follow the pattern `Create_0` and
     /// similar.
-    pub fn parse_filename_simple(value: &str) -> Result<EventType, EventTypeConvertErrors> {
+    pub fn parse_filename_heuristic(value: &str) -> Result<EventType, EventTypeConvertErrors> {
+        match value {
+            "create" | "Create" => {
+                return Ok(EventType::Create);
+            }
+            "room_start" | "RoomStart" | "roomStart" => {
+                return Ok(EventType::Other(OtherEvent::RoomStart));
+            }
+            "room_end" | "RoomEnd" | "roomEnd" => {
+                return Ok(EventType::Other(OtherEvent::RoomEnd));
+            }
+            "animation_end" | "AnimationEnd" | "animationEnd" => {
+                return Ok(EventType::Other(OtherEvent::AnimationEnd));
+            }
+            _ => {}
+        }
+
         let (name, value) = match value.split_once('_') {
             Some(v) => v,
             None => (value, "0"),
         };
-        let value = value
-            .parse()
-            .map_err(|_| EventTypeConvertErrors::BadString)?;
 
-        EventType::parse_filename(name, value)
+        let event_type: EventNumber = name.parse()?;
+
+        match value {
+            "begin" => match event_type {
+                EventNumber::Step => Ok(EventType::Step(Stage::Begin)),
+                EventNumber::Draw => Ok(EventType::Draw(DrawEvent::Draw(Stage::Begin))),
+                _ => Err(EventTypeConvertErrors::CannotFindEventType),
+            },
+            "end" => match event_type {
+                EventNumber::Step => Ok(EventType::Step(Stage::End)),
+                EventNumber::Draw => Ok(EventType::Draw(DrawEvent::Draw(Stage::End))),
+                _ => Err(EventTypeConvertErrors::CannotFindEventType),
+            },
+            other => {
+                let event_num: usize = other
+                    .parse()
+                    .map_err(|_| EventTypeConvertErrors::BadString)?;
+
+                EventType::try_from(EventIntermediary {
+                    event_type: event_type as usize,
+                    event_num,
+                })
+            }
+        }
     }
 
     pub fn is_valid(value: EventType) -> bool {
@@ -885,6 +906,61 @@ impl fmt::Display for AsyncEvent {
         };
 
         write!(f, "Async - {}", word)
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Ord)]
+#[repr(usize)]
+pub enum EventNumber {
+    Create = 0,
+    Destroy = 1,
+    Alarm = 2,
+    Step = 3,
+    Collision = 4,
+    KeyDown = 5,
+    Mouse = 6,
+    Other = 7,
+    Draw = 8,
+    KeyPress = 9,
+    KeyRelease = 10,
+    Cleanup = 12,
+    Gesture = 13,
+}
+
+impl std::str::FromStr for EventNumber {
+    type Err = UnknownEventNumber;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let event_type = match s {
+            "create" | "Create" => Self::Create,
+            "destroy" | "Destroy" => Self::Destroy,
+            "cleanUp" | "CleanUp" | "cleanup" => Self::Cleanup,
+            "step" | "Step" => Self::Step,
+            "alarm" | "Alarm" => Self::Alarm,
+            "draw" | "Draw" => Self::Draw,
+            "collision" | "Collision" => Self::Collision,
+            "mouse" | "Mouse" => Self::Mouse,
+            "keyboard" | "Keyboard" | "keyBoard" | "KeyBoard" | "keyDown" | "keydown" => {
+                Self::KeyDown
+            }
+            "keypress" | "keyPress" | "KeyPress" | "Keypress" => Self::KeyPress,
+            "keyrelease" | "keyRelease" | "KeyRelease" | "Keyrelease" => Self::KeyRelease,
+            "gesture" | "Gesture" => Self::Gesture,
+            "other" | "Other" => Self::Other,
+            _ => return Err(UnknownEventNumber),
+        };
+
+        Ok(event_type)
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("unknown event number")]
+pub struct UnknownEventNumber;
+
+impl From<UnknownEventNumber> for EventTypeConvertErrors {
+    fn from(_: UnknownEventNumber) -> Self {
+        Self::CannotFindEventType
     }
 }
 

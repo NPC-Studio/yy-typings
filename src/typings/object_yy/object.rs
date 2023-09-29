@@ -87,6 +87,11 @@ pub struct Object {
     /// The Id used for the Collision Mask, if not the SpriteId.
     pub sprite_mask_id: Option<FilesystemPath>,
 
+    /// The tags associated with this object.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub tags: Vec<String>,
+
     /// If the object is visible.
     pub visible: bool,
 }
