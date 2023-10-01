@@ -62,7 +62,7 @@ mod tests {
 
         let script = Shader {
             common_data: crate::CommonData {
-                resource_type: consts::Shader::Const,
+                resource_type: consts::Shader,
                 resource_version: ResourceVersion::default(),
                 name: "sh_draw_light_to_screen".to_string(),
             },

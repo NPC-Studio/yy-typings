@@ -66,10 +66,9 @@ pub struct Sprite {
     /// The sequence assigned to each sprite.
     pub sequence: SpriteSequence,
 
-    /// This is probably always null, unless you make a swatch,
-    /// but why are you doing that! Just don't do that. Easy.
-    pub swatch_colours: serde_json::Value,
-
+    // This is probably always null, unless you make a swatch,
+    // but why are you doing that! Just don't do that. Easy.
+    // pub swatch_colours: serde_json::Value,
     /// The precision for Vector sprites. Its default is `2.525`, a number
     /// which is very odd in my opinion.
     #[default(2.525)]

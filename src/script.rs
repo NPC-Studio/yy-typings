@@ -53,7 +53,7 @@ mod tests {
             common_data: crate::CommonData {
                 resource_version: ResourceVersion::default(),
                 name: "CameraClass".to_string(),
-                resource_type: consts::Script::Const,
+                resource_type: consts::Script,
             },
             is_dn_d: false,
             is_compatibility: false,
