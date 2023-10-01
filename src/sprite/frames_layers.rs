@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, FilesystemPath, ResourceVersion, Tags};
+use super::{consts, FilesystemPath, ResourceVersion};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -34,17 +34,17 @@ pub struct Image {
     pub name: Option<String>,
 
     /// The tags assigned to each image. You can apparently tag an image.
-    pub tags: Tags,
+    pub tags: Vec<String>,
 
     /// The resource name of the GM Image.
-    pub resource_type: ConstGmImage,
+    pub resource_type: consts::Image,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Layer {
+pub struct SpriteLayer {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmImageLayer, LayerId>,
+    pub common_data: crate::CommonData<consts::ImageLayer, LayerId>,
 
     /// Defines the blendmode in the GMS2 editor. @todo Must be typed at a later
     /// date.

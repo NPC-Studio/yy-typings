@@ -2,7 +2,7 @@
 
 This is a library was created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by NPC Studio. [Jack Spira](https://twitter.com/sanbox_irl) wrote the first version of this tool and maintains it. This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public. Using this tool, one should be able to generate their own pipeline without difficulty.
 
-***This crate only supports Gms2, and only supports Gms2 2.3 and above***.
+***This crate targets `2023.6.0.92` currently.***.
 
 This repository has a pair: [the Yy-Boss](https://github.com/NPC-Studio/yy-boss), which provides active Yyp handling as a library and as a binary over stdin/stdout, abstracting over Gms2's native types to allow users to dynamically create resources (and analyze existing resources) without handling the Gms2 Yy files directly.
 

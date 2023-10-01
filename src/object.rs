@@ -1,6 +1,9 @@
-use super::{
-    ConstGmEvent, ConstGmObject, ConstGmObjectOverrideProperty, ConstGmObjectProperty, EventType,
-};
+mod event_type;
+pub use event_type::*;
+
+mod vk;
+pub use vk::*;
+
 use crate::FilesystemPath;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -11,7 +14,7 @@ use smart_default::SmartDefault;
 pub struct Object {
     /// The common data for all yy resources.
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmObject>,
+    pub common_data: crate::CommonData<consts::Object>,
 
     // Event list and Properties
     pub event_list: Vec<ObjectEvent>,
@@ -100,7 +103,7 @@ pub struct Object {
 #[serde(rename_all = "camelCase")]
 pub struct ObjectEvent {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmEvent>,
+    pub common_data: crate::CommonData<consts::Event>,
 
     /// The type of the event. In the JSON, this is represented with two enums,
     /// but we use Serde to succesfully parse this into idiomatic Rust enums.
@@ -121,7 +124,7 @@ pub struct ObjectEvent {
 #[serde(rename_all = "camelCase")]
 pub struct ObjectProperty {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmObjectProperty>,
+    pub common_data: crate::CommonData<consts::ObjectProperty>,
     /// The type of property which is preset. Some, or all, of the rest of the
     /// information in this struct will be used based on the property type.
     pub var_type: ObjectPropertyTypes,
@@ -155,7 +158,7 @@ pub struct ObjectProperty {
 #[serde(rename_all = "camelCase")]
 pub struct ObjectOverrideProperty {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmObjectOverrideProperty>,
+    pub common_data: crate::CommonData<consts::ObjectOverrideProperty>,
 
     /// This is **not** a real filesystem path, but instead just looks like one.
     /// Eventually, this will receive better typing. @todo
@@ -224,3 +227,10 @@ pub struct PhysicsVec2 {
     pub x: f32,
     pub y: f32,
 }
+
+gm_const!(
+    Object -> "GMObject",
+    Event -> "GMEvent",
+    ObjectProperty -> "GMObjectProperty",
+    ObjectOverrideProperty -> "GMOverriddenProperty",
+);

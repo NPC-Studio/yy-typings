@@ -1,13 +1,10 @@
-#![allow(clippy::bool_comparison)]
-
-//! This is a library was created for the development of [Fields of Mistria](https://twitter.com/FieldsofMistria), a farming RPG with *tons* of Sprites, by NPC Studio. This tool was created to support an Aseprite -> GMS2 pipeline tool. That tool is not public. Using this tool, one should be able to generate their own pipeline without difficulty.
-//!
-//! ***This crate only supports Gms2, and only supports Gms2 2.3 and above***.
-//! If users do want to use a version with Gms2 version 2.2, there is a
-//! historical release on the main branch which was made before 2.3's release,
-//! though it is not nearly as fully featured as the current branch.
-//!
-//! This repository has a pair: [the Yy-Boss](https://crates.io/crates/yy-boss), which provides active Yyp handling over stdin/stdout, abstracting over Gms2's native types to allow users to dynamically create resources (and analyze existing resources) without handling the Gms2 Yy files directly.
+#![doc = include_str!("../README.md")]
+#![deny(rust_2018_idioms)]
+#![warn(clippy::dbg_macro)]
+#![cfg_attr(not(test), warn(clippy::print_stdout))]
+#![warn(clippy::missing_errors_doc)]
+#![warn(clippy::todo)]
+#![deny(rustdoc::broken_intra_doc_links)]
 
 macro_rules! create_guarded_uuid {
     ($this_val:ident) => {
@@ -54,13 +51,80 @@ macro_rules! create_guarded_uuid {
     };
 }
 
-mod typings;
-pub use typings::*;
+macro_rules! gm_const {
+    ($($struct_name:ident -> $serde_name:literal),+ $(,)?) => {
+        mod consts {
+            $(
+                #[derive(
+                    Debug,
+                    serde::Serialize,
+                    serde::Deserialize,
+                    PartialEq,
+                    Eq,
+                    Hash,
+                    Clone,
+                    Copy,
+                    Default,
+                    PartialOrd,
+                    Ord
+                )]
+                pub enum $struct_name {
+                    #[serde(rename = $serde_name)]
+                    #[default]
+                    Const,
+                }
+            )+
+        }
+    };
+}
 
-/// Two utilities which may be useful for downstream crates:
-///
-/// 1.  `TrailingCommaUtility` will *remove* all trailing commas
-///     from a given input string. It is a wrapper over a Regex pattern.
-/// 2.  `PathValidator` will validate any paths as valid Gms2 names for a
-/// resource.
-pub mod utils;
+mod paths;
+pub use paths::*;
+
+mod tileset;
+pub use tileset::*;
+
+mod audio_group;
+pub use audio_group::AudioGroup;
+
+mod sprite;
+pub use sprite::*;
+
+mod object;
+pub use object::*;
+
+/// Typings associated with Texture Groups.
+mod texture_group;
+pub use texture_group::*;
+
+/// Typings for Scripts.
+mod script;
+pub use script::*;
+
+/// Typings for Shaders.
+mod shader;
+pub use shader::*;
+
+mod sound;
+pub use sound::*;
+
+// pub mod room;
+// pub use room::*;
+
+mod resource_version;
+pub use resource_version::ResourceVersion;
+
+mod yyp;
+pub use yyp::*;
+
+mod unidentified_resource;
+pub use unidentified_resource::*;
+
+mod note;
+pub use note::Note;
+
+mod resource_data;
+pub use resource_data::CommonData;
+
+mod utils;
+pub use utils::{ResourceNameValidator, TrailingCommaUtility};

@@ -1,8 +1,8 @@
 use super::{Gesture, MouseButtonCode, VirtualKeyCode};
 use num_traits::FromPrimitive;
-use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
-use std::{convert::TryFrom, fmt};
+use std::fmt;
 
 /// Describes the current event type. Users can make most events freely, though
 /// special care should be taken that `Alarm`'s .0 field is less than
@@ -13,17 +13,15 @@ use std::{convert::TryFrom, fmt};
 /// EventType.** Yaml, and other text / WYSIWYG data formats should be fine, but
 /// Bincode and other binary sequences are unlikely to succesfully serialize
 /// this. This is due to our use of serde's `flatten`, which runs afoul of this issue: https://github.com/servo/bincode/issues/245
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Copy, Clone)]
 pub enum EventType {
     #[default]
     Create,
-    Destroy,
-    Cleanup,
 
     Step(Stage),
-    Alarm(usize),
     Draw(DrawEvent),
 
+    Alarm(usize),
     Collision,
 
     Mouse(MouseEvent),
@@ -36,56 +34,38 @@ pub enum EventType {
 
     Other(OtherEvent),
     Async(AsyncEvent),
+
+    Destroy,
+    CleanUp,
 }
 
 impl EventType {
     /// The maximum number of alarms which are available in the Gms2 IDE.
     pub const ALARM_MAX: usize = 11;
 
-    /// Gets the filename for a given event with its requisite base. We return
-    /// in this format to reduce allocating a string per call, as this
-    /// filename will likely become allocated on some path in the future.
-    ///
-    /// ```rs
-    /// let (base_name, numeric_id) = EventType::Create;
-    /// assert_eq!(base_name, "Create_");
-    /// assert_eq!(numeric_id, 0);
-    /// ```
-    pub fn filename(&self) -> (&'static str, usize) {
-        let name = match self {
-            EventType::Create => "Create",
-            EventType::Destroy => "Destroy",
-            EventType::Cleanup => "CleanUp",
-            EventType::Step(_) => "Step",
-            EventType::Alarm(_) => "Alarm",
-            EventType::Draw(_) => "Draw",
-            EventType::Collision => "Collision",
-            EventType::Mouse(_) => "Mouse",
-            EventType::KeyDown(_) => "Keyboard",
-            EventType::KeyPress(_) => "KeyPress",
-            EventType::KeyRelease(_) => "KeyRelease",
-            EventType::Gesture(_) => "Gesture",
-            EventType::Other(_) => "Other",
-            EventType::Async(_) => "Other",
-        };
-
-        let number = EventIntermediary::from(*self).event_num;
-
-        (name, number)
-    }
-
     /// Returns the filename like it will appear in a file.
-    pub fn filename_simple(&self) -> String {
-        let (word, number) = self.filename();
-        format!("{}_{}", word, number)
+    pub fn filename(&self) -> String {
+        use heck::ToPascalCase;
+
+        let event_type_number: EventTypeNumber = self.into();
+        let intermediary: EventIntermediary = self.into();
+
+        let word = event_type_number.to_string().to_pascal_case();
+
+        format!("{}_{}", word, intermediary.event_num)
     }
 
     /// Parses a given filename and number into an `EventType`, if valid.
+    ///
+    /// # Errors
+    ///
+    /// Errors if the `value` cannot be parsed into an EventTypeNumber or if the `event_num`
+    /// is not valid for the given EventTypeNumber.
     pub fn parse_filename(
         value: &str,
         event_num: usize,
     ) -> Result<EventType, EventTypeConvertErrors> {
-        let event_type: EventNumber = value.parse()?;
+        let event_type: EventTypeNumber = value.parse()?;
 
         EventType::try_from(EventIntermediary {
             event_type: event_type as usize,
@@ -93,13 +73,64 @@ impl EventType {
         })
     }
 
+    /// Converts to a heuristic filename, suitable for humans.
+    pub fn to_human_readable(&self) -> String {
+        match self {
+            EventType::Create => "create".to_string(),
+            EventType::Destroy => "destroy".to_string(),
+            EventType::CleanUp => "cleanup".to_string(),
+            EventType::Step(stage) => stage.to_human_readable("step"),
+            EventType::Alarm(n) => format!("alarm_{}", n),
+            EventType::Draw(draw_event) => match draw_event {
+                DrawEvent::Draw(stage) => stage.to_human_readable("draw"),
+                DrawEvent::DrawGui(stage) => stage.to_human_readable("draw_gui"),
+                DrawEvent::PreDraw => "pre_draw".to_string(),
+                DrawEvent::PostDraw => "post_draw".to_string(),
+                DrawEvent::WindowResize => "window_resize".to_string(),
+            },
+            EventType::Other(OtherEvent::RoomStart) => "room_start".to_string(),
+            EventType::Other(OtherEvent::RoomEnd) => "room_end".to_string(),
+            EventType::Other(OtherEvent::GameStart) => "game_start".to_string(),
+            EventType::Other(OtherEvent::GameEnd) => "game_end".to_string(),
+            EventType::Other(OtherEvent::AnimationEnd) => "animation_end".to_string(),
+            EventType::Other(OtherEvent::UserEvent(n)) => format!("user_event_{}", n),
+            EventType::Other(_)
+            | EventType::Collision
+            | EventType::Mouse(_)
+            | EventType::KeyDown(_)
+            | EventType::KeyPress(_)
+            | EventType::KeyRelease(_)
+            | EventType::Gesture(_)
+            | EventType::Async(_) => {
+                let event_type_number: EventTypeNumber = self.into();
+                let intermediary: EventIntermediary = self.into();
+
+                format!("{}_{}", event_type_number, intermediary.event_num)
+            }
+        }
+    }
+
     /// A simple way to parse a value. It does a split on the string, which
-    /// basically means it needs to follow the pattern `Create_0` and
-    /// similar.
-    pub fn parse_filename_heuristic(value: &str) -> Result<EventType, EventTypeConvertErrors> {
+    /// basically means it needs to follow the pattern `Create_0` and similar.
+    /// 
+    /// # Errors
+    /// 
+    /// Errors if the given input does not follow the pattern `x_y`, unless it's special cased,
+    /// or if `x` is not a given EventTypeNumber or if `y` is not an appropriate event_num for the given
+    /// EventTypeNumber.
+    /// 
+    /// In general, this function tries to "figure out" what EventType from a given input, and figuring out
+    /// what input should be given is best done reading through the function.
+    pub fn from_human_readable(value: &str) -> Result<EventType, EventTypeConvertErrors> {
         match value {
             "create" | "Create" => {
                 return Ok(EventType::Create);
+            }
+            "game_start" | "GameStart" | "gameStart" => {
+                return Ok(EventType::Other(OtherEvent::GameStart));
+            }
+            "game_end" | "GameEnd" | "gameEnd" => {
+                return Ok(EventType::Other(OtherEvent::GameEnd));
             }
             "room_start" | "RoomStart" | "roomStart" => {
                 return Ok(EventType::Other(OtherEvent::RoomStart));
@@ -110,26 +141,44 @@ impl EventType {
             "animation_end" | "AnimationEnd" | "animationEnd" => {
                 return Ok(EventType::Other(OtherEvent::AnimationEnd));
             }
+            "draw_gui_begin" | "drawGuiBegin" | "DrawGuiBegin" => {
+                return Ok(EventType::Draw(DrawEvent::DrawGui(Stage::Begin)));
+            }
+            "draw_gui" | "drawGui" | "DrawGui" => {
+                return Ok(EventType::Draw(DrawEvent::DrawGui(Stage::Main)));
+            }
+            "draw_gui_end" | "drawGuiEnd" | "DrawGuiEnd" => {
+                return Ok(EventType::Draw(DrawEvent::DrawGui(Stage::End)));
+            }
+            "pre_draw" | "preDraw" | "PreDraw" => {
+                return Ok(EventType::Draw(DrawEvent::PreDraw));
+            }
+            "post_draw" | "postDraw" | "PostDraw" => {
+                return Ok(EventType::Draw(DrawEvent::PostDraw));
+            }
+            "window_resize" | "windowResize" | "WindowResize" => {
+                return Ok(EventType::Draw(DrawEvent::WindowResize));
+            }
             _ => {}
         }
 
-        let (name, value) = match value.split_once('_') {
+        let (name, value) = match value.rsplit_once('_') {
             Some(v) => v,
             None => (value, "0"),
         };
 
-        let event_type: EventNumber = name.parse()?;
+        let event_type: EventTypeNumber = name.parse()?;
 
         match value {
             "begin" => match event_type {
-                EventNumber::Step => Ok(EventType::Step(Stage::Begin)),
-                EventNumber::Draw => Ok(EventType::Draw(DrawEvent::Draw(Stage::Begin))),
-                _ => Err(EventTypeConvertErrors::CannotFindEventType),
+                EventTypeNumber::Step => Ok(EventType::Step(Stage::Begin)),
+                EventTypeNumber::Draw => Ok(EventType::Draw(DrawEvent::Draw(Stage::Begin))),
+                _ => Err(UnknownEventTypeNumber)?,
             },
             "end" => match event_type {
-                EventNumber::Step => Ok(EventType::Step(Stage::End)),
-                EventNumber::Draw => Ok(EventType::Draw(DrawEvent::Draw(Stage::End))),
-                _ => Err(EventTypeConvertErrors::CannotFindEventType),
+                EventTypeNumber::Step => Ok(EventType::Step(Stage::End)),
+                EventTypeNumber::Draw => Ok(EventType::Draw(DrawEvent::Draw(Stage::End))),
+                _ => Err(UnknownEventTypeNumber)?,
             },
             other => {
                 let event_num: usize = other
@@ -149,12 +198,59 @@ impl EventType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+impl fmt::Display for EventType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            EventType::Create => write!(f, "Create"),
+            EventType::Destroy => write!(f, "Destroy"),
+            EventType::CleanUp => write!(f, "CleanUp"),
+            EventType::Step(stage) => write!(f, "{}", stage.display_with_before("Step")),
+            EventType::Alarm(number) => write!(f, "Alarm {}", number),
+            EventType::Draw(draw_stage) => write!(f, "{}", draw_stage),
+            EventType::Collision => write!(f, "Collision"),
+            EventType::Mouse(v) => write!(f, "{}", v),
+            EventType::KeyDown(key) => write!(f, "Key Down - {}", key.as_ref()),
+            EventType::KeyPress(key) => write!(f, "Key Press - {}", key.as_ref()),
+            EventType::KeyRelease(key) => write!(f, "Key Up - {}", key.as_ref()),
+            EventType::Gesture(gesture) => write!(f, "{}", gesture),
+            EventType::Other(other) => write!(f, "{}", other),
+            EventType::Async(async_ev) => write!(f, "{}", async_ev),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Copy, Clone)]
 pub enum Stage {
     #[default]
     Main,
     Begin,
     End,
+}
+
+impl Stage {
+    pub fn to_human_readable(&self, other: &str) -> String {
+        match self {
+            Stage::Main => other.to_string(),
+            Stage::Begin => format!("{}_begin", other),
+            Stage::End => format!("{}_end", other),
+        }
+    }
+
+    pub fn display_with_before(&self, other: &str) -> String {
+        match self {
+            Stage::Main => other.to_string(),
+            Stage::Begin => format!("Begin {}", other),
+            Stage::End => format!("End {}", other),
+        }
+    }
+
+    pub fn display_with_after(&self, other: &str) -> String {
+        match self {
+            Stage::Main => other.to_string(),
+            Stage::Begin => format!("{} Begin", other),
+            Stage::End => format!("{} End", other),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
@@ -165,6 +261,18 @@ pub enum DrawEvent {
     PreDraw,
     PostDraw,
     WindowResize,
+}
+
+impl fmt::Display for DrawEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DrawEvent::Draw(stage) => write!(f, "{}", stage.display_with_after("Draw")),
+            DrawEvent::DrawGui(stage) => write!(f, "{}", stage.display_with_after("Draw GUI")),
+            DrawEvent::PreDraw => write!(f, "Pre-Draw"),
+            DrawEvent::PostDraw => write!(f, "Post-Draw"),
+            DrawEvent::WindowResize => write!(f, "Window Resize"),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
@@ -230,7 +338,22 @@ impl MouseEvent {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+impl fmt::Display for MouseEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            MouseEvent::Down(mb) => write!(f, "{} Down", mb),
+            MouseEvent::Pressed(mb) => write!(f, "{} Pressed", mb),
+            MouseEvent::Released(mb) => write!(f, "{} Released", mb),
+            MouseEvent::NoInput => write!(f, "No Mouse Input"),
+            MouseEvent::MouseEnter => write!(f, "Mouse Enter"),
+            MouseEvent::MouseExit => write!(f, "Mouse Leave"),
+            MouseEvent::MouseWheelUp => write!(f, "Mouse Wheel Up"),
+            MouseEvent::MouseWheelDown => write!(f, "Mouse Wheel Down"),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Copy, Clone)]
 pub struct MouseButton {
     /// The mouse button code used for this input.
     pub mb_code: MouseButtonCode,
@@ -255,7 +378,23 @@ impl MouseButton {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+impl fmt::Display for MouseButton {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self.mb_code {
+            MouseButtonCode::Left => "Left",
+            MouseButtonCode::Right => "Right",
+            MouseButtonCode::Middle => "Middle",
+        };
+
+        if self.local {
+            write!(f, "{}", word)
+        } else {
+            write!(f, "Global {}", word)
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Copy, Clone)]
 pub struct GestureEvent {
     /// The type of gesture used.
     pub gesture: Gesture,
@@ -283,7 +422,33 @@ impl GestureEvent {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+impl fmt::Display for GestureEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self.gesture {
+            Gesture::Tap => "Tap",
+            Gesture::DoubleTap => "Double Tap",
+            Gesture::DragStart => "Drag Start",
+            Gesture::Dragging => "Dragging",
+            Gesture::DragEnd => "Drag End",
+            Gesture::Flick => "Flick",
+            Gesture::PinchStart => "Pinch Start",
+            Gesture::PinchIn => "Pinch In",
+            Gesture::PinchOut => "Pinch Out",
+            Gesture::PinchEnd => "Pinch End",
+            Gesture::RotateStart => "Rotate Start",
+            Gesture::Rotating => "Rotating",
+            Gesture::RotateEnd => "Rotate End",
+        };
+
+        if self.local {
+            write!(f, "{}", word)
+        } else {
+            write!(f, "Global {}", word)
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Copy, Clone)]
 pub enum OtherEvent {
     #[default]
     OutsideRoom,
@@ -302,7 +467,38 @@ pub enum OtherEvent {
     BroadcastMessage,
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Copy, Clone)]
+impl fmt::Display for OtherEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            OtherEvent::OutsideRoom => write!(f, "Outside Room"),
+            OtherEvent::IntersectBoundary => write!(f, "Intersect Boundary"),
+            OtherEvent::OutsideView(view) => write!(f, "Outside View {}", view),
+            OtherEvent::IntersectView(view) => write!(f, "Intersect View {} Boundary", view),
+            OtherEvent::GameStart => write!(f, "Game Start"),
+            OtherEvent::GameEnd => write!(f, "Game End"),
+            OtherEvent::RoomStart => write!(f, "Room Start"),
+            OtherEvent::RoomEnd => write!(f, "Room End"),
+            OtherEvent::AnimationEnd => write!(f, "Animation End"),
+            OtherEvent::AnimationUpdate => write!(f, "Animation Update"),
+            OtherEvent::AnimationEvent => write!(f, "Animation Event"),
+            OtherEvent::PathEnded => write!(f, "Path Ended"),
+            OtherEvent::UserEvent(event) => write!(f, "User Event {}", event),
+            OtherEvent::BroadcastMessage => write!(f, "Broadcast Message"),
+        }
+    }
+}
+
+impl OtherEvent {
+    pub const OUTSIDE_VIEW_BASE: usize = 40;
+    pub const OUTSIDE_VIEW_MAX: usize = 7;
+
+    pub const INTERSECT_VIEW_BASE: usize = 50;
+
+    pub const USER_EVENT_BASE: usize = 10;
+    pub const USER_EVENT_MAX: usize = 15;
+}
+
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Copy, Clone)]
 pub enum AsyncEvent {
     #[default]
     AudioPlayback,
@@ -320,14 +516,26 @@ pub enum AsyncEvent {
     System,
 }
 
-impl OtherEvent {
-    pub const OUTSIDE_VIEW_BASE: usize = 40;
-    pub const OUTSIDE_VIEW_MAX: usize = 7;
+impl fmt::Display for AsyncEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self {
+            AsyncEvent::AudioPlayback => "Audio Playback",
+            AsyncEvent::AudioRecording => "Audio Recording",
+            AsyncEvent::Cloud => "Cloud",
+            AsyncEvent::Dialog => "Dialog",
+            AsyncEvent::Http => "Http",
+            AsyncEvent::InAppPurchase => "In-App Purchase",
+            AsyncEvent::ImageLoaded => "Image Loaded",
+            AsyncEvent::Networking => "Networking",
+            AsyncEvent::PushNotification => "Push Notification",
+            AsyncEvent::SaveLoad => "Save/Load",
+            AsyncEvent::Social => "Social",
+            AsyncEvent::Steam => "Steam",
+            AsyncEvent::System => "System",
+        };
 
-    pub const INTERSECT_VIEW_BASE: usize = 50;
-
-    pub const USER_EVENT_BASE: usize = 10;
-    pub const USER_EVENT_MAX: usize = 15;
+        write!(f, "Async - {}", word)
+    }
 }
 
 /// A simpler, less idiomatic and less understandable, but more direct,
@@ -339,30 +547,16 @@ impl OtherEvent {
 /// stick with the more idiomatic and user-friendly `EventType`, which is far
 /// more type safe while being equally performant.
 #[derive(
-    Debug, PartialEq, Eq, Ord, PartialOrd, Hash, SmartDefault, Serialize, Deserialize, Copy, Clone,
+    Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Serialize, Deserialize, Copy, Clone,
 )]
 pub struct EventIntermediary {
     event_type: usize,
     event_num: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Copy, Clone, Serialize, Deserialize)]
-pub enum EventTypeConvertErrors {
-    CannotFindEventNumber(usize),
-    CannotFindEventType,
-    BadString,
-}
-
-impl std::error::Error for EventTypeConvertErrors {}
-impl fmt::Display for EventTypeConvertErrors {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            EventTypeConvertErrors::CannotFindEventNumber(event_type) => {
-                write!(f, "invalid event_number for event type {}", event_type)
-            }
-            EventTypeConvertErrors::CannotFindEventType => write!(f, "invalid event_type"),
-            EventTypeConvertErrors::BadString => write!(f, "string didn't follow pattern x_y"),
-        }
+impl From<&'_ EventType> for EventIntermediary {
+    fn from(value: &'_ EventType) -> Self {
+        Self::from(*value)
     }
 }
 
@@ -377,7 +571,7 @@ impl From<EventType> for EventIntermediary {
                 event_type: 1,
                 event_num: 0,
             },
-            EventType::Cleanup => EventIntermediary {
+            EventType::CleanUp => EventIntermediary {
                 event_type: 12,
                 event_num: 0,
             },
@@ -547,7 +741,7 @@ impl TryFrom<EventIntermediary> for EventType {
             }
             12 => {
                 if o.event_num == 0 {
-                    EventType::Cleanup
+                    EventType::CleanUp
                 } else {
                     return Err(EventTypeConvertErrors::CannotFindEventNumber(12));
                 }
@@ -677,291 +871,204 @@ impl TryFrom<EventIntermediary> for EventType {
 
                 _ => return Err(EventTypeConvertErrors::CannotFindEventNumber(7)),
             },
-            _ => return Err(EventTypeConvertErrors::CannotFindEventType),
+            _ => return Err(UnknownEventTypeNumber)?,
         };
 
         Ok(output)
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-enum Field {
-    #[serde(rename = "eventNum")]
-    Number,
-    #[serde(rename = "eventType")]
-    Type,
-}
-
-use serde::de::{Error, MapAccess, Visitor};
-struct DeserializerVisitor;
-
-impl<'de> Visitor<'de> for DeserializerVisitor {
-    type Value = EventType;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str(r#"a value of "eventNum""#)
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: MapAccess<'de>,
-    {
-        let mut event_number = None;
-        let mut event_type = None;
-
-        while let Some(key) = map.next_key()? {
-            match key {
-                Field::Number => {
-                    if event_number.is_some() {
-                        return Err(Error::duplicate_field("eventNum"));
-                    }
-                    event_number = Some(map.next_value()?);
-                }
-                Field::Type => {
-                    if event_type.is_some() {
-                        return Err(Error::duplicate_field("eventType"));
-                    }
-                    event_type = Some(map.next_value()?);
-                }
-            }
-        }
-
-        let event_intermediary = EventIntermediary {
-            event_type: event_type.ok_or_else(|| Error::missing_field("eventType"))?,
-            event_num: event_number.ok_or_else(|| Error::missing_field("eventNum"))?,
-        };
-
-        EventType::try_from(event_intermediary).map_err(Error::custom)
-    }
-}
-
-impl Serialize for EventType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let val: EventIntermediary = (*self).into();
-        let mut inter = serializer.serialize_struct("EventIntermediary", 2)?;
-        inter.serialize_field("eventNum", &val.event_num)?;
-        inter.serialize_field("eventType", &val.event_type)?;
-        inter.end()
-    }
-}
-
-impl<'de> Deserialize<'de> for EventType {
-    fn deserialize<D>(deserializer: D) -> Result<EventType, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_struct("EventType", &FIELD_NAMES, DeserializerVisitor)
-    }
-}
-const FIELD_NAMES: [&str; 2] = ["eventNum", "eventType"];
-
-impl fmt::Display for EventType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            EventType::Create => write!(f, "Create"),
-            EventType::Destroy => write!(f, "Destroy"),
-            EventType::Cleanup => write!(f, "CleanUp"),
-            EventType::Step(stage) => write!(f, "{}", stage.display_with_before("Step")),
-            EventType::Alarm(number) => write!(f, "Alarm {}", number),
-            EventType::Draw(draw_stage) => write!(f, "{}", draw_stage),
-            EventType::Collision => write!(f, "Collision"),
-            EventType::Mouse(v) => write!(f, "{}", v),
-            EventType::KeyDown(key) => write!(f, "Key Down - {}", key.as_ref()),
-            EventType::KeyPress(key) => write!(f, "Key Press - {}", key.as_ref()),
-            EventType::KeyRelease(key) => write!(f, "Key Up - {}", key.as_ref()),
-            EventType::Gesture(gesture) => write!(f, "{}", gesture),
-            EventType::Other(other) => write!(f, "{}", other),
-            EventType::Async(async_ev) => write!(f, "{}", async_ev),
-        }
-    }
-}
-
-impl Stage {
-    pub fn display_with_before(&self, other: &str) -> String {
-        match self {
-            Stage::Main => other.to_string(),
-            Stage::Begin => format!("Begin {}", other),
-            Stage::End => format!("End {}", other),
-        }
-    }
-
-    pub fn display_with_after(&self, other: &str) -> String {
-        match self {
-            Stage::Main => other.to_string(),
-            Stage::Begin => format!("{} Begin", other),
-            Stage::End => format!("{} End", other),
-        }
-    }
-}
-
-impl fmt::Display for DrawEvent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            DrawEvent::Draw(stage) => write!(f, "{}", stage.display_with_after("Draw")),
-            DrawEvent::DrawGui(stage) => write!(f, "{}", stage.display_with_after("Draw GUI")),
-            DrawEvent::PreDraw => write!(f, "Pre-Draw"),
-            DrawEvent::PostDraw => write!(f, "Post-Draw"),
-            DrawEvent::WindowResize => write!(f, "Window Resize"),
-        }
-    }
-}
-
-impl fmt::Display for MouseEvent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            MouseEvent::Down(mb) => write!(f, "{} Down", mb),
-            MouseEvent::Pressed(mb) => write!(f, "{} Pressed", mb),
-            MouseEvent::Released(mb) => write!(f, "{} Released", mb),
-            MouseEvent::NoInput => write!(f, "No Mouse Input"),
-            MouseEvent::MouseEnter => write!(f, "Mouse Enter"),
-            MouseEvent::MouseExit => write!(f, "Mouse Leave"),
-            MouseEvent::MouseWheelUp => write!(f, "Mouse Wheel Up"),
-            MouseEvent::MouseWheelDown => write!(f, "Mouse Wheel Down"),
-        }
-    }
-}
-
-impl fmt::Display for MouseButton {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let word = match self.mb_code {
-            MouseButtonCode::Left => "Left",
-            MouseButtonCode::Right => "Right",
-            MouseButtonCode::Middle => "Middle",
-        };
-
-        if self.local {
-            write!(f, "{}", word)
-        } else {
-            write!(f, "Global {}", word)
-        }
-    }
-}
-
-impl fmt::Display for GestureEvent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let word = match self.gesture {
-            Gesture::Tap => "Tap",
-            Gesture::DoubleTap => "Double Tap",
-            Gesture::DragStart => "Drag Start",
-            Gesture::Dragging => "Dragging",
-            Gesture::DragEnd => "Drag End",
-            Gesture::Flick => "Flick",
-            Gesture::PinchStart => "Pinch Start",
-            Gesture::PinchIn => "Pinch In",
-            Gesture::PinchOut => "Pinch Out",
-            Gesture::PinchEnd => "Pinch End",
-            Gesture::RotateStart => "Rotate Start",
-            Gesture::Rotating => "Rotating",
-            Gesture::RotateEnd => "Rotate End",
-        };
-
-        if self.local {
-            write!(f, "{}", word)
-        } else {
-            write!(f, "Global {}", word)
-        }
-    }
-}
-
-impl fmt::Display for OtherEvent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            OtherEvent::OutsideRoom => write!(f, "Outside Room"),
-            OtherEvent::IntersectBoundary => write!(f, "Intersect Boundary"),
-            OtherEvent::OutsideView(view) => write!(f, "Outside View {}", view),
-            OtherEvent::IntersectView(view) => write!(f, "Intersect View {} Boundary", view),
-            OtherEvent::GameStart => write!(f, "Game Start"),
-            OtherEvent::GameEnd => write!(f, "Game End"),
-            OtherEvent::RoomStart => write!(f, "Room Start"),
-            OtherEvent::RoomEnd => write!(f, "Room End"),
-            OtherEvent::AnimationEnd => write!(f, "Animation End"),
-            OtherEvent::AnimationUpdate => write!(f, "Animation Update"),
-            OtherEvent::AnimationEvent => write!(f, "Animation Event"),
-            OtherEvent::PathEnded => write!(f, "Path Ended"),
-            OtherEvent::UserEvent(event) => write!(f, "User Event {}", event),
-            OtherEvent::BroadcastMessage => write!(f, "Broadcast Message"),
-        }
-    }
-}
-
-impl fmt::Display for AsyncEvent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let word = match self {
-            AsyncEvent::AudioPlayback => "Audio Playback",
-            AsyncEvent::AudioRecording => "Audio Recording",
-            AsyncEvent::Cloud => "Cloud",
-            AsyncEvent::Dialog => "Dialog",
-            AsyncEvent::Http => "Http",
-            AsyncEvent::InAppPurchase => "In-App Purchase",
-            AsyncEvent::ImageLoaded => "Image Loaded",
-            AsyncEvent::Networking => "Networking",
-            AsyncEvent::PushNotification => "Push Notification",
-            AsyncEvent::SaveLoad => "Save/Load",
-            AsyncEvent::Social => "Social",
-            AsyncEvent::Steam => "Steam",
-            AsyncEvent::System => "System",
-        };
-
-        write!(f, "Async - {}", word)
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Ord)]
 #[repr(usize)]
-pub enum EventNumber {
+pub enum EventTypeNumber {
     Create = 0,
     Destroy = 1,
     Alarm = 2,
     Step = 3,
     Collision = 4,
-    KeyDown = 5,
+    Keyboard = 5,
     Mouse = 6,
     Other = 7,
     Draw = 8,
     KeyPress = 9,
     KeyRelease = 10,
-    Cleanup = 12,
+    CleanUp = 12,
     Gesture = 13,
 }
 
-impl std::str::FromStr for EventNumber {
-    type Err = UnknownEventNumber;
+impl std::str::FromStr for EventTypeNumber {
+    type Err = UnknownEventTypeNumber;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let event_type = match s {
             "create" | "Create" => Self::Create,
             "destroy" | "Destroy" => Self::Destroy,
-            "cleanUp" | "CleanUp" | "cleanup" => Self::Cleanup,
+            "cleanUp" | "CleanUp" | "cleanup" | "Cleanup" => Self::CleanUp,
             "step" | "Step" => Self::Step,
             "alarm" | "Alarm" => Self::Alarm,
             "draw" | "Draw" => Self::Draw,
             "collision" | "Collision" => Self::Collision,
             "mouse" | "Mouse" => Self::Mouse,
             "keyboard" | "Keyboard" | "keyBoard" | "KeyBoard" | "keyDown" | "keydown" => {
-                Self::KeyDown
+                Self::Keyboard
             }
             "keypress" | "keyPress" | "KeyPress" | "Keypress" => Self::KeyPress,
             "keyrelease" | "keyRelease" | "KeyRelease" | "Keyrelease" => Self::KeyRelease,
             "gesture" | "Gesture" => Self::Gesture,
             "other" | "Other" => Self::Other,
-            _ => return Err(UnknownEventNumber),
+            _ => return Err(UnknownEventTypeNumber),
         };
 
         Ok(event_type)
     }
 }
 
-#[derive(Debug, thiserror::Error)]
-#[error("unknown event number")]
-pub struct UnknownEventNumber;
+impl fmt::Display for EventTypeNumber {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = match self {
+            EventTypeNumber::Create => "create",
+            EventTypeNumber::Destroy => "destroy",
+            EventTypeNumber::Alarm => "alarm",
+            EventTypeNumber::Step => "step",
+            EventTypeNumber::Collision => "collision",
+            EventTypeNumber::Keyboard => "keyboard",
+            EventTypeNumber::Mouse => "mouse",
+            EventTypeNumber::Other => "other",
+            EventTypeNumber::Draw => "draw",
+            EventTypeNumber::KeyPress => "key_press",
+            EventTypeNumber::KeyRelease => "key_release",
+            EventTypeNumber::CleanUp => "clean_up",
+            EventTypeNumber::Gesture => "gesture",
+        };
 
-impl From<UnknownEventNumber> for EventTypeConvertErrors {
-    fn from(_: UnknownEventNumber) -> Self {
-        Self::CannotFindEventType
+        f.pad(word)
     }
+}
+
+impl From<&'_ EventType> for EventTypeNumber {
+    fn from(value: &'_ EventType) -> Self {
+        Self::from(*value)
+    }
+}
+
+impl From<EventType> for EventTypeNumber {
+    fn from(value: EventType) -> Self {
+        match value {
+            EventType::Create => EventTypeNumber::Create,
+            EventType::Step(_) => EventTypeNumber::Step,
+            EventType::Draw(_) => EventTypeNumber::Draw,
+            EventType::Alarm(_) => EventTypeNumber::Alarm,
+            EventType::Collision => EventTypeNumber::Collision,
+            EventType::Mouse(_) => EventTypeNumber::Mouse,
+            EventType::KeyDown(_) => EventTypeNumber::Keyboard,
+            EventType::KeyPress(_) => EventTypeNumber::KeyPress,
+            EventType::KeyRelease(_) => EventTypeNumber::KeyRelease,
+            EventType::Gesture(_) => EventTypeNumber::Gesture,
+            EventType::Other(_) => EventTypeNumber::Other,
+            EventType::Async(_) => EventTypeNumber::Other,
+            EventType::Destroy => EventTypeNumber::Destroy,
+            EventType::CleanUp => EventTypeNumber::CleanUp,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Copy, Clone, thiserror::Error)]
+pub enum EventTypeConvertErrors {
+    #[error("invalid event_number for event type `{0}`")]
+    CannotFindEventNumber(usize),
+    #[error(transparent)]
+    CannotFindEventType(UnknownEventTypeNumber),
+    #[error("string didn't follow pattern x_y")]
+    BadString,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[error("unknown event type number")]
+pub struct UnknownEventTypeNumber;
+
+impl From<UnknownEventTypeNumber> for EventTypeConvertErrors {
+    fn from(v: UnknownEventTypeNumber) -> Self {
+        Self::CannotFindEventType(v)
+    }
+}
+
+mod event_type_serialization {
+    use super::*;
+    use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
+
+    #[derive(Debug, Serialize, Deserialize)]
+    enum Field {
+        #[serde(rename = "eventNum")]
+        Number,
+        #[serde(rename = "eventType")]
+        Type,
+    }
+
+    use serde::de::{Error, MapAccess, Visitor};
+    struct DeserializerVisitor;
+
+    impl<'de> Visitor<'de> for DeserializerVisitor {
+        type Value = EventType;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+            formatter.write_str(r#"a value of "eventNum""#)
+        }
+
+        fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+        where
+            A: MapAccess<'de>,
+        {
+            let mut event_number = None;
+            let mut event_type = None;
+
+            while let Some(key) = map.next_key()? {
+                match key {
+                    Field::Number => {
+                        if event_number.is_some() {
+                            return Err(Error::duplicate_field("eventNum"));
+                        }
+                        event_number = Some(map.next_value()?);
+                    }
+                    Field::Type => {
+                        if event_type.is_some() {
+                            return Err(Error::duplicate_field("eventType"));
+                        }
+                        event_type = Some(map.next_value()?);
+                    }
+                }
+            }
+
+            let event_intermediary = EventIntermediary {
+                event_type: event_type.ok_or_else(|| Error::missing_field("eventType"))?,
+                event_num: event_number.ok_or_else(|| Error::missing_field("eventNum"))?,
+            };
+
+            EventType::try_from(event_intermediary).map_err(Error::custom)
+        }
+    }
+
+    impl Serialize for EventType {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            let val: EventIntermediary = (*self).into();
+            let mut inter = serializer.serialize_struct("EventIntermediary", 2)?;
+            inter.serialize_field("eventNum", &val.event_num)?;
+            inter.serialize_field("eventType", &val.event_type)?;
+            inter.end()
+        }
+    }
+
+    impl<'de> Deserialize<'de> for EventType {
+        fn deserialize<D>(deserializer: D) -> Result<EventType, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            deserializer.deserialize_struct("EventType", &FIELD_NAMES, DeserializerVisitor)
+        }
+    }
+    const FIELD_NAMES: [&str; 2] = ["eventNum", "eventType"];
 }
 
 #[cfg(test)]
@@ -1021,7 +1128,7 @@ mod tests {
     fn symmetry() {
         harness(EventType::Create);
         harness(EventType::Destroy);
-        harness(EventType::Cleanup);
+        harness(EventType::CleanUp);
 
         harness(EventType::Step(Stage::Main));
         harness(EventType::Step(Stage::Begin));
@@ -1181,9 +1288,10 @@ mod tests {
             for i in 0..200 {
                 match EventType::parse_filename(name, i) {
                     Ok(event) => {
-                        let (output_fname, event_number) = event.filename();
+                        let fname = event.filename();
+                        let (output_fname, event_number) = fname.rsplit_once('_').unwrap();
                         assert_eq!(output_fname, *name);
-                        assert_eq!(event_number, i);
+                        assert_eq!(event_number.parse::<usize>().unwrap(), i);
                     }
                     Err(e) => {
                         assert!(

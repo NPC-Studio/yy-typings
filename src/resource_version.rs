@@ -142,7 +142,7 @@ impl<'de> Deserialize<'de> for ResourceVersion {
         impl<'de> Visitor<'de> for ResourceVersionVisitor {
             type Value = ResourceVersion;
 
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
                 formatter.write_str(r#"a string of positives integers "1.0" or "9.2""#)
             }
 

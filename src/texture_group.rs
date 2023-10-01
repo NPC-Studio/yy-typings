@@ -8,7 +8,7 @@ use smart_default::SmartDefault;
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmTextureGroup, String, 1, 3>,
+    pub common_data: crate::CommonData<consts::TextureGroup, String, 1, 3>,
 
     #[default(true)]
     pub autocrop: bool,
@@ -38,13 +38,6 @@ pub struct TextureGroup {
     pub targets: isize,
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize, SmartDefault, Eq, PartialEq)]
-pub enum ConstGmTextureGroup {
-    #[serde(rename = "GMTextureGroup")]
-    #[default]
-    Const,
-}
-
 impl From<TextureGroup> for TexturePath {
     fn from(o: TextureGroup) -> Self {
         TexturePath {
@@ -62,3 +55,5 @@ impl From<&TextureGroup> for TexturePath {
         }
     }
 }
+
+gm_const!(TextureGroup -> "GMTextureGroup");

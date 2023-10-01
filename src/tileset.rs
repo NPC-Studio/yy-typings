@@ -6,7 +6,7 @@ use smart_default::SmartDefault;
 #[serde(rename_all = "camelCase")]
 pub struct TileSet {
     #[serde(flatten)]
-    pub common_data: CommonData<ConstGmTileSet>,
+    pub common_data: CommonData<consts::TileSet>,
 
     pub auto_tile_sets: Vec<AutoTileSet>,
 
@@ -62,7 +62,7 @@ pub struct MacroPageTiles {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 pub struct AutoTileSet {
     #[serde(flatten)]
-    common_data: CommonData<ConstGmAutoTileSet>,
+    common_data: CommonData<consts::AutoTileSet>,
     closed_edge: bool,
     tiles: Vec<usize>,
 }
@@ -71,28 +71,13 @@ pub struct AutoTileSet {
 #[serde(rename_all = "camelCase")]
 pub struct TileAnimationFrame {
     #[serde(flatten)]
-    common_data: CommonData<ConstGmTileAnimation>,
+    common_data: CommonData<consts::TileAnimation>,
 
     pub frames: Vec<usize>,
 }
 
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmTileSet {
-    #[serde(rename = "GMTileSet")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmTileAnimation {
-    #[serde(rename = "GMTileAnimation")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmAutoTileSet {
-    #[serde(rename = "GMAutoTileSet")]
-    #[default]
-    Const,
-}
+gm_const!(
+    TileSet -> "GMTileSet",
+    TileAnimation -> "GMTileAnimation",
+    AutoTileSet -> "GMAutoTileSet",
+);

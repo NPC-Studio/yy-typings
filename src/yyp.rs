@@ -11,7 +11,7 @@ use std::{
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmProject, String, 1, 7>,
+    pub common_data: crate::CommonData<consts::Project, String, 1, 7>,
 
     /// The Audio Groups present within the project. Relationship to
     /// the inherited.yy is unclear
@@ -99,7 +99,7 @@ pub struct YypConfig {
 #[serde(rename_all = "camelCase")]
 pub struct YypFolder {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmFolder>,
+    pub common_data: crate::CommonData<consts::Folder>,
 
     /// The full path from the root to the virtual folder location. The first
     /// part of the path is always `folders`. For top level folders, will look
@@ -111,7 +111,7 @@ pub struct YypFolder {
 #[serde(rename_all = "camelCase")]
 pub struct YypIncludedFile {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmIncludedFile>,
+    pub common_data: crate::CommonData<consts::IncludedFile>,
     #[serde(rename = "CopyToMask")]
     #[default(-1)]
     pub copy_to_mask: isize,
@@ -125,25 +125,8 @@ pub struct RoomOrderId {
     pub room_id: FilesystemPath,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault)]
-pub enum ConstGmProject {
-    #[serde(rename = "GMProject")]
-    #[default]
-    Const,
-}
-
-#[derive(
-    Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault, Ord, PartialOrd,
-)]
-pub enum ConstGmFolder {
-    #[serde(rename = "GMFolder")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy, SmartDefault)]
-pub enum ConstGmIncludedFile {
-    #[serde(rename = "GMIncludedFile")]
-    #[default]
-    Const,
-}
+gm_const!(
+    Project -> "GMProject",
+    Folder -> "GMFolder",
+    IncludedFile -> "GMIncludedFile"
+);

@@ -6,7 +6,7 @@ use smart_default::SmartDefault;
 #[serde(rename_all = "camelCase")]
 pub struct Shader {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmShader>,
+    pub common_data: crate::CommonData<consts::Shader>,
 
     pub parent: crate::ViewPath,
 
@@ -19,13 +19,6 @@ impl Shader {
     pub const VERT_FILE_ENDING: &'static str = "vsh";
 }
 
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmShader {
-    #[serde(rename = "GMShader")]
-    #[default]
-    Const,
-}
-
 #[derive(Debug, Serialize_repr, Deserialize_repr, SmartDefault, PartialEq, Eq, Clone, Copy)]
 #[repr(u8)]
 pub enum ShaderType {
@@ -34,6 +27,8 @@ pub enum ShaderType {
     Glsl,
     Hlsl,
 }
+
+gm_const!(Shader -> "GMShader");
 
 #[cfg(test)]
 mod tests {
@@ -44,7 +39,7 @@ mod tests {
 
     #[test]
     fn trivial_sprite_parsing() {
-        static DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/data/shaders");
+        static DIR: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/data/shaders");
         let tcu = TrailingCommaUtility::new();
 
         for file in DIR.find("**/*.yy").unwrap() {
@@ -59,7 +54,7 @@ mod tests {
 
     #[test]
     fn deep_equality() {
-        let file_raw = include_str!("../../data/shaders/sh_draw_light_to_screen.yy");
+        let file_raw = include_str!("../data/shaders/sh_draw_light_to_screen.yy");
 
         let file_parsed: Shader =
             serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
@@ -67,7 +62,7 @@ mod tests {
 
         let script = Shader {
             common_data: crate::CommonData {
-                resource_type: ConstGmShader::Const,
+                resource_type: consts::Shader::Const,
                 resource_version: ResourceVersion::default(),
                 name: "sh_draw_light_to_screen".to_string(),
             },

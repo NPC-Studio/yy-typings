@@ -1,4 +1,4 @@
-use super::{sprite_constants::*, FilesystemPath, ResourceVersion};
+use super::{consts, FilesystemPath, ResourceVersion};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -9,7 +9,7 @@ create_guarded_uuid!(SpriteSequenceId);
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSequence {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmSequence, String, 1, 4>,
+    pub common_data: crate::CommonData<consts::Sequence, String, 1, 4>,
 
     /// Whether to autorecord the sequence. This will always be true for
     /// sprites.
@@ -100,7 +100,7 @@ pub struct VisibleRange {
 pub struct SpriteEvents {
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
-    pub resource_type: ConstGmSpriteEvent,
+    pub resource_type: consts::SpriteEvent,
 
     /// The resource version of the SpriteEvent.
     pub resource_version: ResourceVersion,
@@ -119,7 +119,7 @@ pub struct SpriteEvents {
 pub struct SpriteMoments {
     /// The name of the Resource Type. This is a C# generic, so this Serde
     /// typing may not be sufficent. Testing will have to be done.
-    pub resource_type: ConstGmSpriteMoment,
+    pub resource_type: consts::SpriteMoment,
 
     /// The resource version of the SpriteMoment. Currently, it is always "1.0".
     pub resource_version: ResourceVersion,
@@ -135,7 +135,7 @@ pub struct SpriteMoments {
 #[serde(rename_all = "camelCase")]
 pub struct Track {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmSpriteFramesTrack, ConstGmSpriteTrackName>,
+    pub common_data: crate::CommonData<consts::SpriteFramesTrack, consts::SpriteTrackName>,
 
     /// Appears to always be zero.
     pub builtin_name: usize,
@@ -174,7 +174,7 @@ pub struct Track {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframes {
-    pub resource_type: ConstGmSpriteKeyframes,
+    pub resource_type: consts::SpriteKeyframes,
     pub resource_version: ResourceVersion,
     #[serde(rename = "Keyframes")]
     pub keyframes: Vec<SpriteKeyframe>,
@@ -191,7 +191,7 @@ pub enum ElementType {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteKeyframe {
-    pub resource_type: ConstGmSpriteKeyframe,
+    pub resource_type: consts::SpriteKeyframe,
 
     pub resource_version: ResourceVersion,
 
@@ -227,7 +227,7 @@ pub struct Channels {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SpriteZeroChannel {
-    pub resource_type: ConstGmSpriteZeroChannel,
+    pub resource_type: consts::SpriteZeroChannel,
     pub resource_version: ResourceVersion,
     #[serde(rename = "Id")]
     pub id: FilesystemPath,

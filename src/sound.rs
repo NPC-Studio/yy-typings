@@ -8,7 +8,7 @@ use crate::AudioGroupId;
 #[serde(rename_all = "camelCase")]
 pub struct Sound {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmSound>,
+    pub common_data: crate::CommonData<consts::Sound>,
 
     /// This is the Path to the Audio Group Id.
     pub audio_group_id: AudioGroupId,
@@ -85,6 +85,11 @@ impl BitRate {
         Some(Self(bitrate))
     }
 
+    /// Sets th bitrate.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if an invalid bit rate is given.
     pub fn set_bitrate(&mut self, rate: u32) -> Result<(), InvalidBitRate> {
         if Self::is_valid_bitrate(rate) {
             self.0 = rate;
@@ -159,6 +164,11 @@ impl SampleRate {
         matches!(bitrate, 5512 | 11025 | 22050 | 32000 | 44100 | 48000)
     }
 
+    /// Sets the sample rate.
+    ///
+    /// # Errors
+    ///
+    /// Errors if an invalid sample rate is given. See [is_valid_sample_rate](Self::is_valid_sample_rate)
     pub fn set_sample_rate(&mut self, sample_rate: u32) -> Result<(), InvalidSampleRate> {
         if Self::is_valid_sample_rate(sample_rate) {
             self.0 = sample_rate;
@@ -202,12 +212,7 @@ pub enum Output {
     ThreeDee,
 }
 
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmSound {
-    #[serde(rename = "GMSound")]
-    #[default]
-    Const,
-}
+gm_const!(Sound -> "GMSound");
 
 #[cfg(test)]
 mod tests {

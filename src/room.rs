@@ -1,4 +1,4 @@
-use crate::{object_yy::ObjectOverrideProperty, ResourceVersion, Tags, ViewPath};
+use crate::{ObjectOverrideProperty, ResourceVersion, Tags, ViewPath};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
@@ -26,7 +26,7 @@ pub struct Room {
     pub is_dnd: bool,
 
     /// The layers of data which are in the room.
-    pub layers: Vec<Layer>,
+    pub layers: Vec<RoomLayer>,
 
     pub parent: crate::ViewPath,
 
@@ -75,7 +75,7 @@ pub struct RoomView {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Layer {
+pub struct RoomLayer {
     #[serde(flatten)]
     pub data: LayerData,
 
@@ -85,7 +85,7 @@ pub struct Layer {
     pub user_defined_depth: bool,
     pub grid_x: i32,
     pub grid_y: i32,
-    pub layers: Vec<Layer>,
+    pub layers: Vec<RoomLayer>,
     pub hierarchy_frozen: bool,
 
     /// The resource version of this yy file. At default 1.0.
