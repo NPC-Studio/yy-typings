@@ -1,5 +1,6 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, ViewPathLocation};
 use serde::{Deserialize, Serialize};
+use serde_json::ser::CompactFormatter;
 use smart_default::SmartDefault;
 use std::{
     hash::Hash,
@@ -130,3 +131,221 @@ gm_const!(
     Folder -> "GMFolder",
     IncludedFile -> "GMIncludedFile"
 );
+
+use std::io;
+
+#[derive(Debug)]
+pub struct YypFormatter {
+    current_indent: usize,
+    has_value: bool,
+    indent: &'static [u8],
+}
+
+impl Default for YypFormatter {
+    fn default() -> Self {
+        Self::new(b"  ")
+    }
+}
+
+impl YypFormatter {
+    pub fn new(indent: &'static [u8]) -> Self {
+        Self {
+            current_indent: 0,
+            has_value: false,
+            indent,
+        }
+    }
+
+    fn indent<W>(&self, wr: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        for _ in 0..self.current_indent {
+            wr.write_all(self.indent)?;
+        }
+
+        Ok(())
+    }
+
+    fn use_compact(&self)
+}
+
+impl serde_json::ser::Formatter for YypFormatter {
+    #[inline]
+    fn begin_array<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.current_indent += 1;
+        self.has_value = false;
+        writer.write_all(b"[")
+    }
+
+    #[inline]
+    fn end_array<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.current_indent -= 1;
+
+        if self.has_value {
+            writer.write_all(b"\n")?;
+            self.indent(writer)?;
+        }
+
+        writer.write_all(b"]")
+    }
+
+    #[inline]
+    fn begin_array_value<W>(&mut self, writer: &mut W, first: bool) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.begin_array_value(writer, first)?;
+
+            return Ok(());
+        }
+        if first {
+            writer.write_all(b"\n")?;
+        } else {
+            writer.write_all(b",\n")?;
+        }
+        self.indent(writer)?;
+        Ok(())
+    }
+
+    #[inline]
+    fn end_array_value<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.end_array_value(writer)?;
+
+            return Ok(());
+        }
+
+        self.has_value = true;
+        Ok(())
+    }
+
+    #[inline]
+    fn begin_object<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.begin_object(writer)?;
+
+            return Ok(());
+        }
+
+        self.current_indent += 1;
+        self.has_value = false;
+        writer.write_all(b"{")
+    }
+
+    #[inline]
+    fn end_object<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.end_object(writer)?;
+
+            return Ok(());
+        }
+
+        self.current_indent -= 1;
+
+        if self.has_value {
+            writer.write_all(b"\n")?;
+            self.indent(writer)?;
+        }
+
+        writer.write_all(b"}")
+    }
+
+    #[inline]
+    fn begin_object_key<W>(&mut self, writer: &mut W, first: bool) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.begin_object_key(writer, first)?;
+
+            return Ok(());
+        }
+
+        if first {
+            writer.write_all(b"\n")?;
+        } else {
+            writer.write_all(b",\n")?;
+        }
+        self.indent(writer)?;
+
+        Ok(())
+    }
+
+    fn end_object_key<W>(&mut self, _writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        Ok(())
+    }
+
+    #[inline]
+    fn begin_object_value<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.begin_object_value(writer)?;
+
+            return Ok(());
+        }
+        writer.write_all(b": ")
+    }
+
+    #[inline]
+    fn end_object_value<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.end_object_value(writer)?;
+
+            return Ok(());
+        }
+        self.has_value = true;
+        Ok(())
+    }
+}
+
+fn serialize_yyp(value: &Yyp) -> String {
+    let mut writer = Vec::with_capacity(128);
+    let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, YypFormatter::default());
+    value.serialize(&mut ser).unwrap();
+
+    unsafe {
+        // We do not emit invalid UTF-8.
+        String::from_utf8_unchecked(writer)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn t() {
+        let x = include_str!("../../../Gms2/SwordAndField/FieldsOfMistria.yyp");
+        let x = crate::TrailingCommaUtility::clear_trailing_comma_once(x);
+        let json: Yyp = serde_json::from_str(x.as_ref()).unwrap();
+
+        let o = serialize_yyp(&json);
+
+        panic!("{}", o);
+    }
+}

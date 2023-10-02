@@ -170,3 +170,6 @@ pub use resource_data::CommonData;
 
 mod utils;
 pub use utils::{ResourceNameValidator, TrailingCommaUtility};
+
+mod yyp_serialization;
+pub use yyp_serialization::serialize_yyp;
