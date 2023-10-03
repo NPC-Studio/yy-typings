@@ -105,13 +105,13 @@ pub struct ObjectEvent {
     #[serde(flatten)]
     pub common_data: crate::CommonData<consts::Event>,
 
+    /// The Id of the thing to collide with.
+    pub collision_object_id: Option<FilesystemPath>,
+
     /// The type of the event. In the JSON, this is represented with two enums,
     /// but we use Serde to succesfully parse this into idiomatic Rust enums.
     #[serde(flatten)]
     pub event_type: EventType,
-
-    /// The Id of the thing to collide with.
-    pub collision_object_id: Option<FilesystemPath>,
 
     /// Is this event used in DragNDrop, the thing no one uses?
     pub is_dn_d: bool,

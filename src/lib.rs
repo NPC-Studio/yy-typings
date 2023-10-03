@@ -170,3 +170,6 @@ pub use resource_data::CommonData;
 
 mod utils;
 pub use utils::{ResourceNameValidator, TrailingCommaUtility};
+
+mod formatter;
+pub use formatter::serialize_file;
