@@ -1,6 +1,5 @@
 use super::{texture_group::TextureGroup, AudioGroup, FilesystemPath, ViewPathLocation};
 use serde::{Deserialize, Serialize};
-use serde_json::ser::CompactFormatter;
 use smart_default::SmartDefault;
 use std::{
     hash::Hash,
@@ -131,4 +130,3 @@ gm_const!(
     Folder -> "GMFolder",
     IncludedFile -> "GMIncludedFile"
 );
-

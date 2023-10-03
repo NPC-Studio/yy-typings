@@ -1,46 +1,54 @@
 use serde::Serialize;
 use serde_json::ser::CompactFormatter;
-use std::io;
+use std::{any::TypeId, io};
 
-/// Serializes a given Yyp
+/// Serializes a given Yy file.
 #[cfg(target_os = "macos")]
-pub fn serialize_file<T: Serialize>(value: &T) -> String {
-    let mut writer = Vec::with_capacity(128);
-    let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, YypFormatter::default());
-    value.serialize(&mut ser).unwrap();
-
-    unsafe {
-        // We do not emit invalid UTF-8.
-        String::from_utf8_unchecked(writer)
-    }
+pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
+    ser(value)
 }
 
-/// Serializes a given Yyp
+/// Serializes a given Yy file.
 #[cfg(target_os = "windows")]
 pub fn serialize_file(value: &Yyp) -> String {
-    let mut writer = Vec::with_capacity(128);
-    let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, YypFormatter::default());
-    value.serialize(&mut ser).unwrap();
+    ser(value).replace('\n', "\r\n")
+}
 
+fn ser<T: Serialize + 'static>(value: &T) -> String {
+    let mut writer = Vec::with_capacity(128);
+    let formatter = Formatter {
+        current_indent: 0,
+        has_value: false,
+        compact: 0,
+    };
+    if TypeId::of::<T>() == TypeId::of::<crate::Sprite>() {
+        let mut ser = serde_json::ser::Serializer::with_formatter(
+            &mut writer,
+            SpriteFormatter {
+                formatter,
+                in_sequence: false,
+                sequence_indent: 0,
+            },
+        );
+        value.serialize(&mut ser).unwrap();
+    } else {
+        let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, formatter);
+        value.serialize(&mut ser).unwrap();
+    };
     unsafe {
         // We do not emit invalid UTF-8.
         String::from_utf8_unchecked(writer)
     }
-
-    #[cfg(target_os = "windows")]
-    {
-        let str = str.replace('\n', "\r\n");
-    }
 }
 
-#[derive(Debug, Default)]
-struct YypFormatter {
+#[derive(Debug)]
+struct Formatter {
     current_indent: usize,
     has_value: bool,
     compact: usize,
 }
 
-impl YypFormatter {
+impl Formatter {
     fn indent<W>(&self, wr: &mut W) -> io::Result<()>
     where
         W: ?Sized + io::Write,
@@ -57,7 +65,7 @@ impl YypFormatter {
     }
 }
 
-impl serde_json::ser::Formatter for YypFormatter {
+impl serde_json::ser::Formatter for Formatter {
     #[inline]
     fn begin_array<W>(&mut self, writer: &mut W) -> io::Result<()>
     where
@@ -198,12 +206,178 @@ impl serde_json::ser::Formatter for YypFormatter {
 
         Ok(())
     }
+}
+
+struct SpriteFormatter {
+    formatter: Formatter,
+    in_sequence: bool,
+    sequence_indent: usize,
+}
+
+impl SpriteFormatter {
+    fn use_compact(&self) -> bool {
+        self.formatter.use_compact() || (self.in_sequence && self.sequence_indent > 1)
+    }
+}
+
+impl serde_json::ser::Formatter for SpriteFormatter {
+    #[inline]
+    fn begin_array<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.formatter.begin_array(writer)
+    }
+
+    #[inline]
+    fn end_array<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.formatter.end_array(writer)
+    }
+
+    #[inline]
+    fn begin_array_value<W>(&mut self, writer: &mut W, first: bool) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.formatter.begin_array_value(writer, first)
+    }
+
+    #[inline]
+    fn end_array_value<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.formatter.end_array_value(writer)
+    }
+
+    #[inline]
+    fn begin_object<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.has_value = false;
+
+        if self.in_sequence {
+            self.sequence_indent += 1;
+        }
+
+        if self.use_compact() {
+            CompactFormatter.begin_object(writer)?;
+
+            return Ok(());
+        }
+
+        self.current_indent += 1;
+        writer.write_all(b"{")
+    }
+
+    #[inline]
+    fn end_object<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        writer.write_all(b",")?;
+
+        if self.use_compact() {
+            writer.write_all(b"}")?;
+
+            if self.in_sequence {
+                self.sequence_indent -= 1;
+                if self.sequence_indent <= 1 {
+                    self.in_sequence = false;
+                }
+            }
+
+            return Ok(());
+        }
+
+        self.current_indent -= 1;
+
+        if self.has_value {
+            writer.write_all(b"\n")?;
+            self.indent(writer)?;
+        }
+
+        writer.write_all(b"}")?;
+        Ok(())
+    }
+
+    #[inline]
+    fn begin_object_key<W>(&mut self, writer: &mut W, first: bool) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.begin_object_key(writer, first)?;
+
+            return Ok(());
+        }
+
+        if first {
+            writer.write_all(b"\n")?;
+        } else {
+            writer.write_all(b",\n")?;
+        }
+        self.indent(writer)?;
+
+        Ok(())
+    }
+
+    #[inline]
+    fn begin_object_value<W>(&mut self, writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.use_compact() {
+            CompactFormatter.begin_object_value(writer)?;
+
+            return Ok(());
+        }
+        writer.write_all(b": ")
+    }
+
+    #[inline]
+    fn end_object_value<W>(&mut self, _writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.has_value = true;
+
+        Ok(())
+    }
 
     fn write_string_fragment<W>(&mut self, writer: &mut W, fragment: &str) -> io::Result<()>
     where
         W: ?Sized + io::Write,
     {
+        println!(
+            "{} -- {}/ {}",
+            fragment, self.current_indent, self.in_sequence
+        );
+        if fragment == "sequence" {
+            self.in_sequence = true;
+        }
+
+        todo!("let's VIBE");
+
         writer.write_all(fragment.as_bytes())
+    }
+}
+
+impl std::ops::Deref for SpriteFormatter {
+    type Target = Formatter;
+
+    fn deref(&self) -> &Self::Target {
+        &self.formatter
+    }
+}
+
+impl std::ops::DerefMut for SpriteFormatter {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.formatter
     }
 }
 
@@ -244,7 +418,6 @@ mod tests {
                 .unwrap();
 
         let o = serialize_file(&json);
-
         assert_eq!(x, o);
     }
 }
