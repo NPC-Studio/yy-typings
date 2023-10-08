@@ -4,15 +4,31 @@ use crate::formatter::Formatter;
 use std::io;
 
 pub(crate) struct SpriteFormatter {
-    pub formatter: Formatter,
-    pub in_sequence: bool,
-    pub sequence_indent: usize,
+    formatter: Formatter,
+    in_sequence: bool,
+    sequence_indent: usize,
+    jump_cmd: Option<Jump>,
 }
 
 impl SpriteFormatter {
     fn use_compact(&self) -> bool {
         self.formatter.use_compact() || (self.in_sequence && self.sequence_indent > 1)
     }
+
+    pub(crate) fn new(formatter: Formatter) -> Self {
+        Self {
+            formatter,
+            in_sequence: false,
+            sequence_indent: 0,
+            jump_cmd: None,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum Jump {
+    Start,
+    End,
 }
 
 impl serde_json::ser::Formatter for SpriteFormatter {
@@ -21,7 +37,14 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        self.formatter.begin_array(writer)
+        self.formatter.begin_array(writer)?;
+
+        if self.jump_cmd == Some(Jump::Start) {
+            self.jump_cmd = Some(Jump::End);
+            self.current_indent += 2;
+        }
+
+        Ok(())
     }
 
     #[inline]
@@ -29,7 +52,14 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        self.formatter.end_array(writer)
+        self.formatter.end_array(writer)?;
+
+        if self.jump_cmd == Some(Jump::End) {
+            self.jump_cmd = None;
+            self.current_indent -= 2;
+        }
+
+        Ok(())
     }
 
     #[inline]
@@ -152,12 +182,14 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        println!(
-            "{} -- indent={}, in_sequence={}, sequence_indent={}",
-            fragment, self.current_indent, self.in_sequence, self.sequence_indent
-        );
-        if fragment == "sequence" {
-            self.in_sequence = true;
+        match fragment {
+            "sequence" => {
+                self.in_sequence = true;
+            }
+            "KeyframeStore<SpriteFrameKeyframe>" => {
+                self.jump_cmd = Some(Jump::Start);
+            }
+            _ => {}
         }
 
         writer.write_all(fragment.as_bytes())
@@ -190,9 +222,17 @@ mod tests {
                 .unwrap();
 
         let o = crate::serialize_file(&json);
+        assert_eq!(x, o);
+    }
 
-        println!("{}", o);
+    #[test]
+    fn sprite_serialization2() {
+        let x = include_str!("../../../../Gms2/SwordAndField/sprites/spr_manor_doorway2_spring/spr_manor_doorway2_spring.yy");
+        let json: crate::Sprite =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
 
+        let o = crate::serialize_file(&json);
         assert_eq!(x, o);
     }
 }

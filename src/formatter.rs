@@ -24,11 +24,7 @@ fn ser<T: Serialize + 'static>(value: &T) -> String {
     if TypeId::of::<T>() == TypeId::of::<crate::Sprite>() {
         let mut ser = serde_json::ser::Serializer::with_formatter(
             &mut writer,
-            crate::SpriteFormatter {
-                formatter,
-                in_sequence: false,
-                sequence_indent: 0,
-            },
+            crate::SpriteFormatter::new(formatter),
         );
         value.serialize(&mut ser).unwrap();
     } else {
@@ -229,6 +225,18 @@ mod tests {
     fn object_serialization() {
         let x = include_str!("../../../Gms2/SwordAndField/objects/Game/game.yy");
         let json: crate::Object =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
+
+        let o = serialize_file(&json);
+
+        assert_eq!(x, o);
+    }
+
+    #[test]
+    fn script() {
+        let x = include_str!("../../../Gms2/SwordAndField/scripts/Anchor/Anchor.yy");
+        let json: crate::Script =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
 
