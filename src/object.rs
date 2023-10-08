@@ -125,30 +125,38 @@ pub struct ObjectEvent {
 pub struct ObjectProperty {
     #[serde(flatten)]
     pub common_data: crate::CommonData<consts::ObjectProperty>,
-    /// The type of property which is preset. Some, or all, of the rest of the
-    /// information in this struct will be used based on the property type.
-    pub var_type: ObjectPropertyTypes,
-    /// The serialized value of the property type. This corresponds exactly to
-    /// what the Gms2 box will have inside it as a string.
-    pub value: String,
-    /// If the range Ui option is enabled for this type. This is ignored unless
-    /// `var_type` is `Real` or `Integer`.
-    pub range_enabled: bool,
-    /// The minimum range. Minimin should be less than max, but does not error
-    /// if so.
-    pub range_min: f64,
-    /// The maximum range. Minimin should be less than max, but does not error
-    /// if so.
-    pub range_max: f64,
-    /// The items which can be selected when `var_type` is set to `List`.
-    /// Ignored in any other `var_type`.
-    pub list_items: Vec<String>,
-    /// If set to true when `var_type` is set to `List`, allows the User to
-    /// select multiple options.
-    pub multiselect: bool,
+
     /// Not sure what this is supposed to be. In the meantime, we've typed it as
     /// a blank array.
     pub filters: Vec<String>,
+
+    /// The items which can be selected when `var_type` is set to `List`.
+    /// Ignored in any other `var_type`.
+    pub list_items: Vec<String>,
+
+    /// If set to true when `var_type` is set to `List`, allows the User to
+    /// select multiple options.
+    pub multiselect: bool,
+
+    /// If the range Ui option is enabled for this type. This is ignored unless
+    /// `var_type` is `Real` or `Integer`.
+    pub range_enabled: bool,
+
+    /// The maximum range. Minimin should be less than max, but does not error
+    /// if so.
+    pub range_max: f64,
+
+    /// The minimum range. Minimin should be less than max, but does not error
+    /// if so.
+    pub range_min: f64,
+
+    /// The serialized value of the property type. This corresponds exactly to
+    /// what the Gms2 box will have inside it as a string.
+    pub value: String,
+
+    /// The type of property which is preset. Some, or all, of the rest of the
+    /// information in this struct will be used based on the property type.
+    pub var_type: ObjectPropertyTypes,
 }
 
 /// Object "properties" are set in the Gms2 window and allow the user to

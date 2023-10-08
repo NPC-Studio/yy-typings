@@ -234,6 +234,22 @@ mod tests {
     }
 
     #[test]
+    fn object_with_properties() {
+        let x = include_str!(
+            "../../../Gms2/SwordAndField/objects/obj_sound_emitter/obj_sound_emitter.yy"
+        );
+        let json: crate::Object =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
+
+        let o = serialize_file(&json);
+
+        println!("{}", o);
+
+        assert_eq!(x, o);
+    }
+
+    #[test]
     fn script() {
         let x = include_str!("../../../Gms2/SwordAndField/scripts/Anchor/Anchor.yy");
         let json: crate::Script =

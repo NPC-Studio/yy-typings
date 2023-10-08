@@ -216,7 +216,7 @@ mod tests {
 
     #[test]
     fn sprite_serialization() {
-        let x = include_str!("../../../../Gms2/SwordAndField/sprites/spr_monster_sapling_main_idle_north/spr_monster_sapling_main_idle_north.yy");
+        let x = include_str!("../../../../Gms2/SwordAndField/sprites/spr_monster_sapling_cool_base_attack_jump/spr_monster_sapling_cool_base_attack_jump.yy");
         let json: crate::Sprite =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
