@@ -250,6 +250,26 @@ mod tests {
     }
 
     #[test]
+    fn object_with_list() {
+        let x = include_str!(
+            "../../../Gms2/SwordAndField/objects/par_modifiable_building/par_modifiable_building.yy"
+        );
+        let json: crate::Object =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
+
+        let o = serialize_file(&json);
+
+        println!("us:");
+        println!("{}", o);
+        println!("-----");
+        println!("them:");
+        println!("{}", x);
+
+        assert_eq!(x, o);
+    }
+
+    #[test]
     fn script() {
         let x = include_str!("../../../Gms2/SwordAndField/scripts/Anchor/Anchor.yy");
         let json: crate::Script =
