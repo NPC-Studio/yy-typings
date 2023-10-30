@@ -10,7 +10,7 @@ pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
 
 /// Serializes a given Yy file.
 #[cfg(target_os = "windows")]
-pub fn serialize_file(value: &Yyp) -> String {
+pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
     ser(value).replace('\n', "\r\n")
 }
 
