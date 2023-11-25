@@ -16,18 +16,17 @@ pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
 
 fn ser<T: Serialize + 'static>(value: &T) -> String {
     let mut writer = Vec::with_capacity(128);
-    let formatter = Formatter {
-        current_indent: 0,
-        has_value: false,
-        compact: 0,
-    };
     if TypeId::of::<T>() == TypeId::of::<crate::Sprite>() {
-        let mut ser = serde_json::ser::Serializer::with_formatter(
-            &mut writer,
-            crate::SpriteFormatter::new(formatter),
-        );
+        let mut ser =
+            serde_json::ser::Serializer::with_formatter(&mut writer, crate::SpriteFormatter::new());
         value.serialize(&mut ser).unwrap();
     } else {
+        let formatter = Formatter {
+            current_indent: 0,
+            has_value: false,
+            compact: 0,
+        };
+
         let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, formatter);
         value.serialize(&mut ser).unwrap();
     };
@@ -50,7 +49,7 @@ impl Formatter {
         W: ?Sized + io::Write,
     {
         for _ in 0..self.current_indent {
-            wr.write_all(b"  ")?;
+            wr.write_all(b" ")?;
         }
 
         Ok(())
@@ -67,7 +66,7 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        self.current_indent += 1;
+        self.current_indent += 2;
         self.has_value = false;
         self.compact += 1;
         writer.write_all(b"[")
@@ -78,7 +77,7 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        self.current_indent -= 1;
+        self.current_indent -= 2;
         self.compact -= 1;
 
         if self.has_value {
@@ -125,7 +124,7 @@ impl serde_json::ser::Formatter for Formatter {
             return Ok(());
         }
 
-        self.current_indent += 1;
+        self.current_indent += 2;
         writer.write_all(b"{")
     }
 
@@ -141,7 +140,7 @@ impl serde_json::ser::Formatter for Formatter {
             return Ok(());
         }
 
-        self.current_indent -= 1;
+        self.current_indent -= 2;
 
         if self.has_value {
             writer.write_all(b",\n")?;

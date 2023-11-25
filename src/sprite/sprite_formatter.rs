@@ -1,50 +1,46 @@
-use serde_json::ser::CompactFormatter;
+pub struct SpriteFormatter {
+    current_indent: usize,
+    has_value: bool,
+    indent: &'static [u8],
+    mode: SpritePrinterMode,
+    check_key: bool,
+    object_stack: u32,
+}
 
-use crate::formatter::Formatter;
-use std::io;
-
-pub(crate) struct SpriteFormatter {
-    formatter: Formatter,
-    in_sequence: bool,
-    sequence_indent: usize,
-    jump_cmd: Option<Jump>,
+enum SpritePrinterMode {
+    Normal,
+    Frames(u32),
+    Compact(u32),
 }
 
 impl SpriteFormatter {
-    fn use_compact(&self) -> bool {
-        self.formatter.use_compact() || (self.in_sequence && self.sequence_indent > 1)
-    }
-
-    pub(crate) fn new(formatter: Formatter) -> Self {
-        Self {
-            formatter,
-            in_sequence: false,
-            sequence_indent: 0,
-            jump_cmd: None,
+    pub fn new() -> Self {
+        SpriteFormatter {
+            current_indent: 0,
+            has_value: false,
+            indent: b"  ",
+            mode: SpritePrinterMode::Normal,
+            check_key: false,
+            object_stack: 0,
         }
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
-enum Jump {
-    Start,
-    End,
-}
-
+use std::io;
 impl serde_json::ser::Formatter for SpriteFormatter {
     #[inline]
     fn begin_array<W>(&mut self, writer: &mut W) -> io::Result<()>
     where
         W: ?Sized + io::Write,
     {
-        self.formatter.begin_array(writer)?;
+        self.current_indent += 1;
+        self.has_value = false;
 
-        if self.jump_cmd == Some(Jump::Start) {
-            self.jump_cmd = Some(Jump::End);
-            self.current_indent += 2;
+        if let SpritePrinterMode::Frames(v) = &mut self.mode {
+            *v += 1;
         }
 
-        Ok(())
+        writer.write_all(b"[")
     }
 
     #[inline]
@@ -52,22 +48,31 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        self.formatter.end_array(writer)?;
+        self.current_indent -= 1;
 
-        if self.jump_cmd == Some(Jump::End) {
-            self.jump_cmd = None;
-            self.current_indent -= 2;
+        if self.has_value {
+            writer.write_all(b"\n").unwrap();
+            indent(writer, self.current_indent, self.indent).unwrap();
         }
 
-        Ok(())
+        if let SpritePrinterMode::Frames(v) = &mut self.mode {
+            *v -= 1;
+            if *v == 0 {
+                self.mode = SpritePrinterMode::Normal;
+            }
+        }
+
+        writer.write_all(b"]")
     }
 
     #[inline]
-    fn begin_array_value<W>(&mut self, writer: &mut W, first: bool) -> io::Result<()>
+    fn begin_array_value<W>(&mut self, writer: &mut W, _first: bool) -> io::Result<()>
     where
         W: ?Sized + io::Write,
     {
-        self.formatter.begin_array_value(writer, first)
+        writer.write_all(b"\n").unwrap();
+        indent(writer, self.current_indent, self.indent).unwrap();
+        Ok(())
     }
 
     #[inline]
@@ -75,7 +80,9 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        self.formatter.end_array_value(writer)
+        writer.write_all(b",").unwrap();
+        self.has_value = true;
+        Ok(())
     }
 
     #[inline]
@@ -83,19 +90,14 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
+        self.current_indent += 1;
+        self.object_stack += 1;
         self.has_value = false;
 
-        if self.in_sequence {
-            self.sequence_indent += 1;
+        // increment our object count WITHIN the frames...
+        if let SpritePrinterMode::Compact(v) = &mut self.mode {
+            *v += 1;
         }
-
-        if self.use_compact() {
-            CompactFormatter.begin_object(writer)?;
-
-            return Ok(());
-        }
-
-        self.current_indent += 1;
         writer.write_all(b"{")
     }
 
@@ -104,53 +106,71 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        if self.has_value {
-            writer.write_all(b",")?;
-        }
+        self.current_indent -= 1;
+        self.object_stack -= 1;
 
-        let compacted = self.use_compact();
-
-        if self.in_sequence {
-            self.sequence_indent -= 1;
-            if self.sequence_indent == 0 {
-                self.in_sequence = false;
+        // increment our object count WITHIN the frames...
+        match &mut self.mode {
+            SpritePrinterMode::Normal => {
+                if self.has_value {
+                    writer.write_all(b"\n").unwrap();
+                    indent(writer, self.current_indent, self.indent).unwrap();
+                }
+            }
+            SpritePrinterMode::Frames(_v) => {}
+            SpritePrinterMode::Compact(_v) => {
+                self.mode = SpritePrinterMode::Normal;
             }
         }
 
-        if compacted {
-            writer.write_all(b"}")?;
-
-            return Ok(());
-        }
-
-        self.current_indent -= 1;
-
-        if self.has_value {
-            writer.write_all(b"\n")?;
-            self.indent(writer)?;
-        }
-
-        writer.write_all(b"}")?;
-        Ok(())
+        writer.write_all(b"}")
     }
 
     #[inline]
-    fn begin_object_key<W>(&mut self, writer: &mut W, first: bool) -> io::Result<()>
+    fn begin_object_key<W>(&mut self, writer: &mut W, _first: bool) -> io::Result<()>
     where
         W: ?Sized + io::Write,
     {
-        if self.use_compact() {
-            CompactFormatter.begin_object_key(writer, first)?;
+        match self.mode {
+            SpritePrinterMode::Normal => {
+                writer.write_all(b"\n").unwrap();
+                self.check_key = true;
+                indent(writer, self.current_indent, self.indent)
+            }
+            SpritePrinterMode::Frames(_) => Ok(()),
+            SpritePrinterMode::Compact(_) => Ok(()),
+        }
+    }
 
-            return Ok(());
+    fn write_string_fragment<W>(&mut self, writer: &mut W, fragment: &str) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.check_key {
+            match fragment {
+                "frames" | "tracks" => {
+                    self.mode = SpritePrinterMode::Frames(0);
+                }
+                "spriteId" | "events" | "moments" | "layers" => {
+                    self.mode = SpritePrinterMode::Compact(0);
+                }
+                "parent" => {
+                    if self.object_stack > 1 {
+                        self.mode = SpritePrinterMode::Compact(0);
+                    }
+                }
+                _ => {}
+            }
         }
 
-        if first {
-            writer.write_all(b"\n")?;
-        } else {
-            writer.write_all(b",\n")?;
-        }
-        self.indent(writer)?;
+        writer.write_all(fragment.as_bytes())
+    }
+
+    fn end_object_key<W>(&mut self, _writer: &mut W) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        self.check_key = false;
 
         Ok(())
     }
@@ -160,54 +180,40 @@ impl serde_json::ser::Formatter for SpriteFormatter {
     where
         W: ?Sized + io::Write,
     {
-        if self.use_compact() {
-            CompactFormatter.begin_object_value(writer)?;
+        writer.write_all(b":").unwrap();
 
-            return Ok(());
+        match self.mode {
+            SpritePrinterMode::Normal => writer.write_all(b" "),
+            SpritePrinterMode::Frames(v) | SpritePrinterMode::Compact(v) => {
+                if v == 0 {
+                    writer.write_all(b" ")
+                } else {
+                    Ok(())
+                }
+            }
         }
-        writer.write_all(b": ")
     }
 
     #[inline]
-    fn end_object_value<W>(&mut self, _writer: &mut W) -> io::Result<()>
+    fn end_object_value<W>(&mut self, writer: &mut W) -> io::Result<()>
     where
         W: ?Sized + io::Write,
     {
         self.has_value = true;
-
+        writer.write_all(b",").unwrap();
         Ok(())
     }
-
-    fn write_string_fragment<W>(&mut self, writer: &mut W, fragment: &str) -> io::Result<()>
-    where
-        W: ?Sized + io::Write,
-    {
-        match fragment {
-            "sequence" => {
-                self.in_sequence = true;
-            }
-            "KeyframeStore<SpriteFrameKeyframe>" => {
-                self.jump_cmd = Some(Jump::Start);
-            }
-            _ => {}
-        }
-
-        writer.write_all(fragment.as_bytes())
-    }
 }
 
-impl std::ops::Deref for SpriteFormatter {
-    type Target = Formatter;
-
-    fn deref(&self) -> &Self::Target {
-        &self.formatter
+fn indent<W>(wr: &mut W, n: usize, s: &[u8]) -> io::Result<()>
+where
+    W: ?Sized + io::Write,
+{
+    for _ in 0..n {
+        wr.write_all(s).unwrap();
     }
-}
 
-impl std::ops::DerefMut for SpriteFormatter {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.formatter
-    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -216,7 +222,7 @@ mod tests {
 
     #[test]
     fn sprite_serialization() {
-        let x = include_str!("../../../../Gms2/SwordAndField/sprites/spr_monster_sapling_cool_base_attack_jump/spr_monster_sapling_cool_base_attack_jump.yy");
+        let x = include_str!("../../../../Gms2/SwordAndField/sprites/spr_monster_sapling_blue_main_attack_jump_south/spr_monster_sapling_blue_main_attack_jump_south.yy");
         let json: crate::Sprite =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();

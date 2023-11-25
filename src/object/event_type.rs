@@ -112,13 +112,13 @@ impl EventType {
 
     /// A simple way to parse a value. It does a split on the string, which
     /// basically means it needs to follow the pattern `Create_0` and similar.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// Errors if the given input does not follow the pattern `x_y`, unless it's special cased,
     /// or if `x` is not a given EventTypeNumber or if `y` is not an appropriate event_num for the given
     /// EventTypeNumber.
-    /// 
+    ///
     /// In general, this function tries to "figure out" what EventType from a given input, and figuring out
     /// what input should be given is best done reading through the function.
     pub fn from_human_readable(value: &str) -> Result<EventType, EventTypeConvertErrors> {
@@ -550,8 +550,8 @@ impl fmt::Display for AsyncEvent {
     Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Default, Serialize, Deserialize, Copy, Clone,
 )]
 pub struct EventIntermediary {
-    event_type: usize,
-    event_num: usize,
+    pub event_type: usize,
+    pub event_num: usize,
 }
 
 impl From<&'_ EventType> for EventIntermediary {
