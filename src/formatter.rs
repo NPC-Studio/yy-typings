@@ -1,6 +1,6 @@
 use serde::Serialize;
 use serde_json::ser::CompactFormatter;
-use std::{any::TypeId, io};
+use std::io;
 
 /// Serializes a given Yy file.
 #[cfg(target_os = "macos")]
@@ -16,31 +16,22 @@ pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
 
 fn ser<T: Serialize + 'static>(value: &T) -> String {
     let mut writer = Vec::with_capacity(128);
-    if TypeId::of::<T>() == TypeId::of::<crate::Sprite>() {
-        let mut ser =
-            serde_json::ser::Serializer::with_formatter(&mut writer, crate::SpriteFormatter::new());
-        value.serialize(&mut ser).unwrap();
-    } else {
-        let formatter = Formatter {
-            real_indentation_count: 0,
-            has_value: false,
-            array_depth: 0,
-        };
+    let formatter = Formatter::default();
 
-        let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, formatter);
-        value.serialize(&mut ser).unwrap();
-    };
+    let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, formatter);
+    value.serialize(&mut ser).unwrap();
+
     unsafe {
         // We do not emit invalid UTF-8.
         String::from_utf8_unchecked(writer)
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub(crate) struct Formatter {
-    pub real_indentation_count: usize,
     pub has_value: bool,
     pub array_depth: usize,
+    pub object_depth: usize,
 }
 
 impl Formatter {
@@ -48,15 +39,17 @@ impl Formatter {
     where
         W: ?Sized + io::Write,
     {
-        for _ in 0..self.real_indentation_count {
-            wr.write_all(b" ")?;
+        let indentation_count = self.array_depth + self.object_depth;
+
+        for _ in 0..indentation_count {
+            wr.write_all(b"  ")?;
         }
 
         Ok(())
     }
 
     pub fn use_compact(&self) -> bool {
-        self.array_depth > 0
+        self.array_depth > 0 || self.object_depth > 2
     }
 }
 
@@ -66,7 +59,6 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        self.real_indentation_count += 2;
         self.array_depth += 1;
         self.has_value = false;
         writer.write_all(b"[")
@@ -77,7 +69,6 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        self.real_indentation_count -= 2;
         self.array_depth -= 1;
 
         if self.has_value {
@@ -118,13 +109,8 @@ impl serde_json::ser::Formatter for Formatter {
         W: ?Sized + io::Write,
     {
         self.has_value = false;
-        if self.use_compact() {
-            CompactFormatter.begin_object(writer)?;
+        self.object_depth += 1;
 
-            return Ok(());
-        }
-
-        self.real_indentation_count += 2;
         writer.write_all(b"{")
     }
 
@@ -134,13 +120,15 @@ impl serde_json::ser::Formatter for Formatter {
         W: ?Sized + io::Write,
     {
         if self.use_compact() {
-            writer.write_all(b",")?;
+            if self.has_value {
+                writer.write_all(b",")?;
+            }
             CompactFormatter.end_object(writer)?;
+            self.object_depth -= 1;
 
             return Ok(());
         }
-
-        self.real_indentation_count -= 2;
+        self.object_depth -= 1;
 
         if self.has_value {
             writer.write_all(b",\n")?;
@@ -272,6 +260,42 @@ mod tests {
                 .unwrap();
 
         let o = serialize_file(&json);
+
+        assert_eq!(x, o);
+    }
+
+    #[test]
+    fn sprite_serialization0() {
+        let x = include_str!("./../data/formatting/sprite_zero.yy");
+        let json: crate::Sprite =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
+
+        let o = crate::serialize_file(&json);
+
+        println!("us:");
+        println!("{}", o);
+        println!("-----");
+        println!("them:");
+        println!("{}", x);
+
+        assert_eq!(x, o);
+    }
+
+    #[test]
+    fn sprite_serialization1() {
+        let x = include_str!("./../data/formatting/sprite_one.yy");
+        let json: crate::Sprite =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
+
+        let o = crate::serialize_file(&json);
+
+        println!("us:");
+        println!("{}", o);
+        println!("-----");
+        println!("them:");
+        println!("{}", x);
 
         assert_eq!(x, o);
     }

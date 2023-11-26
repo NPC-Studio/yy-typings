@@ -6,9 +6,6 @@ pub use sequence::*;
 mod frames_layers;
 pub use frames_layers::*;
 
-mod sprite_formatter;
-pub(crate) use sprite_formatter::SpriteFormatter;
-
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
