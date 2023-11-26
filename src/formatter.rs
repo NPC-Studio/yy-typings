@@ -22,9 +22,9 @@ fn ser<T: Serialize + 'static>(value: &T) -> String {
         value.serialize(&mut ser).unwrap();
     } else {
         let formatter = Formatter {
-            current_indent: 0,
+            real_indentation_count: 0,
             has_value: false,
-            compact: 0,
+            array_depth: 0,
         };
 
         let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, formatter);
@@ -38,9 +38,9 @@ fn ser<T: Serialize + 'static>(value: &T) -> String {
 
 #[derive(Debug)]
 pub(crate) struct Formatter {
-    pub current_indent: usize,
+    pub real_indentation_count: usize,
     pub has_value: bool,
-    pub compact: usize,
+    pub array_depth: usize,
 }
 
 impl Formatter {
@@ -48,7 +48,7 @@ impl Formatter {
     where
         W: ?Sized + io::Write,
     {
-        for _ in 0..self.current_indent {
+        for _ in 0..self.real_indentation_count {
             wr.write_all(b" ")?;
         }
 
@@ -56,7 +56,7 @@ impl Formatter {
     }
 
     pub fn use_compact(&self) -> bool {
-        self.compact > 0
+        self.array_depth > 0
     }
 }
 
@@ -66,9 +66,9 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        self.current_indent += 2;
+        self.real_indentation_count += 2;
+        self.array_depth += 1;
         self.has_value = false;
-        self.compact += 1;
         writer.write_all(b"[")
     }
 
@@ -77,8 +77,8 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        self.current_indent -= 2;
-        self.compact -= 1;
+        self.real_indentation_count -= 2;
+        self.array_depth -= 1;
 
         if self.has_value {
             writer.write_all(b",\n")?;
@@ -124,7 +124,7 @@ impl serde_json::ser::Formatter for Formatter {
             return Ok(());
         }
 
-        self.current_indent += 2;
+        self.real_indentation_count += 2;
         writer.write_all(b"{")
     }
 
@@ -140,7 +140,7 @@ impl serde_json::ser::Formatter for Formatter {
             return Ok(());
         }
 
-        self.current_indent -= 2;
+        self.real_indentation_count -= 2;
 
         if self.has_value {
             writer.write_all(b",\n")?;
@@ -210,7 +210,7 @@ mod tests {
 
     #[test]
     fn yyp_serialization() {
-        let x = include_str!("../../../Gms2/SwordAndField/FieldsOfMistria.yyp");
+        let x = include_str!("./../data/formatting/yyp.yyp");
         let json: crate::Yyp =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
@@ -222,7 +222,7 @@ mod tests {
 
     #[test]
     fn object_serialization() {
-        let x = include_str!("../../../Gms2/SwordAndField/objects/Game/game.yy");
+        let x = include_str!("./../data/formatting/game.yy");
         let json: crate::Object =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
@@ -234,9 +234,7 @@ mod tests {
 
     #[test]
     fn object_with_properties() {
-        let x = include_str!(
-            "../../../Gms2/SwordAndField/objects/obj_sound_emitter/obj_sound_emitter.yy"
-        );
+        let x = include_str!("./../data/formatting/obj_sound_emitter.yy");
         let json: crate::Object =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
@@ -250,9 +248,7 @@ mod tests {
 
     #[test]
     fn object_with_list() {
-        let x = include_str!(
-            "../../../Gms2/SwordAndField/objects/par_modifiable_building/par_modifiable_building.yy"
-        );
+        let x = include_str!("./../data/formatting/par_modifiable_building.yy");
         let json: crate::Object =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
@@ -270,7 +266,7 @@ mod tests {
 
     #[test]
     fn script() {
-        let x = include_str!("../../../Gms2/SwordAndField/scripts/Anchor/Anchor.yy");
+        let x = include_str!("./../data/formatting/Anchor.yy");
         let json: crate::Script =
             serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
                 .unwrap();
