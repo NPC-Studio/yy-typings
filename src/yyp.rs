@@ -54,6 +54,9 @@ pub struct Yyp {
     #[serde(rename = "RoomOrderNodes")]
     pub room_order_nodes: Vec<RoomOrderId>,
 
+    /// This is probably always null and if it's not always null, good luck, go with god.
+    template_type: Option<()>,
+
     /// The Texture groups present within the project. Relationship to
     /// the inherited.yy is unclear
     #[serde(rename = "TextureGroups")]
@@ -61,7 +64,7 @@ pub struct Yyp {
 }
 
 impl Yyp {
-    pub const DEFAULT_VERSION: &'static str = "2023.6.0.92";
+    pub const DEFAULT_VERSION: &'static str = "2023.11.0.121";
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
