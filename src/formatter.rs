@@ -4,17 +4,17 @@ use std::io;
 
 /// Serializes a given Yy file.
 #[cfg(target_os = "macos")]
-pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
+pub fn serialize_file<T: Serialize>(value: &T) -> String {
     ser(value)
 }
 
 /// Serializes a given Yy file.
 #[cfg(target_os = "windows")]
-pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
+pub fn serialize_file<T: Serialize>(value: &T) -> String {
     ser(value).replace('\n', "\r\n")
 }
 
-fn ser<T: Serialize + 'static>(value: &T) -> String {
+fn ser<T: Serialize>(value: &T) -> String {
     let mut writer = Vec::with_capacity(128);
     let formatter = Formatter::default();
 
