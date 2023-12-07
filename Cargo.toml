@@ -12,8 +12,6 @@ readme = "README.md"
 serde = { version = "1.0", features = ["derive"] }
 serde_repr = "0.1"
 serde_json = "1.0"
-serde_with = "1.4"
-
 uuid = { version = "0.8", features = ["serde", "v4"] }
 
 regex = "1.3"

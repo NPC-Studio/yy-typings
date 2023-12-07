@@ -1,5 +1,5 @@
-use crate::{ObjectOverrideProperty, ResourceVersion, Tags, ViewPath};
-use serde::{Deserialize, Serialize};
+use crate::{CommonData, ObjectOverrideProperty, ResourceVersion, ViewPath};
+use serde::{ser::SerializeStruct, Deserialize, Serialize};
 use smart_default::SmartDefault;
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
@@ -7,7 +7,7 @@ use smart_default::SmartDefault;
 pub struct Room {
     /// Common data
     #[serde(flatten)]
-    pub common_data: crate::CommonData<ConstGmRoom>,
+    pub common_data: CommonData<consts::Room>,
 
     /// The relative subpath of the creation code for this room,
     /// if it exists.
@@ -20,6 +20,7 @@ pub struct Room {
     /// This is only meaningful if `parent_room` is `Some`.
     pub inherit_layers: bool,
 
+    /// The order in which instances are created. Users can edit this.
     pub instance_creation_order: Vec<ViewPath>,
 
     /// Is this used in DragNDrop? Hopefully not! that would get messy.
@@ -28,23 +29,31 @@ pub struct Room {
     /// The layers of data which are in the room.
     pub layers: Vec<RoomLayer>,
 
+    /// The parent folder.
     pub parent: crate::ViewPath,
 
     /// The path of the parent room.
     pub parent_room: Option<ViewPath>,
 
+    /// All of the irksome physics settings.
     pub physics_settings: PhysicsSettings,
 
+    /// Specific room setting details
     pub room_settings: RoomSettings,
 
+    /// This appears to always be null, so that's cool.
     pub sequence_id: Option<()>,
 
-    pub tags: Tags,
+    /// The tags associated with this object.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub tags: Vec<String>,
 
     /// Eight (at least) views. Most users won't have anything
     /// meaningful here.
     pub views: Vec<RoomView>,
 
+    /// Ah the great view settings!
     pub view_settings: ViewSettings,
 
     /// A volume? I have no idea where this appears in the UI.
@@ -73,15 +82,12 @@ pub struct RoomView {
     pub object_id: Option<ViewPath>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Clone)]
 pub struct RoomLayer {
-    #[serde(flatten)]
     pub data: LayerData,
 
     pub visible: bool,
     pub depth: i32,
-    #[serde(rename = "userdefinedDepth")]
     pub user_defined_depth: bool,
     pub grid_x: i32,
     pub grid_y: i32,
@@ -95,24 +101,13 @@ pub struct RoomLayer {
     pub name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(tag = "resourceType")]
+#[derive(Debug, PartialEq, Clone)]
 pub enum LayerData {
-    #[serde(rename = "GMRInstanceLayer")]
-    Instance(Instances),
-    #[serde(rename = "GMRTileLayer")]
+    Instance(Vec<Instance>),
     Tilemap(Tilemap),
-    #[serde(rename = "GMRAssetLayer")]
-    Asset(Assets),
-    #[serde(rename = "GMRBackgroundLayer")]
+    Asset(Vec<Asset>),
     Background(BackgroundSprite),
-    #[serde(rename = "GMRLayer")]
     Folder,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
-pub struct Assets {
-    pub assets: Vec<Asset>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -134,14 +129,12 @@ pub struct Asset {
     pub y: f64,
     pub resource_version: ResourceVersion,
     pub name: String,
-    pub resource_type: ConstGMSpriteGraphic,
+    pub resource_type: consts::SpriteGraphic,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Clone, Default)]
 pub struct BackgroundSprite {
     pub sprite_id: Option<ViewPath>,
-    #[serde(rename = "colour")]
     pub color: usize,
     pub x: i32,
     pub y: i32,
@@ -150,20 +143,17 @@ pub struct BackgroundSprite {
     pub hspeed: f64,
     pub vspeed: f64,
     pub stretch: bool,
-    #[serde(rename = "animationFPS")]
     pub animation_fps: f64,
     pub animation_speed_type: i32,
-    #[serde(rename = "userdefinedAnimFPS")]
     pub user_defined_anim_fps: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct Tilemap {
+    pub tiles: TilemapTileData,
     pub tileset_id: Option<ViewPath>,
     pub x: i32,
     pub y: i32,
-    pub tiles: TilemapTileData,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default)]
@@ -181,14 +171,9 @@ pub struct TilemapTileData {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Instances {
-    pub instances: Vec<Instance>,
-}
-
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Instance {
-    pub resource_type: ConstGmInstance,
+    pub resource_type: consts::Instance,
     pub resource_version: ResourceVersion,
     pub name: String,
     pub properties: Vec<ObjectOverrideProperty>,
@@ -212,27 +197,6 @@ pub struct Instance {
 }
 
 #[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmRoom {
-    #[serde(rename = "GMRoom")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGmInstance {
-    #[serde(rename = "GMRInstance")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub enum ConstGMSpriteGraphic {
-    #[serde(rename = "GMRSpriteGraphic")]
-    #[default]
-    Const,
-}
-
-#[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RoomSettings {
     pub inherit_room_settings: bool,
@@ -253,15 +217,116 @@ pub struct ViewSettings {
 }
 
 #[derive(Debug, Copy, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct PhysicsSettings {
+    #[serde(rename = "inheritPhysicsSettings")]
     inherit_physics_settings: bool,
-    #[serde(rename = "PhysicsWorld")]
     physics_world: bool,
-    #[serde(rename = "PhysicsWorldGravityX")]
     physics_world_gravity_x: f64,
-    #[serde(rename = "PhysicsWorldGravityY")]
     physics_world_gravity_y: f64,
-    #[serde(rename = "PhysicsWorldPixToMetres")]
     physics_world_pix_to_meters: f64,
+}
+
+gm_const!(
+    Room -> "GMRoom",
+    Instance -> "GMRInstance",
+    SpriteGraphic -> "GMRSpriteGraphic",
+);
+
+impl Serialize for RoomLayer {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        // TODO figure out the number for all possible states...
+        let mut state = serializer.serialize_struct("RoomLayer", 1000)?;
+        let resource_type = match &self.data {
+            LayerData::Instance(_) => "GMRInstanceLayer",
+            LayerData::Tilemap(_) => "GMRTileLayer",
+            LayerData::Asset(_) => "GMRAssetLayer",
+            LayerData::Background(_) => "GMRBackgroundLayer",
+            LayerData::Folder => "GMRLayer",
+        };
+
+        state.serialize_field("resourceType", resource_type)?;
+        state.serialize_field("resourceVersion", &self.resource_version)?;
+        state.serialize_field("name", &self.name)?;
+
+        match &self.data {
+            LayerData::Asset(asset_list) => {
+                state.serialize_field("assets", asset_list)?;
+            }
+            LayerData::Background(background) => {
+                // "animationFPS":15.0,"animationSpeedType":0,"colour":4281991226
+                state.serialize_field("animationFPS", &background.animation_fps)?;
+                state.serialize_field("animationSpeedType", &background.animation_speed_type)?;
+                state.serialize_field("colour", &background.color)?;
+            }
+            _ => {}
+        }
+
+        state.serialize_field("depth", &self.depth)?;
+        state.serialize_field("effectEnabled", &false)?;
+        state.serialize_field("effectType", &Option::<()>::None)?;
+        state.serialize_field("effectType", &Option::<()>::None)?;
+        state.serialize_field("gridX", &self.grid_x)?;
+        state.serialize_field("gridY", &self.grid_y)?;
+        state.serialize_field("hierarchyFrozen", &self.hierarchy_frozen)?;
+        state.serialize_field("inheritLayerDepth", &false)?;
+        state.serialize_field("inheritLayerSettings", &false)?;
+        state.serialize_field("inheritSubLayers", &true)?;
+        state.serialize_field("inheritVisibility", &true)?;
+
+        if let LayerData::Instance(instances) = &self.data {
+            state.serialize_field("instances", instances)?;
+        }
+
+        // I think everyone has layers...
+        state.serialize_field("layers", &self.layers)?;
+        state.serialize_field::<Vec<()>>("properties", &vec![])?;
+
+        if let LayerData::Tilemap(tile_data) = &self.data {
+            state.serialize_field("tiles", &tile_data.tiles)?;
+            state.serialize_field("tilesetId", &tile_data.tileset_id)?;
+        }
+
+        state.serialize_field("userdefinedDepth", &self.user_defined_depth)?;
+        state.serialize_field("visible", &self.visible)?;
+
+        if let LayerData::Tilemap(tile_data) = &self.data {
+            state.serialize_field("x", &tile_data.x)?;
+            state.serialize_field("y", &tile_data.y)?;
+        }
+        state.end()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn basic_cycle() {
+        fn t(input: &str) {
+            let input = crate::TrailingCommaUtility::clear_trailing_comma_once(input);
+            let room_data: super::Room = serde_json::from_str(&input).unwrap();
+            println!("{}", crate::serialize_file(&room_data));
+
+            let our_value = serde_json::to_value(room_data).unwrap();
+
+            let their_value: serde_json::Value = serde_json::from_str(&input).unwrap();
+
+            assert_eq!(our_value, their_value);
+        }
+
+        const TESTS: &[&str] = &[
+            include_str!("./../data/rooms/rm_farm.yy"),
+            include_str!("./../data/rooms/rm_inn.yy"),
+            include_str!("./../data/rooms/rm_mines_upper_elevator10.yy"),
+            include_str!("./../data/rooms/rm_town.yy"),
+        ];
+
+        for test in TESTS {
+            t(test);
+        }
+    }
 }
