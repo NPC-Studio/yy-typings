@@ -1,5 +1,5 @@
 use serde::Serialize;
-use serde_json::ser::CompactFormatter;
+use serde_json::{ser::CompactFormatter, Value};
 use std::io;
 
 /// Serializes a given Yy file.
@@ -18,12 +18,51 @@ fn ser<T: Serialize>(value: &T) -> String {
     let mut writer = Vec::with_capacity(128);
     let formatter = Formatter::default();
 
+    let value = alphabetize_value(serde_json::to_value(value).unwrap());
+
     let mut ser = serde_json::ser::Serializer::with_formatter(&mut writer, formatter);
     value.serialize(&mut ser).unwrap();
 
     unsafe {
         // We do not emit invalid UTF-8.
         String::from_utf8_unchecked(writer)
+    }
+}
+
+fn alphabetize_value(value: serde_json::Value) -> serde_json::Value {
+    match value {
+        Value::Array(seq) => Value::Array(seq.into_iter().map(alphabetize_value).collect()),
+        Value::Object(map) => {
+            let resource_type = map.get("resourceType").cloned();
+            let name = map.get("name").cloned();
+
+            let mut key_values: Vec<(_, _)> = map.into_iter().collect();
+            key_values.sort_by_cached_key(|v| {
+                // pain
+                v.0.to_lowercase().replace('_', "{")
+            });
+
+            let mut new_output = serde_json::Map::new();
+
+            // if we have a resourceType, then we're good to proceed:
+            if let Some(resource_type) = resource_type {
+                let ty = resource_type.as_str().unwrap();
+                new_output.insert(format!("${}", ty), String::new().into());
+
+                if let Some(name) = name {
+                    if !matches!(ty, "GMSpriteFramesTrack") {
+                        new_output.insert("%Name".into(), name.as_str().unwrap().into());
+                    }
+                }
+            }
+
+            for (key, value) in key_values {
+                new_output.insert(key, alphabetize_value(value));
+            }
+
+            serde_json::Value::Object(new_output)
+        }
+        other => other,
     }
 }
 
@@ -177,7 +216,7 @@ impl serde_json::ser::Formatter for Formatter {
 
             return Ok(());
         }
-        writer.write_all(b": ")
+        writer.write_all(b":")
     }
 
     #[inline]
@@ -217,6 +256,8 @@ mod tests {
 
         let o = serialize_file(&json);
 
+        println!("{}", o);
+
         assert_eq!(x, o);
     }
 
@@ -246,9 +287,6 @@ mod tests {
         println!("us:");
         println!("{}", o);
         println!("-----");
-        println!("them:");
-        println!("{}", x);
-
         assert_eq!(x, o);
     }
 
@@ -276,8 +314,6 @@ mod tests {
         println!("us:");
         println!("{}", o);
         println!("-----");
-        println!("them:");
-        println!("{}", x);
 
         assert_eq!(x, o);
     }
@@ -294,8 +330,6 @@ mod tests {
         println!("us:");
         println!("{}", o);
         println!("-----");
-        println!("them:");
-        println!("{}", x);
 
         assert_eq!(x, o);
     }

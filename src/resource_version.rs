@@ -13,7 +13,7 @@ pub struct ResourceVersion {
 
 impl Default for ResourceVersion {
     fn default() -> Self {
-        ResourceVersion::new(1, 0)
+        ResourceVersion::new(2, 0)
     }
 }
 

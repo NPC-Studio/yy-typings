@@ -5,7 +5,7 @@
     "name": "Camera",
     "path": "folders/Scripts/Gameplay Systems/Camera.yy",
   },
-  "resourceVersion": "1.0",
+  "resourceVersion": "2.0",
   "name": "CameraClass",
   "tags": [],
   "resourceType": "GMScript",

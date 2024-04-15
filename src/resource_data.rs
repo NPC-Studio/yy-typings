@@ -19,7 +19,7 @@ use crate::ResourceVersion;
 pub struct CommonData<
     T: Default,
     N: Default = String,
-    const MAJOR: usize = 1,
+    const MAJOR: usize = 2,
     const MINOR: usize = 0,
 > {
     pub resource_type: T,

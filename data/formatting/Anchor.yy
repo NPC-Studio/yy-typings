@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "Anchor",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Anchor",
-    "path": "folders/Scripts/UI/Anchor.yy",
+  "$GMScript":"",
+  "%Name":"Anchor",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Anchor",
+  "parent":{
+    "name":"Anchor",
+    "path":"folders/Scripts/UI/Anchor.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }
