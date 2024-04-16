@@ -257,3 +257,26 @@ gm_const!(
     SpriteZeroChannel -> "SpriteFrameKeyframe",
     NineSliceData -> "GMNineSliceData"
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::TrailingCommaUtility;
+    use include_dir::{include_dir, Dir, DirEntry};
+
+    static ALL_SPRITES: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/data/sprites");
+
+    #[test]
+    fn trivial_sprite_parsing() {
+        let tcu = TrailingCommaUtility::new();
+
+        for object_file in ALL_SPRITES.find("**/*.yy").unwrap() {
+            if let DirEntry::File(file) = object_file {
+                println!("parsing {}", file.path().display());
+                let our_str = std::str::from_utf8(file.contents()).unwrap();
+                let our_str = tcu.clear_trailing_comma(our_str);
+                serde_json::from_str::<Sprite>(&our_str).unwrap();
+            }
+        }
+    }
+}
