@@ -27,8 +27,6 @@ pub struct TileSet {
 
     pub texture_group_id: TexturePath,
 
-    #[serde(rename = "tile_count")]
-    pub tile_count: u64,
     pub tile_animation: TileAnimation,
     pub tile_animation_frames: Vec<TileAnimationFrame>,
     pub tile_animation_speed: f64,
@@ -39,6 +37,9 @@ pub struct TileSet {
     pub tile_width: u64,
     pub tilexoff: u64,
     pub tileyoff: u64,
+
+    #[serde(rename = "tile_count")]
+    pub tile_count: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
@@ -81,3 +82,62 @@ gm_const!(
     TileAnimation -> "GMTileAnimation",
     AutoTileSet -> "GMAutoTileSet",
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{utils::TrailingCommaUtility, ViewPath, ViewPathLocation};
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn deep_equality() {
+        let file_raw = include_str!("../data/tileset/test.yy");
+
+        let file_parsed: TileSet =
+            serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
+                .unwrap();
+
+        let tset = TileSet {
+            common_data: CommonData::new("tile_collision_info".to_string()),
+            auto_tile_sets: vec![],
+            macro_page_tiles: MacroPageTiles {
+                serialize_height: 0,
+                serialize_width: 0,
+                tile_serialize_data: vec![],
+            },
+            out_columns: 3,
+            out_tile_hborder: 2,
+            out_tile_vborder: 2,
+            parent: ViewPath {
+                name: "__META".to_string(),
+                path: ViewPathLocation::new("folders/Tile Sets/Tiles/__META.yy"),
+            },
+            sprite_id: Some(ViewPath {
+                name: "spr_collision_tile_info".to_string(),
+                path: ViewPathLocation::new(
+                    "sprites/spr_collision_tile_info/spr_collision_tile_info.yy",
+                ),
+            }),
+            sprite_no_export: true,
+            texture_group_id: TexturePath {
+                name: "Default".to_string(),
+                path: crate::TexturePathLocation("texturegroups/Default".to_string()),
+            },
+            tile_animation: TileAnimation {
+                frame_data: vec![0, 1, 2, 3, 4, 5, 6],
+                serialize_frame_count: 1,
+            },
+            tile_animation_frames: vec![],
+            tile_animation_speed: 15.0,
+            tile_height: 8,
+            tilehsep: 0,
+            tilevsep: 0,
+            tile_width: 8,
+            tilexoff: 0,
+            tileyoff: 0,
+            tile_count: 7,
+        };
+
+        assert_eq!(file_parsed, tset);
+    }
+}
