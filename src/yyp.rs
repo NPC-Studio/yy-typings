@@ -11,7 +11,7 @@ use std::{
 #[serde(rename_all = "camelCase")]
 pub struct Yyp {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<consts::Project, String, 1, 7>,
+    pub common_data: crate::CommonData<consts::Project, String>,
 
     /// The Audio Groups present within the project. Relationship to
     /// the inherited.yy is unclear

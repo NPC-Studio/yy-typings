@@ -9,7 +9,7 @@ create_guarded_uuid!(SpriteSequenceId);
 #[serde(rename_all = "camelCase")]
 pub struct SpriteSequence {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<consts::Sequence, String, 1, 4>,
+    pub common_data: crate::CommonData<consts::Sequence, String>,
 
     /// Whether to autorecord the sequence. This will always be true for
     /// sprites.

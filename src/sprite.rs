@@ -38,7 +38,7 @@ pub struct Sprite {
     pub for3d: bool,
 
     /// Each frame within this Sprite File.
-    pub frames: Vec<crate::CommonData<consts::SpriteFrame, FrameId, 1, 1>>,
+    pub frames: Vec<crate::CommonData<consts::SpriteFrame, FrameId>>,
 
     pub grid_x: usize,
     pub grid_y: usize,

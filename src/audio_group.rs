@@ -5,7 +5,7 @@ use smart_default::SmartDefault;
 #[serde(rename_all = "camelCase")]
 pub struct AudioGroup {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<consts::AudioGroup, String, 1, 3>,
+    pub common_data: crate::CommonData<consts::AudioGroup, String>,
     #[default(-1)]
     pub targets: isize,
 }
