@@ -1,7 +1,7 @@
 {
   "$GMShader":"",
-  "%Name":"shd_outline",
-  "name":"shd_outline",
+  "%Name":"shd_animal_lut",
+  "name":"shd_animal_lut",
   "parent":{
     "name":"Shaders",
     "path":"folders/Shaders.yy",

@@ -1,12 +1,12 @@
 {
   "$GMScript":"",
-  "%Name":"script_execute_alt",
+  "%Name":"Grid",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"script_execute_alt",
+  "name":"Grid",
   "parent":{
-    "name":"Misc",
-    "path":"folders/Scripts/Utilities/Misc.yy",
+    "name":"__GridGeneral",
+    "path":"folders/Scripts/Gameplay Systems/Data/Grid/__GridGeneral.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

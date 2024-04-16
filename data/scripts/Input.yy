@@ -1,12 +1,12 @@
 {
   "$GMScript":"",
-  "%Name":"script_execute_alt",
+  "%Name":"Input",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"script_execute_alt",
+  "name":"Input",
   "parent":{
-    "name":"Misc",
-    "path":"folders/Scripts/Utilities/Misc.yy",
+    "name":"Input",
+    "path":"folders/Scripts/Gameplay Systems/Input.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

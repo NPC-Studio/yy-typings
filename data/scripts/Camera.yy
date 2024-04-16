@@ -1,12 +1,12 @@
 {
   "$GMScript":"",
-  "%Name":"script_execute_alt",
+  "%Name":"Camera",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"script_execute_alt",
+  "name":"Camera",
   "parent":{
-    "name":"Misc",
-    "path":"folders/Scripts/Utilities/Misc.yy",
+    "name":"Camera",
+    "path":"folders/Scripts/Gameplay Systems/Camera.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

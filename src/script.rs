@@ -43,7 +43,7 @@ mod tests {
 
     #[test]
     fn deep_equality() {
-        let script_raw = include_str!("../data/scripts/CameraClass.yy");
+        let script_raw = include_str!("../data/scripts/Camera.yy");
 
         let script_parsed: Script =
             serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(script_raw))
@@ -52,7 +52,7 @@ mod tests {
         let script = Script {
             common_data: crate::CommonData {
                 resource_version: ResourceVersion::default(),
-                name: "CameraClass".to_string(),
+                name: "Camera".to_string(),
                 resource_type: consts::Script,
             },
             is_dn_d: false,

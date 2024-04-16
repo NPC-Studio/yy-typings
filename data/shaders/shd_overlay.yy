@@ -1,7 +1,7 @@
 {
   "$GMShader":"",
-  "%Name":"shd_outline",
-  "name":"shd_outline",
+  "%Name":"shd_overlay",
+  "name":"shd_overlay",
   "parent":{
     "name":"Shaders",
     "path":"folders/Shaders.yy",

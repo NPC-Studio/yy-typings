@@ -1,12 +1,13 @@
 {
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Misc",
-    "path": "folders/Scripts/Utilities/Misc.yy",
+  "$GMScript":"",
+  "%Name":"log",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"log",
+  "parent":{
+    "name":"Misc",
+    "path":"folders/Scripts/Utilities/Misc.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "log",
-  "tags": [],
-  "resourceType": "GMScript",
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

@@ -1,7 +1,7 @@
 {
   "$GMShader":"",
-  "%Name":"shd_outline",
-  "name":"shd_outline",
+  "%Name":"shd_day_night",
+  "name":"shd_day_night",
   "parent":{
     "name":"Shaders",
     "path":"folders/Shaders.yy",

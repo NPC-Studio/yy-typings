@@ -1,12 +1,13 @@
 {
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Player",
-    "path": "folders/Scripts/Player.yy",
+  "$GMScript":"",
+  "%Name":"PlayerAnimationRuntime",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"PlayerAnimationRuntime",
+  "parent":{
+    "name":"Player Animation Runtime",
+    "path":"folders/Scripts/Player Animation Runtime.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "draw_player",
-  "tags": [],
-  "resourceType": "GMScript",
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

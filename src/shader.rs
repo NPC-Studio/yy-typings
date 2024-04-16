@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn deep_equality() {
-        let file_raw = include_str!("../data/shaders/sh_draw_light_to_screen.yy");
+        let file_raw = include_str!("../data/shaders/shd_anchor_outline.yy");
 
         let file_parsed: Shader =
             serde_json::from_str(&TrailingCommaUtility::clear_trailing_comma_once(file_raw))
@@ -64,12 +64,12 @@ mod tests {
             common_data: crate::CommonData {
                 resource_type: consts::Shader,
                 resource_version: ResourceVersion::default(),
-                name: "sh_draw_light_to_screen".to_string(),
+                name: "shd_anchor_outline".to_string(),
             },
             shader_type: ShaderType::GlslEs,
             parent: ViewPath {
-                name: "shaders".to_string(),
-                path: ViewPathLocation("folders/Objects/system/lighting/shaders.yy".to_string()),
+                name: "Shaders".to_string(),
+                path: ViewPathLocation("folders/Shaders.yy".to_string()),
             },
         };
 

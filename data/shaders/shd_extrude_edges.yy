@@ -1,7 +1,7 @@
 {
   "$GMShader":"",
-  "%Name":"shd_outline",
-  "name":"shd_outline",
+  "%Name":"shd_extrude_edges",
+  "name":"shd_extrude_edges",
   "parent":{
     "name":"Shaders",
     "path":"folders/Shaders.yy",
