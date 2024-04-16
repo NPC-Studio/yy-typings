@@ -4,19 +4,26 @@ use std::io;
 
 /// Serializes a given Yy file.
 #[cfg(target_os = "macos")]
-pub fn serialize_file<T: Serialize>(value: &T) -> String {
+pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
     ser(value)
 }
 
 /// Serializes a given Yy file.
 #[cfg(target_os = "windows")]
-pub fn serialize_file<T: Serialize>(value: &T) -> String {
+pub fn serialize_file<T: Serialize + 'static>(value: &T) -> String {
     ser(value).replace('\n', "\r\n")
 }
 
-fn ser<T: Serialize>(value: &T) -> String {
+fn ser<T: Serialize + 'static>(value: &T) -> String {
     let mut writer = Vec::with_capacity(128);
-    let formatter = Formatter::default();
+    let formatter = Formatter {
+        channel_state: if std::any::TypeId::of::<T>() == std::any::TypeId::of::<crate::Sprite>() {
+            ChannelState::Possible
+        } else {
+            ChannelState::Never
+        },
+        ..Default::default()
+    };
 
     let value = alphabetize_value(serde_json::to_value(value).unwrap());
 
@@ -71,6 +78,7 @@ pub(crate) struct Formatter {
     pub has_value: bool,
     pub array_depth: usize,
     pub object_depth: usize,
+    pub channel_state: ChannelState,
 }
 
 impl Formatter {
@@ -88,7 +96,7 @@ impl Formatter {
     }
 
     pub fn use_compact(&self) -> bool {
-        self.array_depth > 0 || self.object_depth > 2
+        self.array_depth > 0
     }
 }
 
@@ -150,7 +158,16 @@ impl serde_json::ser::Formatter for Formatter {
         self.has_value = false;
         self.object_depth += 1;
 
-        writer.write_all(b"{")
+        writer.write_all(b"{")?;
+
+        if self.channel_state == ChannelState::Ready {
+            writer.write_all(b"\n")?;
+            self.indent(writer)?;
+
+            self.channel_state = ChannelState::WaitingForReturn(self.object_depth);
+        }
+
+        Ok(())
     }
 
     #[inline]
@@ -158,7 +175,19 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        if self.use_compact() {
+        let use_compact = if let ChannelState::WaitingForReturn(ret) = self.channel_state {
+            if ret == self.object_depth {
+                self.channel_state = ChannelState::Possible;
+
+                false
+            } else {
+                self.use_compact()
+            }
+        } else {
+            self.use_compact()
+        };
+
+        if use_compact {
             if self.has_value {
                 writer.write_all(b",")?;
             }
@@ -174,8 +203,7 @@ impl serde_json::ser::Formatter for Formatter {
             self.indent(writer)?;
         }
 
-        writer.write_all(b"}")?;
-        Ok(())
+        writer.write_all(b"}")
     }
 
     #[inline]
@@ -211,11 +239,6 @@ impl serde_json::ser::Formatter for Formatter {
     where
         W: ?Sized + io::Write,
     {
-        if self.use_compact() {
-            CompactFormatter.begin_object_value(writer)?;
-
-            return Ok(());
-        }
         writer.write_all(b":")
     }
 
@@ -228,6 +251,26 @@ impl serde_json::ser::Formatter for Formatter {
 
         Ok(())
     }
+
+    fn write_string_fragment<W>(&mut self, writer: &mut W, fragment: &str) -> io::Result<()>
+    where
+        W: ?Sized + io::Write,
+    {
+        if self.channel_state == ChannelState::Possible && fragment == "Channels" {
+            self.channel_state = ChannelState::Ready;
+        }
+
+        writer.write_all(fragment.as_bytes())
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Default)]
+pub enum ChannelState {
+    #[default]
+    Never,
+    Possible,
+    Ready,
+    WaitingForReturn(usize),
 }
 
 #[cfg(test)]
@@ -244,7 +287,11 @@ mod tests {
 
         let o = serialize_file(&json);
 
-        assert_eq!(x, o);
+        if x != o {
+            println!("{}", o);
+
+            panic!("yyps did not serialize correctly!");
+        }
     }
 
     #[test]

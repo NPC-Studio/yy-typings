@@ -8,7 +8,7 @@ use smart_default::SmartDefault;
 #[serde(rename_all = "camelCase")]
 pub struct TextureGroup {
     #[serde(flatten)]
-    pub common_data: crate::CommonData<consts::TextureGroup, String, 1, 3>,
+    pub common_data: crate::CommonData<consts::TextureGroup, String>,
 
     #[default(true)]
     pub autocrop: bool,
@@ -17,6 +17,9 @@ pub struct TextureGroup {
     pub border: usize,
 
     pub compress_format: String,
+
+    /// Some custom options, we'll probably do evil things with this
+    pub custom_options: String,
 
     #[serde(rename = "ConfigValues")]
     #[serde(skip_serializing_if = "Option::is_none")]
