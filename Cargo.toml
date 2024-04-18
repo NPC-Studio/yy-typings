@@ -1,6 +1,6 @@
 [package]
 name = "yy-typings"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Jonathan Spira <jjspira@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -9,7 +9,7 @@ repository = "https://github.com/NPC-Studio/yy-typings"
 readme = "README.md"
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 serde_repr = "0.1"
 serde_json = { version = "1.0", features = ["preserve_order", "arbitrary_precision"] }
 serde_with = "1.4"

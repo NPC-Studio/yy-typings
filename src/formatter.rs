@@ -390,10 +390,6 @@ mod tests {
 
         let o = crate::serialize_file(&json);
 
-        println!("us:");
-        println!("{}", o);
-        println!("-----");
-
         std::assert_eq!(x, o);
     }
 }
