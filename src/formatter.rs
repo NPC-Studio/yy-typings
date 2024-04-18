@@ -380,4 +380,20 @@ mod tests {
 
         assert_eq!(x, o);
     }
+
+    #[test]
+    fn sprite_serialization2() {
+        let x = include_str!("./../data/formatting/floater.yy");
+        let json: crate::Sprite =
+            serde_json::from_str(&crate::TrailingCommaUtility::clear_trailing_comma_once(x))
+                .unwrap();
+
+        let o = crate::serialize_file(&json);
+
+        println!("us:");
+        println!("{}", o);
+        println!("-----");
+
+        std::assert_eq!(x, o);
+    }
 }
