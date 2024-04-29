@@ -133,3 +133,47 @@ gm_const!(
     Folder -> "GMFolder",
     IncludedFile -> "GMIncludedFile"
 );
+
+#[cfg(test)]
+mod sort_tests {
+    pub use super::*;
+
+    #[test]
+    fn sort_resources() {
+        let resources_str = include_str!("../data/formatting/resources.json");
+        let mut resources: Vec<YypResource> = serde_json::from_str(resources_str).unwrap();
+        let resource_order: Vec<String> = resources
+            .iter()
+            .map(|v| v.id.path.to_str().unwrap().to_owned())
+            .collect();
+
+        resources.sort_by_key(|r| {
+            let first_folder = r.id.path.to_str().unwrap().split_once('/').unwrap().0;
+
+            (first_folder.to_owned(), r.id.name.to_lowercase())
+
+            // r.id.path
+            //     .file_name()
+            //     .unwrap()
+            //     .to_str()
+            //     .unwrap()
+            //     .to_owned()
+            //     .to_lowercase()
+            // // .replace('_', "{")
+            // // .replace('/', "{")
+        });
+
+        let back_as_str = serde_json::to_string_pretty(&resources).unwrap();
+
+        if resources_str != back_as_str {
+            pretty_assertions::assert_eq!(
+                resource_order,
+                Vec::from_iter(
+                    resources
+                        .iter()
+                        .map(|v| v.id.path.to_str().unwrap().to_owned())
+                )
+            )
+        }
+    }
+}

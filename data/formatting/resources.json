@@ -1,0 +1,2396 @@
+[
+  {
+    "id": {
+      "name": "extern_gm_bench",
+      "path": "extensions/extern_gm_bench/extern_gm_bench.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_gm_serde",
+      "path": "extensions/extern_gm_serde/extern_gm_serde.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_hound",
+      "path": "extensions/extern_hound/extern_hound.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_hyperpath",
+      "path": "extensions/extern_hyperpath/extern_hyperpath.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_rusty_noise",
+      "path": "extensions/extern_rusty_noise/extern_rusty_noise.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_string_apply_newlines",
+      "path": "extensions/extern_string_apply_newlines/extern_string_apply_newlines.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_t2",
+      "path": "extensions/extern_t2/extern_t2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "extern_vertigo",
+      "path": "extensions/extern_vertigo/extern_vertigo.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "window_set_cursor",
+      "path": "extensions/window_set_cursor/window_set_cursor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "fnt_bugger",
+      "path": "fonts/fnt_bugger/fnt_bugger.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "fnt_text_tiny",
+      "path": "fonts/fnt_text_tiny/fnt_text_tiny.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "fnt_text",
+      "path": "fonts/fnt_text/fnt_text.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "fnt_zpix",
+      "path": "fonts/fnt_zpix/fnt_zpix.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Game",
+      "path": "objects/Game/Game.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_adeline",
+      "path": "objects/obj_adeline/obj_adeline.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_animation_effect",
+      "path": "objects/obj_animation_effect/obj_animation_effect.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_ari",
+      "path": "objects/obj_ari/obj_ari.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_assetobject",
+      "path": "objects/obj_assetobject/obj_assetobject.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_balor",
+      "path": "objects/obj_balor/obj_balor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_balors_wagon",
+      "path": "objects/obj_balors_wagon/obj_balors_wagon.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_bathhouse",
+      "path": "objects/obj_bathhouse/obj_bathhouse.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_bird",
+      "path": "objects/obj_bird/obj_bird.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_blacksmith_store",
+      "path": "objects/obj_blacksmith_store/obj_blacksmith_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_bobber",
+      "path": "objects/obj_bobber/obj_bobber.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_bug",
+      "path": "objects/obj_bug/obj_bug.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_caldarus",
+      "path": "objects/obj_caldarus/obj_caldarus.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_camera_target",
+      "path": "objects/obj_camera_target/obj_camera_target.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_celine_pot",
+      "path": "objects/obj_celine_pot/obj_celine_pot.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_celine",
+      "path": "objects/obj_celine/obj_celine.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_chicken_statue",
+      "path": "objects/obj_chicken_statue/obj_chicken_statue.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_collision_circle",
+      "path": "objects/obj_collision_circle/obj_collision_circle.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_collision",
+      "path": "objects/obj_collision/obj_collision.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_cosmic_debug",
+      "path": "objects/obj_cosmic_debug/obj_cosmic_debug.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_critter_point",
+      "path": "objects/obj_critter_point/obj_critter_point.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_cutscene_trigger",
+      "path": "objects/obj_cutscene_trigger/obj_cutscene_trigger.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_damage_number",
+      "path": "objects/obj_damage_number/obj_damage_number.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_damage_receiver",
+      "path": "objects/obj_damage_receiver/obj_damage_receiver.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_damage_tarball",
+      "path": "objects/obj_damage_tarball/obj_damage_tarball.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_darcy",
+      "path": "objects/obj_darcy/obj_darcy.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_darcys_stall",
+      "path": "objects/obj_darcys_stall/obj_darcys_stall.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_debris",
+      "path": "objects/obj_debris/obj_debris.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_debug_player_animation",
+      "path": "objects/obj_debug_player_animation/obj_debug_player_animation.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dell",
+      "path": "objects/obj_dell/obj_dell.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_destruction",
+      "path": "objects/obj_destruction/obj_destruction.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_divespot",
+      "path": "objects/obj_divespot/obj_divespot.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_door",
+      "path": "objects/obj_door/obj_door.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dozy",
+      "path": "objects/obj_dozy/obj_dozy.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dragonshrine",
+      "path": "objects/obj_dragonshrine/obj_dragonshrine.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_elevator",
+      "path": "objects/obj_dungeon_elevator/obj_dungeon_elevator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_fountain",
+      "path": "objects/obj_dungeon_fountain/obj_dungeon_fountain.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_interactable",
+      "path": "objects/obj_dungeon_interactable/obj_dungeon_interactable.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_ladder_down",
+      "path": "objects/obj_dungeon_ladder_down/obj_dungeon_ladder_down.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_ladder_up",
+      "path": "objects/obj_dungeon_ladder_up/obj_dungeon_ladder_up.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_shrine",
+      "path": "objects/obj_dungeon_shrine/obj_dungeon_shrine.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_dungeon_whirlpool",
+      "path": "objects/obj_dungeon_whirlpool/obj_dungeon_whirlpool.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_eastern_road_bridge",
+      "path": "objects/obj_eastern_road_bridge/obj_eastern_road_bridge.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_egg",
+      "path": "objects/obj_egg/obj_egg.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_eiland",
+      "path": "objects/obj_eiland/obj_eiland.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_elsie",
+      "path": "objects/obj_elsie/obj_elsie.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_elsies_stall",
+      "path": "objects/obj_elsies_stall/obj_elsies_stall.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_errol",
+      "path": "objects/obj_errol/obj_errol.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_falling_tree",
+      "path": "objects/obj_falling_tree/obj_falling_tree.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_farm_bell",
+      "path": "objects/obj_farm_bell/obj_farm_bell.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_farm_plate",
+      "path": "objects/obj_farm_plate/obj_farm_plate.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_fish_school",
+      "path": "objects/obj_fish_school/obj_fish_school.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_fish_spawner",
+      "path": "objects/obj_fish_spawner/obj_fish_spawner.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_fishy",
+      "path": "objects/obj_fishy/obj_fishy.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_forge_menu",
+      "path": "objects/obj_forge_menu/obj_forge_menu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_furniture_previewer",
+      "path": "objects/obj_furniture_previewer/obj_furniture_previewer.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_general_store_building",
+      "path": "objects/obj_general_store_building/obj_general_store_building.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_general_store",
+      "path": "objects/obj_general_store/obj_general_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_hayden_store",
+      "path": "objects/obj_hayden_store/obj_hayden_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_hayden",
+      "path": "objects/obj_hayden/obj_hayden.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_hemlock",
+      "path": "objects/obj_hemlock/obj_hemlock.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_henrietta",
+      "path": "objects/obj_henrietta/obj_henrietta.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_holt",
+      "path": "objects/obj_holt/obj_holt.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_impact",
+      "path": "objects/obj_impact/obj_impact.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_incubator",
+      "path": "objects/obj_incubator/obj_incubator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_inn_kitchen",
+      "path": "objects/obj_inn_kitchen/obj_inn_kitchen.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_inn_soup",
+      "path": "objects/obj_inn_soup/obj_inn_soup.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_inn",
+      "path": "objects/obj_inn/obj_inn.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_item",
+      "path": "objects/obj_item/obj_item.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_josephine",
+      "path": "objects/obj_josephine/obj_josephine.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_juniper",
+      "path": "objects/obj_juniper/obj_juniper.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_kitchen_ingredient",
+      "path": "objects/obj_kitchen_ingredient/obj_kitchen_ingredient.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_landen",
+      "path": "objects/obj_landen/obj_landen.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_lavabubble",
+      "path": "objects/obj_lavabubble/obj_lavabubble.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_lavaplatform",
+      "path": "objects/obj_lavaplatform/obj_lavaplatform.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_big",
+      "path": "objects/obj_light_big/obj_light_big.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_med",
+      "path": "objects/obj_light_med/obj_light_med.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_rect_med",
+      "path": "objects/obj_light_rect_med/obj_light_rect_med.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_small",
+      "path": "objects/obj_light_small/obj_light_small.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_tiny",
+      "path": "objects/obj_light_tiny/obj_light_tiny.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_very_good_and_normal",
+      "path": "objects/obj_light_very_good_and_normal/obj_light_very_good_and_normal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_width_152",
+      "path": "objects/obj_light_width_152/obj_light_width_152.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_light_xs",
+      "path": "objects/obj_light_xs/obj_light_xs.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_lightning",
+      "path": "objects/obj_lightning/obj_lightning.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_louis",
+      "path": "objects/obj_louis/obj_louis.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_luc",
+      "path": "objects/obj_luc/obj_luc.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_map_node",
+      "path": "objects/obj_map_node/obj_map_node.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_maple",
+      "path": "objects/obj_maple/obj_maple.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_maples_stall",
+      "path": "objects/obj_maples_stall/obj_maples_stall.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_march",
+      "path": "objects/obj_march/obj_march.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_merri",
+      "path": "objects/obj_merri/obj_merri.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_merris_stall",
+      "path": "objects/obj_merris_stall/obj_merris_stall.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_mill_menu",
+      "path": "objects/obj_mill_menu/obj_mill_menu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_mill",
+      "path": "objects/obj_mill/obj_mill.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_bat",
+      "path": "objects/obj_monster_bat/obj_monster_bat.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_clod_projectile",
+      "path": "objects/obj_monster_clod_projectile/obj_monster_clod_projectile.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_clod",
+      "path": "objects/obj_monster_clod/obj_monster_clod.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_enchantern_projectile",
+      "path": "objects/obj_monster_enchantern_projectile/obj_monster_enchantern_projectile.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_enchantern",
+      "path": "objects/obj_monster_enchantern/obj_monster_enchantern.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_mite_secondary",
+      "path": "objects/obj_monster_mite_secondary/obj_monster_mite_secondary.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_mite",
+      "path": "objects/obj_monster_mite/obj_monster_mite.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_sap",
+      "path": "objects/obj_monster_sap/obj_monster_sap.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_shroom",
+      "path": "objects/obj_monster_shroom/obj_monster_shroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_monster_stars",
+      "path": "objects/obj_monster_stars/obj_monster_stars.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_morsel",
+      "path": "objects/obj_morsel/obj_morsel.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_museum",
+      "path": "objects/obj_museum/obj_museum.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_narrows_rubble",
+      "path": "objects/obj_narrows_rubble/obj_narrows_rubble.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_narrows_stairs",
+      "path": "objects/obj_narrows_stairs/obj_narrows_stairs.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_node_renderer_top",
+      "path": "objects/obj_node_renderer_top/obj_node_renderer_top.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_node_renderer",
+      "path": "objects/obj_node_renderer/obj_node_renderer.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_nora",
+      "path": "objects/obj_nora/obj_nora.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_noras_stall",
+      "path": "objects/obj_noras_stall/obj_noras_stall.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_noticeboard",
+      "path": "objects/obj_noticeboard/obj_noticeboard.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_olric",
+      "path": "objects/obj_olric/obj_olric.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_parallax",
+      "path": "objects/obj_parallax/obj_parallax.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_rain_droplet",
+      "path": "objects/obj_rain_droplet/obj_rain_droplet.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_reina",
+      "path": "objects/obj_reina/obj_reina.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_renderer",
+      "path": "objects/obj_renderer/obj_renderer.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_renown_chest",
+      "path": "objects/obj_renown_chest/obj_renown_chest.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_roomtransition",
+      "path": "objects/obj_roomtransition/obj_roomtransition.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_ryis_store",
+      "path": "objects/obj_ryis_store/obj_ryis_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_ryis",
+      "path": "objects/obj_ryis/obj_ryis.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_seal_altar",
+      "path": "objects/obj_seal_altar/obj_seal_altar.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_seal_tablet",
+      "path": "objects/obj_seal_tablet/obj_seal_tablet.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_seridia_shrine",
+      "path": "objects/obj_seridia_shrine/obj_seridia_shrine.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_seridia",
+      "path": "objects/obj_seridia/obj_seridia.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_shadow_level",
+      "path": "objects/obj_shadow_level/obj_shadow_level.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_shared_aggro_box",
+      "path": "objects/obj_shared_aggro_box/obj_shared_aggro_box.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_signpost",
+      "path": "objects/obj_signpost/obj_signpost.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_sound_debug_target",
+      "path": "objects/obj_sound_debug_target/obj_sound_debug_target.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_sound_emitter",
+      "path": "objects/obj_sound_emitter/obj_sound_emitter.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_sparkle",
+      "path": "objects/obj_sparkle/obj_sparkle.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_sprite_renderer",
+      "path": "objects/obj_sprite_renderer/obj_sprite_renderer.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_squirrel",
+      "path": "objects/obj_squirrel/obj_squirrel.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_sticky_patch",
+      "path": "objects/obj_sticky_patch/obj_sticky_patch.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_stillwell",
+      "path": "objects/obj_stillwell/obj_stillwell.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_stock_log",
+      "path": "objects/obj_stock_log/obj_stock_log.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_taliferro",
+      "path": "objects/obj_taliferro/obj_taliferro.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_terithia",
+      "path": "objects/obj_terithia/obj_terithia.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_terithias_store",
+      "path": "objects/obj_terithias_store/obj_terithias_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_tile_cursor",
+      "path": "objects/obj_tile_cursor/obj_tile_cursor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_tile_furniture_lines",
+      "path": "objects/obj_tile_furniture_lines/obj_tile_furniture_lines.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_town_cracks",
+      "path": "objects/obj_town_cracks/obj_town_cracks.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_camera",
+      "path": "objects/obj_trellis_point_camera/obj_trellis_point_camera.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_chest",
+      "path": "objects/obj_trellis_point_chest/obj_trellis_point_chest.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_default",
+      "path": "objects/obj_trellis_point_default/obj_trellis_point_default.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_door",
+      "path": "objects/obj_trellis_point_door/obj_trellis_point_door.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_item_display",
+      "path": "objects/obj_trellis_point_item_display/obj_trellis_point_item_display.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_prop",
+      "path": "objects/obj_trellis_point_prop/obj_trellis_point_prop.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_seat",
+      "path": "objects/obj_trellis_point_seat/obj_trellis_point_seat.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_trellis_point_transition",
+      "path": "objects/obj_trellis_point_transition/obj_trellis_point_transition.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_twinkle",
+      "path": "objects/obj_twinkle/obj_twinkle.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_unfinished_content",
+      "path": "objects/obj_unfinished_content/obj_unfinished_content.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_valen",
+      "path": "objects/obj_valen/obj_valen.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_vera",
+      "path": "objects/obj_vera/obj_vera.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_wheedle",
+      "path": "objects/obj_wheedle/obj_wheedle.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_windowshader_exterior",
+      "path": "objects/obj_windowshader_exterior/obj_windowshader_exterior.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_windowshader_interior",
+      "path": "objects/obj_windowshader_interior/obj_windowshader_interior.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "obj_zorel",
+      "path": "objects/obj_zorel/obj_zorel.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_aggro_box",
+      "path": "objects/par_aggro_box/par_aggro_box.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_animal",
+      "path": "objects/par_animal/par_animal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_crafting_table",
+      "path": "objects/par_crafting_table/par_crafting_table.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_critter",
+      "path": "objects/par_critter/par_critter.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_interactable",
+      "path": "objects/par_interactable/par_interactable.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_ladder",
+      "path": "objects/par_ladder/par_ladder.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_ledger",
+      "path": "objects/par_ledger/par_ledger.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_light",
+      "path": "objects/par_light/par_light.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_manger",
+      "path": "objects/par_manger/par_manger.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_modifiable_building",
+      "path": "objects/par_modifiable_building/par_modifiable_building.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_monster",
+      "path": "objects/par_monster/par_monster.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "par_NPC",
+      "path": "objects/par_NPC/par_NPC.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Setup",
+      "path": "objects/Setup/Setup.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "SetupCreator",
+      "path": "objects/SetupCreator/SetupCreator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_adelines_bedroom",
+      "path": "rooms/rm_adelines_bedroom/rm_adelines_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_adelines_office",
+      "path": "rooms/rm_adelines_office/rm_adelines_office.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_aldaria",
+      "path": "rooms/rm_aldaria/rm_aldaria.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_balors_room",
+      "path": "rooms/rm_balors_room/rm_balors_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_bathhouse_bath",
+      "path": "rooms/rm_bathhouse_bath/rm_bathhouse_bath.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_bathhouse_bedroom",
+      "path": "rooms/rm_bathhouse_bedroom/rm_bathhouse_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_bathhouse_change_room",
+      "path": "rooms/rm_bathhouse_change_room/rm_bathhouse_change_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_bathhouse",
+      "path": "rooms/rm_bathhouse/rm_bathhouse.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_beach",
+      "path": "rooms/rm_beach/rm_beach.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_blacksmith_room_left",
+      "path": "rooms/rm_blacksmith_room_left/rm_blacksmith_room_left.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_blacksmith_room_right",
+      "path": "rooms/rm_blacksmith_room_right/rm_blacksmith_room_right.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_blacksmith_store",
+      "path": "rooms/rm_blacksmith_store/rm_blacksmith_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_celines_room",
+      "path": "rooms/rm_celines_room/rm_celines_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_clinic_b1",
+      "path": "rooms/rm_clinic_b1/rm_clinic_b1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_clinic_f1",
+      "path": "rooms/rm_clinic_f1/rm_clinic_f1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_clinic_f2",
+      "path": "rooms/rm_clinic_f2/rm_clinic_f2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_deep_woods",
+      "path": "rooms/rm_deep_woods/rm_deep_woods.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_dells_bedroom",
+      "path": "rooms/rm_dells_bedroom/rm_dells_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_earth_seal",
+      "path": "rooms/rm_earth_seal/rm_earth_seal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_eastern_road",
+      "path": "rooms/rm_eastern_road/rm_eastern_road.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_eilands_bedroom",
+      "path": "rooms/rm_eilands_bedroom/rm_eilands_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_eilands_office",
+      "path": "rooms/rm_eilands_office/rm_eilands_office.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_elsies_bedroom",
+      "path": "rooms/rm_elsies_bedroom/rm_elsies_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_errols_bedroom",
+      "path": "rooms/rm_errols_bedroom/rm_errols_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_farm",
+      "path": "rooms/rm_farm/rm_farm.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_farmhouse",
+      "path": "rooms/rm_farmhouse/rm_farmhouse.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_fire_seal",
+      "path": "rooms/rm_fire_seal/rm_fire_seal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_general_store_home",
+      "path": "rooms/rm_general_store_home/rm_general_store_home.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_general_store_store",
+      "path": "rooms/rm_general_store_store/rm_general_store_store.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_haydens_bedroom",
+      "path": "rooms/rm_haydens_bedroom/rm_haydens_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_haydens_farm",
+      "path": "rooms/rm_haydens_farm/rm_haydens_farm.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_haydens_house",
+      "path": "rooms/rm_haydens_house/rm_haydens_house.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_holt_and_noras_bedroom",
+      "path": "rooms/rm_holt_and_noras_bedroom/rm_holt_and_noras_bedroom.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_inn",
+      "path": "rooms/rm_inn/rm_inn.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_jo_hemlocks_room",
+      "path": "rooms/rm_jo_hemlocks_room/rm_jo_hemlocks_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_landens_house_f1",
+      "path": "rooms/rm_landens_house_f1/rm_landens_house_f1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_landens_house_f2",
+      "path": "rooms/rm_landens_house_f2/rm_landens_house_f2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_large_barn",
+      "path": "rooms/rm_large_barn/rm_large_barn.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_large_coop",
+      "path": "rooms/rm_large_coop/rm_large_coop.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_lucs_room",
+      "path": "rooms/rm_lucs_room/rm_lucs_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_manor_house_dining_room",
+      "path": "rooms/rm_manor_house_dining_room/rm_manor_house_dining_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_manor_house_entry",
+      "path": "rooms/rm_manor_house_entry/rm_manor_house_entry.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_maples_room",
+      "path": "rooms/rm_maples_room/rm_maples_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_medium_barn",
+      "path": "rooms/rm_medium_barn/rm_medium_barn.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_medium_coop",
+      "path": "rooms/rm_medium_coop/rm_medium_coop.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_menu",
+      "path": "rooms/rm_menu/rm_menu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mill",
+      "path": "rooms/rm_mill/rm_mill.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_basement_elevator",
+      "path": "rooms/rm_mines_basement_elevator/rm_mines_basement_elevator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_basement_no_elevator",
+      "path": "rooms/rm_mines_basement_no_elevator/rm_mines_basement_no_elevator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_basement_treasure",
+      "path": "rooms/rm_mines_basement_treasure/rm_mines_basement_treasure.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_decortest",
+      "path": "rooms/rm_mines_decortest/rm_mines_decortest.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_butterfly",
+      "path": "rooms/rm_mines_deep_butterfly/rm_mines_deep_butterfly.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_chambers",
+      "path": "rooms/rm_mines_deep_chambers/rm_mines_deep_chambers.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_key",
+      "path": "rooms/rm_mines_deep_key/rm_mines_deep_key.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_leap",
+      "path": "rooms/rm_mines_deep_leap/rm_mines_deep_leap.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_runner",
+      "path": "rooms/rm_mines_deep_runner/rm_mines_deep_runner.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_scorpio",
+      "path": "rooms/rm_mines_deep_scorpio/rm_mines_deep_scorpio.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_spiral",
+      "path": "rooms/rm_mines_deep_spiral/rm_mines_deep_spiral.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_winding",
+      "path": "rooms/rm_mines_deep_winding/rm_mines_deep_winding.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_deep_wishbone",
+      "path": "rooms/rm_mines_deep_wishbone/rm_mines_deep_wishbone.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_entry",
+      "path": "rooms/rm_mines_entry/rm_mines_entry.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_lava_arena",
+      "path": "rooms/rm_mines_lava_arena/rm_mines_lava_arena.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_lava_bullseye",
+      "path": "rooms/rm_mines_lava_bullseye/rm_mines_lava_bullseye.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_lava_elements",
+      "path": "rooms/rm_mines_lava_elements/rm_mines_lava_elements.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_lava_generic",
+      "path": "rooms/rm_mines_lava_generic/rm_mines_lava_generic.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_lava_treasure",
+      "path": "rooms/rm_mines_lava_treasure/rm_mines_lava_treasure.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_lava_world",
+      "path": "rooms/rm_mines_lava_world/rm_mines_lava_world.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_ruins_secretfire",
+      "path": "rooms/rm_mines_ruins_secretfire/rm_mines_ruins_secretfire.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_basic1",
+      "path": "rooms/rm_mines_tide_basic1/rm_mines_tide_basic1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_basic2",
+      "path": "rooms/rm_mines_tide_basic2/rm_mines_tide_basic2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_basic3",
+      "path": "rooms/rm_mines_tide_basic3/rm_mines_tide_basic3.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_basic4",
+      "path": "rooms/rm_mines_tide_basic4/rm_mines_tide_basic4.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_chamber",
+      "path": "rooms/rm_mines_tide_chamber/rm_mines_tide_chamber.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_earthseal",
+      "path": "rooms/rm_mines_tide_earthseal/rm_mines_tide_earthseal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_elevator25",
+      "path": "rooms/rm_mines_tide_elevator25/rm_mines_tide_elevator25.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_elevator30",
+      "path": "rooms/rm_mines_tide_elevator30/rm_mines_tide_elevator30.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_elevator35",
+      "path": "rooms/rm_mines_tide_elevator35/rm_mines_tide_elevator35.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_floor21",
+      "path": "rooms/rm_mines_tide_floor21/rm_mines_tide_floor21.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_fork",
+      "path": "rooms/rm_mines_tide_fork/rm_mines_tide_fork.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_islands",
+      "path": "rooms/rm_mines_tide_islands/rm_mines_tide_islands.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_milestone",
+      "path": "rooms/rm_mines_tide_milestone/rm_mines_tide_milestone.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_oasis",
+      "path": "rooms/rm_mines_tide_oasis/rm_mines_tide_oasis.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_paths",
+      "path": "rooms/rm_mines_tide_paths/rm_mines_tide_paths.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_shrine1",
+      "path": "rooms/rm_mines_tide_shrine1/rm_mines_tide_shrine1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_shrine2",
+      "path": "rooms/rm_mines_tide_shrine2/rm_mines_tide_shrine2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_shrine3",
+      "path": "rooms/rm_mines_tide_shrine3/rm_mines_tide_shrine3.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_switch1",
+      "path": "rooms/rm_mines_tide_switch1/rm_mines_tide_switch1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_switch2",
+      "path": "rooms/rm_mines_tide_switch2/rm_mines_tide_switch2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_switch3",
+      "path": "rooms/rm_mines_tide_switch3/rm_mines_tide_switch3.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_switch4",
+      "path": "rooms/rm_mines_tide_switch4/rm_mines_tide_switch4.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_whirlpool1",
+      "path": "rooms/rm_mines_tide_whirlpool1/rm_mines_tide_whirlpool1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_whirlpool2",
+      "path": "rooms/rm_mines_tide_whirlpool2/rm_mines_tide_whirlpool2.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_whirlpool3",
+      "path": "rooms/rm_mines_tide_whirlpool3/rm_mines_tide_whirlpool3.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_whirlpool4",
+      "path": "rooms/rm_mines_tide_whirlpool4/rm_mines_tide_whirlpool4.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_tide_whirly",
+      "path": "rooms/rm_mines_tide_whirly/rm_mines_tide_whirly.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_amoeba",
+      "path": "rooms/rm_mines_upper_amoeba/rm_mines_upper_amoeba.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_boomerang",
+      "path": "rooms/rm_mines_upper_boomerang/rm_mines_upper_boomerang.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_canada",
+      "path": "rooms/rm_mines_upper_canada/rm_mines_upper_canada.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_crossroad",
+      "path": "rooms/rm_mines_upper_crossroad/rm_mines_upper_crossroad.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_elevator10",
+      "path": "rooms/rm_mines_upper_elevator10/rm_mines_upper_elevator10.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_elevator15",
+      "path": "rooms/rm_mines_upper_elevator15/rm_mines_upper_elevator15.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_elevator5",
+      "path": "rooms/rm_mines_upper_elevator5/rm_mines_upper_elevator5.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_floor1",
+      "path": "rooms/rm_mines_upper_floor1/rm_mines_upper_floor1.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_formerelevator",
+      "path": "rooms/rm_mines_upper_formerelevator/rm_mines_upper_formerelevator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_four",
+      "path": "rooms/rm_mines_upper_four/rm_mines_upper_four.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_muscle",
+      "path": "rooms/rm_mines_upper_muscle/rm_mines_upper_muscle.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_path",
+      "path": "rooms/rm_mines_upper_path/rm_mines_upper_path.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_pillars",
+      "path": "rooms/rm_mines_upper_pillars/rm_mines_upper_pillars.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_pits",
+      "path": "rooms/rm_mines_upper_pits/rm_mines_upper_pits.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_pond",
+      "path": "rooms/rm_mines_upper_pond/rm_mines_upper_pond.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_ponds",
+      "path": "rooms/rm_mines_upper_ponds/rm_mines_upper_ponds.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_slimetime",
+      "path": "rooms/rm_mines_upper_slimetime/rm_mines_upper_slimetime.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_snake",
+      "path": "rooms/rm_mines_upper_snake/rm_mines_upper_snake.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_sock",
+      "path": "rooms/rm_mines_upper_sock/rm_mines_upper_sock.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_staple",
+      "path": "rooms/rm_mines_upper_staple/rm_mines_upper_staple.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_stream",
+      "path": "rooms/rm_mines_upper_stream/rm_mines_upper_stream.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_treasure",
+      "path": "rooms/rm_mines_upper_treasure/rm_mines_upper_treasure.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_wishbone",
+      "path": "rooms/rm_mines_upper_wishbone/rm_mines_upper_wishbone.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_mines_upper_worm",
+      "path": "rooms/rm_mines_upper_worm/rm_mines_upper_worm.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_museum_entry",
+      "path": "rooms/rm_museum_entry/rm_museum_entry.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_museum_wing_archaeology",
+      "path": "rooms/rm_museum_wing_archaeology/rm_museum_wing_archaeology.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_museum_wing_fauna",
+      "path": "rooms/rm_museum_wing_fauna/rm_museum_wing_fauna.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_museum_wing_fish",
+      "path": "rooms/rm_museum_wing_fish/rm_museum_wing_fish.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_museum_wing_flora",
+      "path": "rooms/rm_museum_wing_flora/rm_museum_wing_flora.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_narrows",
+      "path": "rooms/rm_narrows/rm_narrows.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_reinas_room",
+      "path": "rooms/rm_reinas_room/rm_reinas_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_seridias_chamber",
+      "path": "rooms/rm_seridias_chamber/rm_seridias_chamber.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_small_barn",
+      "path": "rooms/rm_small_barn/rm_small_barn.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_small_coop",
+      "path": "rooms/rm_small_coop/rm_small_coop.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_summit",
+      "path": "rooms/rm_summit/rm_summit.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_terithias_house",
+      "path": "rooms/rm_terithias_house/rm_terithias_house.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_town",
+      "path": "rooms/rm_town/rm_town.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_water_seal",
+      "path": "rooms/rm_water_seal/rm_water_seal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "rm_western_ruins",
+      "path": "rooms/rm_western_ruins/rm_western_ruins.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "ActivitiesAndRoutines",
+      "path": "scripts/ActivitiesAndRoutines/ActivitiesAndRoutines.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "add_key_time",
+      "path": "scripts/add_key_time/add_key_time.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AdoptionMenu",
+      "path": "scripts/AdoptionMenu/AdoptionMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AlmanacMenu",
+      "path": "scripts/AlmanacMenu/AlmanacMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "anchor_utils",
+      "path": "scripts/anchor_utils/anchor_utils.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Anchor",
+      "path": "scripts/Anchor/Anchor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AnchorMenu",
+      "path": "scripts/AnchorMenu/AnchorMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Animal",
+      "path": "scripts/Animal/Animal.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AnimalMenu",
+      "path": "scripts/AnimalMenu/AnimalMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AnimalPrototypes",
+      "path": "scripts/AnimalPrototypes/AnimalPrototypes.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AnimalUtils",
+      "path": "scripts/AnimalUtils/AnimalUtils.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AnimationEffects",
+      "path": "scripts/AnimationEffects/AnimationEffects.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Archaeology",
+      "path": "scripts/Archaeology/Archaeology.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Ari",
+      "path": "scripts/Ari/Ari.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AriFsm",
+      "path": "scripts/AriFsm/AriFsm.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AriUtils",
+      "path": "scripts/AriUtils/AriUtils.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "ArrayBool",
+      "path": "scripts/ArrayBool/ArrayBool.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Assert",
+      "path": "scripts/Assert/Assert.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Awaiter",
+      "path": "scripts/Awaiter/Awaiter.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "AxisBox",
+      "path": "scripts/AxisBox/AxisBox.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BabyJournalMenu",
+      "path": "scripts/BabyJournalMenu/BabyJournalMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BackgroundMenu",
+      "path": "scripts/BackgroundMenu/BackgroundMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BarkEmitter",
+      "path": "scripts/BarkEmitter/BarkEmitter.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BarkPrototypes",
+      "path": "scripts/BarkPrototypes/BarkPrototypes.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BehaviorTree",
+      "path": "scripts/BehaviorTree/BehaviorTree.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Bitflags",
+      "path": "scripts/Bitflags/Bitflags.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Blueprints",
+      "path": "scripts/Blueprints/Blueprints.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Boombox",
+      "path": "scripts/Boombox/Boombox.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Breakables",
+      "path": "scripts/Breakables/Breakables.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BugDeclarations",
+      "path": "scripts/BugDeclarations/BugDeclarations.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Bugger",
+      "path": "scripts/Bugger/Bugger.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BuggerInitialize",
+      "path": "scripts/BuggerInitialize/BuggerInitialize.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BuggerMenu",
+      "path": "scripts/BuggerMenu/BuggerMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BugManager",
+      "path": "scripts/BugManager/BugManager.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "build_dungeon_room",
+      "path": "scripts/build_dungeon_room/build_dungeon_room.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Buildings",
+      "path": "scripts/Buildings/Buildings.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BuildingUtils",
+      "path": "scripts/BuildingUtils/BuildingUtils.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "BuildMod",
+      "path": "scripts/BuildMod/BuildMod.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Bushes",
+      "path": "scripts/Bushes/Bushes.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CaldarusStatueOverlayMenu",
+      "path": "scripts/CaldarusStatueOverlayMenu/CaldarusStatueOverlayMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Calendar",
+      "path": "scripts/Calendar/Calendar.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CalendarMenu",
+      "path": "scripts/CalendarMenu/CalendarMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Callable",
+      "path": "scripts/Callable/Callable.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Camera",
+      "path": "scripts/Camera/Camera.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "capitalize",
+      "path": "scripts/capitalize/capitalize.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CardinalUtilities",
+      "path": "scripts/CardinalUtilities/CardinalUtilities.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Chains",
+      "path": "scripts/Chains/Chains.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "ChanceUtilities",
+      "path": "scripts/ChanceUtilities/ChanceUtilities.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "ChaosBundle",
+      "path": "scripts/ChaosBundle/ChaosBundle.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Chop",
+      "path": "scripts/Chop/Chop.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Clock",
+      "path": "scripts/Clock/Clock.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Collision",
+      "path": "scripts/Collision/Collision.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Color",
+      "path": "scripts/Color/Color.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CombatUtils",
+      "path": "scripts/CombatUtils/CombatUtils.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Composite",
+      "path": "scripts/Composite/Composite.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Conditions",
+      "path": "scripts/Conditions/Conditions.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "ConversationDriver",
+      "path": "scripts/ConversationDriver/ConversationDriver.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CraftingMenu",
+      "path": "scripts/CraftingMenu/CraftingMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CraftingSequenceMenu",
+      "path": "scripts/CraftingSequenceMenu/CraftingSequenceMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "create_anchor",
+      "path": "scripts/create_anchor/create_anchor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "create_renderer_at_depth",
+      "path": "scripts/create_renderer_at_depth/create_renderer_at_depth.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CreditsMenu",
+      "path": "scripts/CreditsMenu/CreditsMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Crops",
+      "path": "scripts/Crops/Crops.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Cursor",
+      "path": "scripts/Cursor/Cursor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "CustomizationMenu",
+      "path": "scripts/CustomizationMenu/CustomizationMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Daycare",
+      "path": "scripts/Daycare/Daycare.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "DaycareMenu",
+      "path": "scripts/DaycareMenu/DaycareMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Decor",
+      "path": "scripts/Decor/Decor.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Decorator",
+      "path": "scripts/Decorator/Decorator.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "DefaultNpcBrain",
+      "path": "scripts/DefaultNpcBrain/DefaultNpcBrain.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "DigSite",
+      "path": "scripts/DigSite/DigSite.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "DingalingMenu",
+      "path": "scripts/DingalingMenu/DingalingMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Display",
+      "path": "scripts/Display/Display.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "DragonshrineMenu",
+      "path": "scripts/DragonshrineMenu/DragonshrineMenu.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "drop_item",
+      "path": "scripts/drop_item/drop_item.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "ds_grid_find_value_random",
+      "path": "scripts/ds_grid_find_value_random/ds_grid_find_value_random.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "dungeon_utils",
+      "path": "scripts/dungeon_utils/dungeon_utils.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "DungeonRunner",
+      "path": "scripts/DungeonRunner/DungeonRunner.yy"
+    }
+  },
+  {
+    "id": {
+      "name": "Ease",
+      "path": "scripts/Ease/Ease.yy"
+    }
+  }
+]
