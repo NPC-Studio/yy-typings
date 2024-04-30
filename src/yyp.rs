@@ -75,10 +75,23 @@ pub struct YypMetaData {
 }
 
 /// Represents a resource entry in a YYP
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Hash, Ord, PartialOrd)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Hash)]
 pub struct YypResource {
     /// This is the path to the Filesystem
     pub id: FilesystemPath,
+}
+
+impl YypResource {
+    /// The sort key we use for the `YypResource`
+    pub fn sort_key(&self) -> String {
+        self.id
+            .path
+            .to_str()
+            .unwrap()
+            .to_owned()
+            .to_lowercase()
+            .replace('_', "%")
+    }
 }
 
 /// A description of a Config. Note that Configs form
@@ -148,19 +161,12 @@ mod sort_tests {
             .collect();
 
         resources.sort_by_key(|r| {
-            let first_folder = r.id.path.to_str().unwrap().split_once('/').unwrap().0;
-
-            (first_folder.to_owned(), r.id.name.to_lowercase())
-
-            // r.id.path
-            //     .file_name()
-            //     .unwrap()
-            //     .to_str()
-            //     .unwrap()
-            //     .to_owned()
-            //     .to_lowercase()
-            // // .replace('_', "{")
-            // // .replace('/', "{")
+            r.id.path
+                .to_str()
+                .unwrap()
+                .to_owned()
+                .to_lowercase()
+                .replace('_', "%")
         });
 
         let back_as_str = serde_json::to_string_pretty(&resources).unwrap();
@@ -175,5 +181,27 @@ mod sort_tests {
                 )
             )
         }
+    }
+
+    #[test]
+    fn simple() {
+        let mut input = vec![
+            "anchor_utils/anchor_utils.yy",
+            "Anchor/Anchor.yy",
+            "Daycare/Daycare.yy",
+            "DaycareMenu/DaycareMenu.yy",
+        ];
+
+        input.sort_by_key(|v| v.to_lowercase().replace(['_'], "%"));
+
+        assert_eq!(
+            input,
+            [
+                "anchor_utils/anchor_utils.yy",
+                "Anchor/Anchor.yy",
+                "Daycare/Daycare.yy",
+                "DaycareMenu/DaycareMenu.yy",
+            ]
+        )
     }
 }
