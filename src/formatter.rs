@@ -54,7 +54,10 @@ fn alphabetize_value(value: serde_json::Value) -> serde_json::Value {
             // if we have a resourceType, then we're good to proceed:
             if let Some(resource_type) = resource_type {
                 let ty = resource_type.as_str().unwrap();
-                new_output.insert(format!("${}", ty), String::new().into());
+                let new_key = format!("${}", ty);
+                if !new_output.contains_key(&new_key) {
+                    new_output.insert(new_key, String::new().into());
+                }
 
                 if let Some(name) = name {
                     if !matches!(ty, "GMSpriteFramesTrack") {

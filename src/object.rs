@@ -123,6 +123,9 @@ pub struct ObjectEvent {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectProperty {
+    #[serde(rename = "$GMObjectProperty")]
+    pub gm_object_property: String,
+
     #[serde(flatten)]
     pub common_data: crate::CommonData<consts::ObjectProperty>,
 
@@ -165,6 +168,9 @@ pub struct ObjectProperty {
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone, PartialOrd)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectOverrideProperty {
+    #[serde(rename = "$GMOverriddenProperty")]
+    pub gm_overriden_property: String,
+
     #[serde(flatten)]
     pub common_data: crate::CommonData<consts::ObjectOverrideProperty>,
 
