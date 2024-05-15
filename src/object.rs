@@ -124,6 +124,7 @@ pub struct ObjectEvent {
 #[serde(rename_all = "camelCase")]
 pub struct ObjectProperty {
     #[serde(rename = "$GMObjectProperty")]
+    #[default = "v1"]
     pub gm_object_property: String,
 
     #[serde(flatten)]
@@ -169,6 +170,7 @@ pub struct ObjectProperty {
 #[serde(rename_all = "camelCase")]
 pub struct ObjectOverrideProperty {
     #[serde(rename = "$GMOverriddenProperty")]
+    #[default = "v1"]
     pub gm_overriden_property: String,
 
     #[serde(flatten)]
