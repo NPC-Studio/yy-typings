@@ -4,7 +4,7 @@ pub use event_type::*;
 mod vk;
 pub use vk::*;
 
-use crate::FilesystemPath;
+use crate::{FilesystemPath, VersionStamp};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use smart_default::SmartDefault;
@@ -104,6 +104,10 @@ pub struct Object {
 pub struct ObjectEvent {
     #[serde(flatten)]
     pub common_data: crate::CommonData<consts::Event>,
+
+    /// The event version that GM uses -- it's currently "v1"
+    #[serde(rename = "$GMEvent")]
+    pub gm_version_stamp: VersionStamp<1>,
 
     /// The Id of the thing to collide with.
     pub collision_object_id: Option<FilesystemPath>,

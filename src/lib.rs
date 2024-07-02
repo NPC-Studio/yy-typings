@@ -169,7 +169,7 @@ mod resource_data;
 pub use resource_data::CommonData;
 
 mod utils;
-pub use utils::{ResourceNameValidator, TrailingCommaUtility};
+pub use utils::{ResourceNameValidator, TrailingCommaUtility, VersionStamp};
 
 mod formatter;
 pub use formatter::serialize_file;

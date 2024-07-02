@@ -96,6 +96,77 @@ impl Default for TrailingCommaUtility {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+pub struct VersionStamp<const N: u8>;
+
+impl<const N: u8> serde::Serialize for VersionStamp<N> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if N == 0 {
+            serializer.serialize_str("")
+        } else {
+            let output_bytes: [u8; 2] = [b"v"[0], char::from_u32(N as u32).unwrap() as u8];
+            serializer.serialize_str(std::str::from_utf8(&output_bytes).unwrap())
+        }
+    }
+}
+
+impl<'de, const N: u8> serde::Deserialize<'de> for VersionStamp<N> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct Visitor<const N: u8>;
+        impl<'de, const N: u8> serde::de::Visitor<'de> for Visitor<N> {
+            type Value = VersionStamp<N>;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("a string starting with `v`, or nothing")
+            }
+
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                if v.is_empty() {
+                    if N == 0 {
+                        Ok(VersionStamp)
+                    } else {
+                        Err(E::custom("expected an empty string `\"\"`"))
+                    }
+                } else if let Some(sub) = v.strip_prefix('v') {
+                    if sub.len() == 1 {
+                        let version_stamp = sub.as_bytes()[0] - ('0' as u32 as u8);
+
+                        if version_stamp == N {
+                            Ok(VersionStamp)
+                        } else {
+                            Err(E::custom(format!(
+                                "expected version `{}`, got version `{}`",
+                                N, version_stamp
+                            )))
+                        }
+                    } else {
+                        Err(E::custom("expected a version between 0-9"))
+                    }
+                } else {
+                    Err(E::custom("expected a string starting with `v`"))
+                }
+            }
+            // Similar for other methods:
+            //   - visit_i16
+            //   - visit_u8
+            //   - visit_u16
+            //   - visit_u32
+            //   - visit_u64
+        }
+
+        deserializer.deserialize_str(Visitor)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
