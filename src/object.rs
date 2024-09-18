@@ -264,7 +264,7 @@ mod tests {
     static ALL_OBJECTS: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/data/objects");
 
     #[test]
-    fn trivial_sprite_parsing() {
+    fn trivial_object_parsing() {
         let tcu = TrailingCommaUtility::new();
 
         for object_file in ALL_OBJECTS.find("**/*.yy").unwrap() {

@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"script_execute_alt",
   "isCompatibility":false,
   "isDnD":false,
