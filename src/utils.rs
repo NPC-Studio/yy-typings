@@ -107,7 +107,7 @@ impl<const N: u8> serde::Serialize for VersionStamp<N> {
         if N == 0 {
             serializer.serialize_str("")
         } else {
-            let output_bytes: [u8; 2] = [b"v"[0], char::from_u32(N as u32).unwrap() as u8];
+            let output_bytes: [u8; 2] = [b"v"[0], char::from_digit(N as u32, 10).unwrap() as u8];
             serializer.serialize_str(std::str::from_utf8(&output_bytes).unwrap())
         }
     }
