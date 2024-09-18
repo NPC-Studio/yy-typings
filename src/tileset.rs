@@ -1,10 +1,14 @@
-use crate::{CommonData, TexturePath, ViewPath};
+use crate::{CommonData, TexturePath, VersionStamp, ViewPath};
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TileSet {
+    /// The event version that GM uses -- it's currently "v1"
+    #[serde(rename = "$GMTileSet")]
+    pub gm_version_stamp: VersionStamp<1>,
+
     #[serde(flatten)]
     pub common_data: CommonData<consts::TileSet>,
 
@@ -27,7 +31,6 @@ pub struct TileSet {
 
     pub texture_group_id: TexturePath,
 
-    pub tile_animation: TileAnimation,
     pub tile_animation_frames: Vec<TileAnimationFrame>,
     pub tile_animation_speed: f64,
 
@@ -40,14 +43,6 @@ pub struct TileSet {
 
     #[serde(rename = "tile_count")]
     pub tile_count: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
-pub struct TileAnimation {
-    #[serde(rename = "FrameData")]
-    frame_data: Vec<usize>,
-    #[serde(rename = "SerialiseFrameCount")]
-    serialize_frame_count: usize,
 }
 
 #[derive(Debug, Serialize, Deserialize, SmartDefault, PartialEq, Eq, Clone)]
@@ -99,6 +94,7 @@ mod tests {
 
         let tset = TileSet {
             common_data: CommonData::new("tile_collision_info".to_string()),
+            gm_version_stamp: VersionStamp,
             auto_tile_sets: vec![],
             macro_page_tiles: MacroPageTiles {
                 serialize_height: 0,
@@ -122,10 +118,6 @@ mod tests {
             texture_group_id: TexturePath {
                 name: "Default".to_string(),
                 path: crate::TexturePathLocation("texturegroups/Default".to_string()),
-            },
-            tile_animation: TileAnimation {
-                frame_data: vec![0, 1, 2, 3, 4, 5, 6],
-                serialize_frame_count: 1,
             },
             tile_animation_frames: vec![],
             tile_animation_speed: 15.0,

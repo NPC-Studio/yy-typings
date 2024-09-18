@@ -1,5 +1,5 @@
 {
-  "$GMTileSet":"",
+  "$GMTileSet":"v1",
   "%Name":"tile_collision_info",
   "autoTileSets":[],
   "macroPageTiles":{
