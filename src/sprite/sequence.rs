@@ -41,7 +41,7 @@ pub struct SpriteSequence {
     /// The number of frames of the Sprite. GMS2 records this as an f32 due to
     /// its shared status between sequences -- this can be converted to a
     /// `usize` without issue.
-    pub length: f32,
+    pub length: f64,
 
     /// Whether the origin of the sprite is locked in the GMS2
     /// Editor. It has no effect otherwise.
@@ -208,11 +208,11 @@ pub struct SpriteKeyframe {
     pub is_creation_key: bool,
 
     #[serde(rename = "Key")]
-    pub key: f32,
+    pub key: f64,
 
     #[serde(rename = "Length")]
     #[default = 1.0]
-    pub length: f32,
+    pub length: f64,
 
     #[serde(rename = "Stretch")]
     pub stretch: bool,

@@ -393,6 +393,6 @@ mod tests {
 
         let o = crate::serialize_file(&json);
 
-        std::assert_eq!(x, o);
+        pretty_assertions::assert_eq!(x, o);
     }
 }
