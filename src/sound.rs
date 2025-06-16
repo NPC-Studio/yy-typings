@@ -153,7 +153,7 @@ pub struct SampleRate(u32);
 
 impl SampleRate {
     pub fn new(sample_rate: u32) -> Option<Self> {
-        if Self::is_valid_sample_rate(sample_rate) {
+        if !Self::is_valid_sample_rate(sample_rate) {
             return None;
         }
 
