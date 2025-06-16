@@ -78,14 +78,14 @@ pub struct BitRate(u32);
 
 impl BitRate {
     pub fn new(bitrate: u32) -> Option<Self> {
-        if Self::is_valid_bitrate(bitrate) {
+        if !Self::is_valid_bitrate(bitrate) {
             return None;
         }
 
         Some(Self(bitrate))
     }
 
-    /// Sets th bitrate.
+    /// Sets the bitrate.
     ///
     /// # Errors
     ///
@@ -152,12 +152,12 @@ impl std::error::Error for InvalidBitRate {}
 pub struct SampleRate(u32);
 
 impl SampleRate {
-    pub fn new(bitrate: u32) -> Option<Self> {
-        if Self::is_valid_sample_rate(bitrate) {
+    pub fn new(sample_rate: u32) -> Option<Self> {
+        if Self::is_valid_sample_rate(sample_rate) {
             return None;
         }
 
-        Some(Self(bitrate))
+        Some(Self(sample_rate))
     }
 
     pub fn is_valid_sample_rate(bitrate: u32) -> bool {
