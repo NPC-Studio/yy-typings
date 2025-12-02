@@ -88,6 +88,11 @@ pub struct Sprite {
 
     #[default(NonZeroUsize::new(1).unwrap())]
     pub width: NonZeroUsize,
+
+    /// The tags associated with this object.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub tags: Vec<String>,
 }
 
 #[derive(
@@ -262,7 +267,7 @@ gm_const!(
 mod tests {
     use super::*;
     use crate::utils::TrailingCommaUtility;
-    use include_dir::{include_dir, Dir, DirEntry};
+    use include_dir::{Dir, DirEntry, include_dir};
 
     static ALL_SPRITES: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/data/sprites");
 
